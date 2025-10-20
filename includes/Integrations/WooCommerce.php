@@ -45,6 +45,21 @@ class WooCommerce {
                 $this->send( 'order_customer_complete', $order );
                 break;
 
+            case 'cancelled':
+                $this->send( 'order_admin_cancelled', $order );
+                $this->send( 'order_customer_cancelled', $order );
+                break;
+
+            case 'failed':
+                $this->send( 'order_admin_failed', $order );
+                $this->send( 'order_customer_failed', $order );
+                break;
+
+            case 'refunded':
+                $this->send( 'order_admin_refunded', $order );
+                $this->send( 'order_customer_refunded', $order );
+                break;
+
             default:
                 // code...
                 break;

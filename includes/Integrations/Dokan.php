@@ -42,6 +42,18 @@ class Dokan {
                 $this->send( 'order_dokan_complete', $order, $vendor_id );
                 break;
 
+            case 'cancelled':
+                $this->send( 'order_dokan_cancelled', $order, $vendor_id );
+                break;
+
+            case 'failed':
+                $this->send( 'order_dokan_failed', $order, $vendor_id );
+                break;
+
+            case 'refunded':
+                $this->send( 'order_dokan_refunded', $order, $vendor_id );
+                break;
+
             default:
                 // code...
                 break;

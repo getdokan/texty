@@ -55,16 +55,25 @@ class Notifications {
             // WC Admin
             $notifications['order_admin_processing'] = __NAMESPACE__ . '\Notifications\WC\ProcessingAdmin';
             $notifications['order_admin_complete']   = __NAMESPACE__ . '\Notifications\WC\CompleteAdmin';
+            $notifications['order_admin_cancelled']  = __NAMESPACE__ . '\Notifications\WC\CancelledAdmin';
+            $notifications['order_admin_failed']     = __NAMESPACE__ . '\Notifications\WC\FailedAdmin';
+            $notifications['order_admin_refunded']   = __NAMESPACE__ . '\Notifications\WC\RefundedAdmin';
 
             // WC Customers
             $notifications['order_customer_hold']       = __NAMESPACE__ . '\Notifications\WC\HoldCustomer';
             $notifications['order_customer_processing'] = __NAMESPACE__ . '\Notifications\WC\ProcessingCustomer';
             $notifications['order_customer_complete']   = __NAMESPACE__ . '\Notifications\WC\CompleteCustomer';
+            $notifications['order_customer_cancelled']  = __NAMESPACE__ . '\Notifications\WC\CancelledCustomer';
+            $notifications['order_customer_failed']     = __NAMESPACE__ . '\Notifications\WC\FailedCustomer';
+            $notifications['order_customer_refunded']   = __NAMESPACE__ . '\Notifications\WC\RefundedCustomer';
         }
 
         if ( class_exists( 'WeDevs_Dokan' ) ) {
             $notifications['order_dokan_processing'] = __NAMESPACE__ . '\Notifications\Dokan\ProcessingVendor';
             $notifications['order_dokan_complete']   = __NAMESPACE__ . '\Notifications\Dokan\CompleteVendor';
+            $notifications['order_dokan_cancelled']  = __NAMESPACE__ . '\Notifications\Dokan\CancelledVendor';
+            $notifications['order_dokan_failed']     = __NAMESPACE__ . '\Notifications\Dokan\FailedVendor';
+            $notifications['order_dokan_refunded']   = __NAMESPACE__ . '\Notifications\Dokan\RefundedVendor';
         }
 
         $this->notifications = apply_filters( 'texty_available_notifications', $notifications );
