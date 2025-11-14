@@ -11,22 +11,22 @@ import TestMessage from '../components/TestMessage';
 
 function Tools() {
   return (
-    <div className="texty-tools">
+    <div>
       <h1>{__('Tools', 'texty')}</h1>
 
       <Status />
 
-      <div className="texty-two-col">
-        <div className="texty-col">
-          <Card className="mt-4">
+      <div className="flex flex-wrap justify-between">
+        <div className="flex-[0_48%] max-sm:flex-[0_100%]">
+          <Card className="mt-5">
             <CardHeader>{__('Test Message', 'texty')}</CardHeader>
             <CardBody>
               <TestMessage />
             </CardBody>
           </Card>
         </div>
-        <div className="texty-col">
-          <Card className="mt-4">
+        <div className="flex-[0_48%] max-sm:flex-[0_100%]">
+          <Card className="mt-5">
             <CardHeader>{__('Quick Send', 'texty')}</CardHeader>
             <CardBody>
               <QuickSend />

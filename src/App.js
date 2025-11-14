@@ -26,8 +26,8 @@ function App() {
 
       <Header />
 
-      <div className="wrap texty">
-        <div className="texty-container">
+      <div className="mt-6 texty">
+        <div className="mx-auto w-full max-w-container">
           <Switch>
             <Route path="/notifications" component={Notifications} />
             <Route path="/tools" component={Tools} />

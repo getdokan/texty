@@ -101,37 +101,41 @@ function Settings() {
   const gateways = Object.keys(settings.gateways);
 
   return (
-    <div className="texty-settings">
+    <div>
       <h1>{__('Settings', 'texty')}</h1>
 
-      <form onSubmit={handleSubmit} className="texty-settings__form">
+      <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader>{__('SMS Gateway', 'texty')}</CardHeader>
           <CardBody>
             <fieldset disabled={isSaving}>
-              <div className="settings-row">
-                <div className="settings-row__label">
-                  <label>{__('Gateways', 'texty')}</label>
+              <div className="pb-5">
+                <div>
+                  <label className="text-base font-medium">{__('Gateways', 'texty')}</label>
                 </div>
-                <div className="settings-row__field">
-                  <div className="settings-row__gateways">
+                <div className="mt-4">
+                  <div className="flex flex-wrap max-sm:block">
                     {gateways.map((key) => {
                       const { name, logo } = settings.gateways[key];
 
                       return (
                         <div
-                          className={classNames('gateway-card', {
-                            active: key === settings.gateway,
-                          })}
+                          className={classNames(
+                            'flex flex-col w-40 bg-white mr-4 mb-4 p-5 px-4 rounded-md text-center cursor-pointer opacity-40 relative border border-gray-200',
+                            'max-sm:w-auto max-sm:text-left max-sm:flex-row max-sm:mb-2.5 max-sm:mr-0 max-sm:items-center',
+                            {
+                              'opacity-100 border-2 border-primary-dark': key === settings.gateway,
+                            }
+                          )}
                           key={'gateway-' + key}
                           onClick={() => setOption('gateway', key)}
                         >
-                          <ActiveIcon />
-                          <div className="gateway-card__logo">
-                            <img src={logo} alt={name} />
+                          <ActiveIcon isActive={key === settings.gateway} />
+                          <div className="h-8 max-sm:h-auto max-sm:flex-[0_40%]">
+                            <img src={logo} alt={name} className="max-w-[90px] max-h-6 max-sm:max-w-[90%]" />
                           </div>
 
-                          <div className="gateway-card__heading">{name}</div>
+                          <div className="text-lg mt-2 font-medium max-sm:mt-0">{name}</div>
                         </div>
                       );
                     })}
@@ -145,7 +149,7 @@ function Settings() {
                 return (
                   settings.gateway === key && (
                     <div
-                      className={'settings-row settings-' + key}
+                      className={'pb-5 settings-' + key}
                       key={'settings-' + key}
                     >
                       <h3>{name}</h3>
@@ -211,7 +215,7 @@ function Settings() {
           </CardBody>
         </Card>
 
-        <div className="submit-area">
+        <div className="flex justify-end">
           <Button
             type="submit"
             isPrimary={true}

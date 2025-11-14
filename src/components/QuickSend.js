@@ -43,7 +43,7 @@ function QuickSend() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="texty-settings__form">
+    <form onSubmit={handleSubmit}>
       <fieldset disabled={isSending}>
         <TextControl
           label={__('Phone Number', 'texty')}
@@ -63,7 +63,7 @@ function QuickSend() {
         />
       </fieldset>
 
-      <div className="submit-area">
+      <div className="flex justify-end">
         <Button type="submit" isPrimary={true} isBusy={isSending}>
           {isSending ? __('Sending...', 'texty') : __('Send Message', 'texty')}
         </Button>

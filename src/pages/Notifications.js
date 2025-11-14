@@ -86,7 +86,7 @@ function Notifications() {
   }
 
   return (
-    <div className="texty-notifications">
+    <div>
       <h1>{__('Notifications', 'texty')}</h1>
       <p>
         {__(
@@ -109,7 +109,7 @@ function Notifications() {
                 {title}
 
                 {!available && (
-                  <span class="sub-heading">
+                  <span className="sub-heading">
                     {__('Plugin not installed', 'texty')}
                   </span>
                 )}
@@ -141,7 +141,7 @@ function Notifications() {
           );
         })}
 
-        <div className="submit-area">
+        <div className="flex justify-end">
           <Button
             type="submit"
             isPrimary={true}

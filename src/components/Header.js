@@ -4,10 +4,10 @@ import { NavLink } from 'react-router-dom';
 
 function Header() {
   return (
-    <div className="texty-header-wrap">
-      <div className="texty-container">
-        <div className="texty-header">
-          <div className="texty-admin-header__logo">
+    <div className="bg-white ml-[-20px] shadow-sm">
+      <div className="mx-auto w-full max-w-container">
+        <div className="flex items-center py-4 lg:py-4 lg:px-0 px-5 max-sm:block max-sm:text-center">
+          <div className="flex items-end max-sm:block max-sm:mb-2.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 97 28"
@@ -27,33 +27,36 @@ function Header() {
             </svg>
           </div>
 
-          <div className="texty-admin-header__menu">
+          <div className="flex-1 text-right pr-1.5 max-sm:text-left">
             <NavLink
               to="/"
               exact
-              className="header-link"
+              className="no-underline ml-1 text-gray-700 py-2 px-5 pl-4 hover:bg-gray-100 hover:rounded rounded max-sm:text-left max-sm:block"
+              activeClassName="bg-primary text-gray-100"
               title={__('Gateway Settings', 'texty')}
             >
               <span className="dashicons dashicons-admin-settings"></span>
-              <span className="title">{__('Gateway Settings', 'texty')}</span>
+              <span className="ml-1">{__('Gateway Settings', 'texty')}</span>
             </NavLink>
 
             <NavLink
               to="/notifications"
-              className="header-link"
+              className="no-underline ml-1 text-gray-700 py-2 px-5 pl-4 hover:bg-gray-100 hover:rounded rounded max-sm:text-left max-sm:block"
+              activeClassName="bg-primary text-gray-100"
               title={__('Notifications', 'texty')}
             >
               <span className="dashicons dashicons-admin-plugins"></span>
-              <span className="title">{__('Notifications', 'texty')}</span>
+              <span className="ml-1">{__('Notifications', 'texty')}</span>
             </NavLink>
 
             <NavLink
               to="/tools"
-              className="header-link"
+              className="no-underline ml-1 text-gray-700 py-2 px-5 pl-4 hover:bg-gray-100 hover:rounded rounded max-sm:text-left max-sm:block"
+              activeClassName="bg-primary text-gray-100"
               title={__('Tools', 'texty')}
             >
               <span className="dashicons dashicons-admin-tools"></span>
-              <span className="title">{__('Tools', 'texty')}</span>
+              <span className="ml-1">{__('Tools', 'texty')}</span>
             </NavLink>
           </div>
         </div>
