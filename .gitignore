@@ -1,5 +1,6 @@
 vendor
 .DS_Store
+.idea
 node_modules
 yarn-error.log
 dev-config.json

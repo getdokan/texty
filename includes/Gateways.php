@@ -55,6 +55,7 @@ class Gateways {
             'vonage'     => __NAMESPACE__ . '\Gateways\Vonage',
             'clickatell' => __NAMESPACE__ . '\Gateways\Clickatell',
             'plivo'      => __NAMESPACE__ . '\Gateways\Plivo',
+            'octopush'   => __NAMESPACE__ . '\Gateways\Octopush',
         ];
 
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
