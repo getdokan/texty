@@ -1,7 +1,7 @@
 === Texty - SMS Notification for WordPress, WooCommerce, Dokan and more ===
 Contributors: tareq1988, wedevs, nizamuddinbabu
 Donate link: https://tareq.co/donate/
-Tags: sms, text, notification, twilio, nexmo, vonage, clickatell, plivo, dokan, woocommerce
+Tags: sms, notification, twilio, woocommerce, dokan
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
@@ -9,61 +9,79 @@ Stable tag: 1.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Texty is a lightweight SMS notification plugin for WordPress.
+A lightweight SMS notification plugin for WordPress, WooCommerce, and Dokan.
 
 == Description ==
 
-Texty is a lightweight SMS notification plugin for WordPress.
+Texty is a lightweight SMS notification plugin for WordPress. With so many emails coming to your inbox, often it becomes overwhelming to stay on top of things that matter most. A text notification on your phone may be more desired.
 
-With so many emails coming to your inbox, often it becomes overwhelming to get top of things that you feel most important. A text notification on your phone, WhatsApp, or Telegram may be more desired.
+Texty integrates with 3rd party SMS providers to add support for text messaging. When events occur in WordPress, WooCommerce, or Dokan, Texty sends an SMS notification to the right people at the right time.
 
-👉 [Docs](https://github.com/weDevsOfficial/texty/wiki)
+👉 [GitHub](https://github.com/getdokan/texty) | [Developer Docs](https://github.com/getdokan/texty#developer-documentation)
 
-### How does it work?
+= Features =
 
-Texty integrates with 3rd party SMS providers to add support for text messaging.
+- **Multiple SMS Gateways** - Choose from Twilio, Vonage, Plivo, or Clickatell
+- **WordPress Notifications** - New user registration and new comment alerts
+- **WooCommerce Notifications** - Admin and customer order status notifications
+- **Dokan Notifications** - Vendor order status notifications
+- **Customizable Messages** - Use template tags to personalize every SMS
+- **Developer Friendly** - 20+ action and filter hooks for full extensibility
 
-If you need an SMS notification when a user registers your website, Texty can send a text alert to you when someone registers. Similarly, when a different event occurs in different plugins, Texty can send a text notification depending upon the event.
-
-Another example might be an order notification from WooCommerce. Upon receiving an order, you might decide to receive a text notification, as well as your customer may get a text notification when the order status changes.
-
-### Supported Gateways
+= Supported Gateways =
 
 - [Twilio](https://twilio.com)
 - [Vonage](https://vonage.com/communications-apis/) - Formerly Nexmo
 - [Plivo](https://www.plivo.com/)
 - [Clickatell](https://www.clickatell.com/)
 
-### Supported Events
+= Supported Events =
 
-#### WordPress Core
+**WordPress Core**
 
-- **New User** - Send an alert when someone registers on your website.
-- **New Comment** - Get an alert when anyone lefts a comment.
+- New User Registration
+- New Comment
 
-#### WooCommerce
+**WooCommerce (Admin)**
 
-- **Admin - When Order Status is Processing** - Get an alert when a new order is received in *Processing* status.
-- **Admin - When Order Status is Complete** - Get an alert when a new order is *Complete*.
-- **Customer - When Order Status is On Hold** - Send an alert to the customer when a new order received, but is in *On Hold* status.
-- **Customer - When Order Status is Processing** - Send an alert to the customer when a new order changes to *Processing* status.
-- **Customer - When Order Status is Complete** - Send an alert to the customer when a order changes to *Complete* status.
+- Order Processing
+- Order Complete
+- Order Cancelled
+- Order Failed
+- Order Refunded
 
-#### Dokan
+**WooCommerce (Customer)**
 
-- **Vendor - When Order Status is Processing** - Send an alert to the vendor when a new order received in *Processing* status.
-- **Vendor - When Order Status is Complete** - Send an alert to the vendor when a order changes to *Complete*.
+- Order On Hold
+- Order Processing
+- Order Complete
+- Order Cancelled
+- Order Failed
+- Order Refunded
 
-#### Disclaimer
+**Dokan (Vendor)**
 
-As Texty doesn't have any capability to send a text by itself, it integrates with 3rd party providers to do so. You should check the individual provider's terms of service and privacy policies before using them.
+- Order Processing
+- Order Complete
+- Order Cancelled
+- Order Failed
+- Order Refunded
 
-- Twilio - [Terms of Service](https://www.twilio.com/legal/tos) and [Privacy Policy](https://www.twilio.com/legal/privacy)
-- Vonage - [Legal](https://www.vonage.com/legal/) and [Privacy Policy](https://www.vonage.com/legal/privacy-policy/)
-- Plivo - [Terms of Service](https://www.plivo.com/legal/tos/) and [Privacy Policy](https://www.plivo.com/legal/privacy/)
-- Clickatell - [Terms of Service](https://www.clickatell.com/legal/master-terms/) and [Privacy Policy](https://www.clickatell.com/legal/general-terms-notices/privacy-notice/)
+= Extensibility =
 
-#### Privacy Policy
+Texty is built with developers in mind. Register custom gateways, add new notification types, modify messages on the fly, or integrate with any WordPress plugin. See the [Developer Documentation](https://github.com/getdokan/texty#developer-documentation) for details.
+
+= Disclaimer =
+
+Texty integrates with 3rd party providers to send SMS messages. Please review each provider's terms before use:
+
+- Twilio - [Terms of Service](https://www.twilio.com/legal/tos) | [Privacy Policy](https://www.twilio.com/legal/privacy)
+- Vonage - [Legal](https://www.vonage.com/legal/) | [Privacy Policy](https://www.vonage.com/legal/privacy-policy/)
+- Plivo - [Terms of Service](https://www.plivo.com/legal/tos/) | [Privacy Policy](https://www.plivo.com/legal/privacy/)
+- Clickatell - [Terms of Service](https://www.clickatell.com/legal/master-terms/) | [Privacy Policy](https://www.clickatell.com/legal/general-terms-notices/privacy-notice/)
+
+= Privacy Policy =
+
 Texty uses [Appsero](https://appsero.com) SDK to collect some telemetry data upon user's confirmation. This helps us to troubleshoot problems faster & make product improvements.
 
 Appsero SDK **does not gather any data by default.** The SDK only starts gathering basic telemetry data **when a user allows it via the admin notice**. We collect the data to ensure a great user experience for all our users.
@@ -72,67 +90,102 @@ Learn more about how [Appsero collects and uses this data](https://appsero.com/p
 
 == Installation ==
 
-Extract the zip file and just drop the contents in the wp-content/plugins/ directory of your WordPress installation and then activate the Plugin from Plugins page.
+= Minimum Requirements =
+
+- WordPress 6.8 or greater
+- PHP 7.4 or greater
+
+= Automatic Installation =
+
+1. Go to **Plugins > Add New** in your WordPress admin
+2. Search for "Texty"
+3. Click **Install Now** and then **Activate**
+
+= Manual Installation =
+
+1. Download the plugin zip file
+2. Extract and upload the `texty` folder to `/wp-content/plugins/`
+3. Activate the plugin from the **Plugins** page in WordPress admin
+
+= Setup =
+
+1. Navigate to **Texty > Settings** in your WordPress admin
+2. Select your SMS gateway and enter the API credentials
+3. Go to the **Notifications** tab to enable and configure alerts
+4. Use the **Tools** tab to send a test SMS
 
 == Frequently Asked Questions ==
 
 = Which gateways does Texty support? =
 
-Currently, it supports Twilio, Vonage (Nexmo), Plivo, Clickatell. More gateway support is being added continiously.
+Texty supports Twilio, Vonage (Nexmo), Plivo, and Clickatell. You can also register custom gateways via the `texty_register_gateways` action hook.
 
 = Does it support WooCommerce? =
 
-Yes, it does. We are continiously adding more events for WooCommerce.
+Yes. Texty supports admin and customer notifications for order status changes including processing, complete, on-hold, cancelled, failed, and refunded.
 
 = Does it support Dokan? =
 
-Yes, it supports Dokan.
+Yes. Dokan vendors receive SMS notifications when their order statuses change.
 
-= Can I do X? =
+= Can I add custom gateways? =
 
-Well, it depends. Let us know what you want, we might consider adding that feature.
+Yes. Implement the `GatewayInterface` and register your gateway using the `texty_register_gateways` action hook. See the [Developer Documentation](https://github.com/getdokan/texty#developer-documentation) for details.
 
+= Can I modify SMS content before sending? =
+
+Yes. Use the `texty_sms_message` filter to modify the SMS body, or `texty_notification_message` to modify notification content before sending.
+
+= Can I add notifications for other plugins? =
+
+Yes. Use the `texty_register_notifications` action hook to register custom notification types.
 
 == Screenshots ==
 
 1. Gateway settings page
-1. All supported notifications panel
-1. Tools page for quick testing
-1. WooCommerce admin notification
-1. WooCommerce customer notification
+2. All supported notifications panel
+3. Tools page for quick testing
+4. WooCommerce admin notification
+5. WooCommerce customer notification
 
 == Changelog ==
 
 = v1.1.5 (3 Feb, 2026) =
-- **New:** Added notifications for Woocommerce order statuses: cancelled, failed, and refunded
+
+- **New:** Added notifications for WooCommerce order statuses: cancelled, failed, and refunded
 - **New:** Added notifications for Dokan Vendor order statuses: cancelled, failed, and refunded
+- **New:** Added 21 action and filter hooks for developer extensibility
+- **New:** Gateway registry system — register custom gateways via `texty_register_gateways`
+- **New:** Notification registry system — register custom notifications via `texty_register_notifications`
 - **Update:** Appsero updated for WordPress 6.8 compatibility
 - **Update:** Mozart is integrated with the plugin
 - **Update:** WordPress 6.9 compatibility added
 
 = v1.1.4 (8 Oct, 2024) =
-- **update:** WordPress 6.6.2 compatibility
+
+- **Update:** WordPress 6.6.2 compatibility
 
 = v1.1.2 (31 Oct, 2023) =
-- **update:** WordPress 6.3.2 compatibility
-- **fix:** Fixed Appsero SDK security issue
+
+- **Update:** WordPress 6.3.2 compatibility
+- **Fix:** Fixed Appsero SDK security issue
 
 = v1.1.1 (2 June, 2022) =
 
- - **Fix:** WordPress 6.0 compatibility
+- **Fix:** WordPress 6.0 compatibility
 
 = v1.1 (31 Aug, 2021) =
 
- - **Fix:** Responsive issue in the settings panel was fixed where the name of gateways were overflowing the total viewport.
- - **Fix:** Remove duplicate numbers while sending messages. If a message is being sent and somehow two person have the same numbers, it'll only send one message.
- - **New:** Syncing of vendor phone number from Dokan added while registration. When a vendor was registering, his phone number from Dokan wasn't syncing as a Texty number, which prevented him to receive messages.
+- **Fix:** Responsive issue in the settings panel where gateway names overflowed the viewport
+- **Fix:** Remove duplicate numbers while sending messages
+- **New:** Syncing of vendor phone number from Dokan during registration
 
 = v1.0 (22 Jan, 2021) =
 
-- **New:** Added Plivo gateway.
-- **New:** Added Clickatell gateway.
-- **New:** Added Dokan integration. Now vendors will receive SMS notifications when they receive an order (processing and complted status).
-- **New:** Added `{items}` shortcode for WooCommerce orders which displays the product with quantity.
+- **New:** Added Plivo gateway
+- **New:** Added Clickatell gateway
+- **New:** Added Dokan integration for vendor order notifications
+- **New:** Added `{items}` shortcode for WooCommerce orders
 
 = v0.2 (18 Jan, 2021) =
 
@@ -140,4 +193,5 @@ Well, it depends. Let us know what you want, we might consider adding that featu
 
 == Upgrade Notice ==
 
-Nothing here right now
+= 1.1.5 =
+Adds new notification types for cancelled, failed, and refunded orders. Adds 21 extensibility hooks for developers.
