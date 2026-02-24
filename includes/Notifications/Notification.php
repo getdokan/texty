@@ -226,12 +226,16 @@ abstract class Notification {
      */
     public function enabled() {
         $settings = $this->settings();
+        $enabled  = isset( $settings['enabled'] ) && $settings['enabled'] === true;
 
-        if ( isset( $settings['enabled'] ) && $settings['enabled'] === true ) {
-            return true;
-        }
-
-        return false;
+        /**
+         * Filter whether a notification is enabled.
+         *
+         * @param bool         $enabled      Whether the notification is enabled
+         * @param string       $id           The notification ID
+         * @param Notification $notification The notification instance
+         */
+        return apply_filters( 'texty_notification_enabled', $enabled, $this->get_id(), $this );
     }
 
     /**
@@ -241,12 +245,16 @@ abstract class Notification {
      */
     public function settings() {
         $settings = texty()->notifications()->settings();
+        $value    = isset( $settings[ $this->get_id() ] ) ? $settings[ $this->get_id() ] : [];
 
-        if ( isset( $settings[ $this->get_id() ] ) ) {
-            return $settings[ $this->get_id() ];
-        }
-
-        return [];
+        /**
+         * Filter the notification settings.
+         *
+         * @param array        $value        The notification settings
+         * @param string       $id           The notification ID
+         * @param Notification $notification The notification instance
+         */
+        return apply_filters( 'texty_notification_settings', $value, $this->get_id(), $this );
     }
 
     /**
@@ -259,7 +267,13 @@ abstract class Notification {
             return;
         }
 
-        $recipients = $this->get_recipients();
+        /**
+         * Filter the recipients for a notification.
+         *
+         * @param array        $recipients   The recipient phone numbers
+         * @param Notification $notification The notification instance
+         */
+        $recipients = apply_filters( 'texty_notification_recipients', $this->get_recipients(), $this );
 
         if ( ! $recipients ) {
             return;
@@ -269,6 +283,32 @@ abstract class Notification {
         $recipients = array_unique( $recipients );
 
         $content = $this->get_message();
+
+        /**
+         * Filter the notification message content.
+         *
+         * @param string       $content      The message content
+         * @param Notification $notification The notification instance
+         */
+        $content = apply_filters( 'texty_notification_message', $content, $this );
+
+        /**
+         * Filter the message for a specific notification type.
+         *
+         * @param string       $content      The message content
+         * @param Notification $notification The notification instance
+         */
+        $content = apply_filters( 'texty_notification_message_' . $this->get_id(), $content, $this );
+
+        /**
+         * Fires before the notification send loop.
+         *
+         * @param Notification $notification The notification instance
+         * @param array        $recipients   The recipient phone numbers
+         * @param string       $content      The message content
+         */
+        do_action( 'texty_before_notification', $this, $recipients, $content );
+
         $gateway = texty()->gateways();
 
         foreach ( $recipients as $number ) {
@@ -278,5 +318,14 @@ abstract class Notification {
 
             $gateway->send( $number, $content );
         }
+
+        /**
+         * Fires after the notification send loop.
+         *
+         * @param Notification $notification The notification instance
+         * @param array        $recipients   The recipient phone numbers
+         * @param string       $content      The message content
+         */
+        do_action( 'texty_after_notification', $this, $recipients, $content );
     }
 }
