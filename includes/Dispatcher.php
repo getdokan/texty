@@ -19,9 +19,32 @@ class Dispatcher {
         add_action( 'user_register', [ $this, 'user_register' ] );
         add_action( 'comment_post', [ $this, 'new_comment' ] );
 
-        // WooCommerce
-        new WooCommerce();
-        new Dokan();
+        // Load integrations
+        $this->register_integrations();
+    }
+
+    /**
+     * Register integrations via hook for extensibility.
+     *
+     * @return void
+     */
+    private function register_integrations() {
+        /**
+         * Fires to allow registration of custom integrations.
+         *
+         * Default handler loads WooCommerce and Dokan integrations
+         * when their respective plugins are active.
+         */
+        do_action( 'texty_register_integrations' );
+
+        // Load built-in integrations conditionally
+        if ( class_exists( 'WooCommerce' ) ) {
+            new WooCommerce();
+        }
+
+        if ( class_exists( 'WeDevs_Dokan' ) ) {
+            new Dokan();
+        }
     }
 
     /**

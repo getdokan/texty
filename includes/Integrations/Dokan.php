@@ -14,6 +14,28 @@ class Dokan {
         add_action( 'woocommerce_order_status_changed', [ $this, 'order_status_changed' ], 99, 4 );
         add_action( 'dokan_new_seller_created', [ $this, 'update_vendor_phone' ], 35, 2 );
         add_action( 'dokan_store_profile_saved', [ $this, 'update_vendor_phone' ], 35, 2 );
+        add_action( 'texty_register_notifications', [ $this, 'register_notifications' ] );
+    }
+
+    /**
+     * Register Dokan notification types.
+     *
+     * @param \Texty\Notifications $notifications The notifications manager
+     *
+     * @return void
+     */
+    public function register_notifications( $notifications ) {
+        if ( ! class_exists( 'WeDevs_Dokan' ) ) {
+            return;
+        }
+
+        $namespace = 'Texty\Notifications\Dokan\\';
+
+        $notifications->register( 'order_dokan_processing', $namespace . 'ProcessingVendor' );
+        $notifications->register( 'order_dokan_complete', $namespace . 'CompleteVendor' );
+        $notifications->register( 'order_dokan_cancelled', $namespace . 'CancelledVendor' );
+        $notifications->register( 'order_dokan_failed', $namespace . 'FailedVendor' );
+        $notifications->register( 'order_dokan_refunded', $namespace . 'RefundedVendor' );
     }
 
     /**
