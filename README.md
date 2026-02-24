@@ -10,6 +10,15 @@
 
 A lightweight SMS notification plugin for WordPress, WooCommerce, and Dokan.
 
+## Table of Contents
+
+- [Description](#description)
+- [Installation](#installation)
+- [Development Setup](#development-setup)
+- [Developer Documentation](#developer-documentation)
+- [Frequently Asked Questions](#frequently-asked-questions)
+- [Changelog](#changelog)
+
 ## Description
 
 Texty is a lightweight SMS notification plugin for WordPress. With so many emails coming to your inbox, often it becomes overwhelming to stay on top of things that matter most. A text notification on your phone may be more desired.
@@ -69,6 +78,74 @@ Texty integrates with 3rd party SMS providers to add support for text messaging.
 2. Select your SMS gateway and enter the API credentials
 3. Go to the **Notifications** tab to enable and configure alerts
 4. Use the **Tools** tab to send a test SMS
+
+## Development Setup
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or later)
+- [Composer](https://getcomposer.org/)
+- PHP 7.4 or later
+- A local WordPress installation
+
+### Clone and Install
+
+```bash
+# Clone the repository into your WordPress plugins directory
+cd /path/to/wordpress/wp-content/plugins
+git clone https://github.com/getdokan/texty.git
+cd texty
+
+# Install PHP dependencies
+composer install
+
+# Install Node.js dependencies
+npm install
+```
+
+### Build
+
+```bash
+# Build assets for production
+npm run build
+
+# Start development mode with file watching
+npm run start
+```
+
+### Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Build production assets |
+| `npm run start` | Start development mode with file watching |
+| `npm run clean` | Remove the `dist` directory |
+| `npm run makepot` | Generate translation POT file |
+| `npm run pot2json` | Convert POT file to JSON for JavaScript translations |
+| `npm run readme` | Convert `readme.txt` to `readme.md` |
+| `composer phpcs` | Run PHP CodeSniffer |
+| `composer phpcbf` | Auto-fix PHP CodeSniffer issues |
+
+### Project Structure
+
+```
+texty/
+├── includes/               # PHP source files
+│   ├── Gateways/           # SMS gateway implementations
+│   ├── Integrations/       # Third-party plugin integrations (WooCommerce, Dokan)
+│   ├── Notifications/      # Notification types (WP, WC, Dokan)
+│   ├── Dispatcher.php      # Event dispatcher
+│   ├── Gateways.php        # Gateway manager/registry
+│   ├── Notifications.php   # Notification manager/registry
+│   └── Settings.php        # Plugin settings
+├── src/                    # JavaScript/React source files
+├── dist/                   # Built assets (generated)
+├── dependencies/           # Mozart-managed PHP dependencies
+├── languages/              # Translation files
+├── texty.php               # Plugin entry point
+├── composer.json
+└── package.json
+```
 
 ## Developer Documentation
 
@@ -704,14 +781,6 @@ Yes. Implement the `GatewayInterface` and register your gateway using the `texty
 
 Yes. Use the `texty_sms_message` filter to modify the SMS body, or `texty_notification_message` to modify notification content before sending.
 
-## Screenshots
-
-1. Gateway settings page
-2. All supported notifications panel
-3. Tools page for quick testing
-4. WooCommerce admin notification
-5. WooCommerce customer notification
-
 ## Changelog
 
 ### v1.1.5 (3 Feb, 2026)
@@ -755,19 +824,3 @@ Yes. Use the `texty_sms_message` filter to modify the SMS body, or `texty_notifi
 
 - Initial Release
 
-## Disclaimer
-
-Texty integrates with 3rd party providers to send SMS messages. Please review each provider's terms before use:
-
-- Twilio - [Terms of Service](https://www.twilio.com/legal/tos) | [Privacy Policy](https://www.twilio.com/legal/privacy)
-- Vonage - [Legal](https://www.vonage.com/legal/) | [Privacy Policy](https://www.vonage.com/legal/privacy-policy/)
-- Plivo - [Terms of Service](https://www.plivo.com/legal/tos/) | [Privacy Policy](https://www.plivo.com/legal/privacy/)
-- Clickatell - [Terms of Service](https://www.clickatell.com/legal/master-terms/) | [Privacy Policy](https://www.clickatell.com/legal/general-terms-notices/privacy-notice/)
-
-## Privacy Policy
-
-Texty uses [Appsero](https://appsero.com) SDK to collect some telemetry data upon user's confirmation. This helps us troubleshoot problems faster & make product improvements.
-
-Appsero SDK **does not gather any data by default.** The SDK only starts gathering basic telemetry data **when a user allows it via the admin notice**. We collect the data to ensure a great user experience for all our users.
-
-Learn more about how [Appsero collects and uses this data](https://appsero.com/privacy-policy/).
