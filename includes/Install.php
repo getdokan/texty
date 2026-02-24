@@ -37,12 +37,13 @@ class Install {
         error_log ( "Creating table with charset: {$charset_collate}" );
         $table_name      = $wpdb->prefix . 'texty_sms_stat';
 
-        $sql = "CREATE TABLE {$table_name} (
+        $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             receiver VARCHAR(20) NOT NULL,
             gateway VARCHAR(50) NOT NULL,
             status VARCHAR(20) DEFAULT NULL,
-            timestamp DATETIME NOT NULL,
+            created_at DATETIME NOT NULL,
+            updated_at DATETIME NOT NULL,
             reference_id VARCHAR(100) DEFAULT NULL
         ) {$charset_collate};";
 

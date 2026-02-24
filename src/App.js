@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { HashRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
-=======
-import { HashRouter as Router, Switch, Route } from 'react-router-dom';
->>>>>>> develop
 import { ToastContainer } from 'react-toastify';
 
 import Header from './components/Header';
