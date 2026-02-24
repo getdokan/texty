@@ -46,12 +46,15 @@ class Settings {
      */
     public function get( $key ) {
         $settings = $this->all();
+        $value    = isset( $settings[ $key ] ) ? $settings[ $key ] : false;
 
-        if ( isset( $settings[ $key ] ) ) {
-            return $settings[ $key ];
-        }
-
-        return false;
+        /**
+         * Filter a setting value. Allows overriding from env vars or other sources.
+         *
+         * @param mixed  $value The setting value
+         * @param string $key   The setting key
+         */
+        return apply_filters( 'texty_setting', $value, $key );
     }
 
     /**
@@ -60,6 +63,13 @@ class Settings {
      * @return string|false
      */
     public function gateway() {
-        return $this->get( 'gateway' );
+        $gateway = $this->get( 'gateway' );
+
+        /**
+         * Filter the active gateway name.
+         *
+         * @param string|false $gateway The active gateway identifier
+         */
+        return apply_filters( 'texty_active_gateway_name', $gateway );
     }
 }

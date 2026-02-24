@@ -135,15 +135,58 @@ class Base extends Notification {
             $recipients = $this->get_recipients();
         }
 
+        /**
+         * Filter the recipients for a notification.
+         *
+         * @param array        $recipients   The recipient phone numbers
+         * @param Notification $notification The notification instance
+         */
+        $recipients = apply_filters( 'texty_notification_recipients', $recipients, $this );
+
         if ( ! $recipients ) {
             return;
         }
 
         $content = $this->get_message();
+
+        /**
+         * Filter the notification message content.
+         *
+         * @param string       $content      The message content
+         * @param Notification $notification The notification instance
+         */
+        $content = apply_filters( 'texty_notification_message', $content, $this );
+
+        /**
+         * Filter the message for a specific notification type.
+         *
+         * @param string       $content      The message content
+         * @param Notification $notification The notification instance
+         */
+        $content = apply_filters( 'texty_notification_message_' . $this->get_id(), $content, $this );
+
+        /**
+         * Fires before the notification send loop.
+         *
+         * @param Notification $notification The notification instance
+         * @param array        $recipients   The recipient phone numbers
+         * @param string       $content      The message content
+         */
+        do_action( 'texty_before_notification', $this, $recipients, $content );
+
         $gateway = texty()->gateways();
 
         foreach ( $recipients as $number ) {
             $gateway->send( $number, $content );
         }
+
+        /**
+         * Fires after the notification send loop.
+         *
+         * @param Notification $notification The notification instance
+         * @param array        $recipients   The recipient phone numbers
+         * @param string       $content      The message content
+         */
+        do_action( 'texty_after_notification', $this, $recipients, $content );
     }
 }

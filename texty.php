@@ -77,6 +77,13 @@ final class Texty {
 
         new Texty\Api();
         new Texty\Dispatcher();
+
+        /**
+         * Fires after the Texty plugin is fully initialized.
+         *
+         * @param Texty $texty The main plugin instance
+         */
+        do_action( 'texty_loaded', $this );
     }
 
     /**

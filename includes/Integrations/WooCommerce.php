@@ -12,6 +12,37 @@ class WooCommerce {
      */
     public function __construct() {
         add_action( 'woocommerce_order_status_changed', [ $this, 'order_status_changed' ], 10, 4 );
+        add_action( 'texty_register_notifications', [ $this, 'register_notifications' ] );
+    }
+
+    /**
+     * Register WooCommerce notification types.
+     *
+     * @param \Texty\Notifications $notifications The notifications manager
+     *
+     * @return void
+     */
+    public function register_notifications( $notifications ) {
+        if ( ! class_exists( 'WooCommerce' ) ) {
+            return;
+        }
+
+        $namespace = 'Texty\Notifications\WC\\';
+
+        // WC Admin
+        $notifications->register( 'order_admin_processing', $namespace . 'ProcessingAdmin' );
+        $notifications->register( 'order_admin_complete', $namespace . 'CompleteAdmin' );
+        $notifications->register( 'order_admin_cancelled', $namespace . 'CancelledAdmin' );
+        $notifications->register( 'order_admin_failed', $namespace . 'FailedAdmin' );
+        $notifications->register( 'order_admin_refunded', $namespace . 'RefundedAdmin' );
+
+        // WC Customers
+        $notifications->register( 'order_customer_hold', $namespace . 'HoldCustomer' );
+        $notifications->register( 'order_customer_processing', $namespace . 'ProcessingCustomer' );
+        $notifications->register( 'order_customer_complete', $namespace . 'CompleteCustomer' );
+        $notifications->register( 'order_customer_cancelled', $namespace . 'CancelledCustomer' );
+        $notifications->register( 'order_customer_failed', $namespace . 'FailedCustomer' );
+        $notifications->register( 'order_customer_refunded', $namespace . 'RefundedCustomer' );
     }
 
     /**
