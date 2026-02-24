@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import { toast } from 'react-toastify';
 import apiFetch from '@wordpress/api-fetch';

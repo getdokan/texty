@@ -5,5 +5,6 @@ yarn-error.log
 dev-config.json
 build
 .idea/*
-dist/vendors.js.LICENSE.txt
 .vscode
+dist/
+dependencies/

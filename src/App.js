@@ -1,7 +1,4 @@
-import { hot } from 'react-hot-loader/root';
-import React from 'react';
 import { HashRouter as Router, Switch, Route } from 'react-router-dom';
-
 import { ToastContainer } from 'react-toastify';
 
 import Header from './components/Header';
@@ -39,4 +36,4 @@ function App() {
   );
 }
 
-export default hot(App);
+export default App;

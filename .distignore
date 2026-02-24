@@ -10,6 +10,7 @@ package.json
 package-lock.json
 phpcs-report.txt
 phpcs.xml.dist
+src
 build
 composer.json
 composer.lock
