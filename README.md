@@ -1,13 +1,5 @@
 # Texty - SMS Notification for WordPress, WooCommerce, Dokan and more
 
-**Contributors:** [tareq1988](https://profiles.wordpress.org/tareq1988/), [wedevs](https://profiles.wordpress.org/wedevs/), [nizamuddinbabu](https://profiles.wordpress.org/nizamuddinbabu/)
-**Requires at least:** 6.8
-**Tested up to:** 6.9
-**Requires PHP:** 7.4
-**Stable tag:** 1.1.5
-**License:** GPLv2 or later
-**License URI:** https://www.gnu.org/licenses/gpl-2.0.html
-
 A lightweight SMS notification plugin for WordPress, WooCommerce, and Dokan.
 
 ## Table of Contents
@@ -322,7 +314,7 @@ add_filter( 'texty_notification_message', function ( $content, $notification ) {
 
 #### `texty_notification_message_{$id}` (filter)
 
-Modify the message for a specific notification type. Replace `{$id}` with the notification ID (e.g., `texty_notification_message_registration`).
+Modify the message for a specific notification type. Replace `{$id}` with the notification ID (e.g., `texty_notification_message_registration` for the new user registration).
 
 ```php
 add_filter( 'texty_notification_message_registration', function ( $content, $notification ) {
