@@ -155,7 +155,7 @@ class Gateways {
                 'vonage'     => __NAMESPACE__ . '\Gateways\Vonage',
                 'clickatell' => __NAMESPACE__ . '\Gateways\Clickatell',
                 'plivo'      => __NAMESPACE__ . '\Gateways\Plivo',
-                'messagebird' => __NAMESPACE__ . '\Gateways\Messagebird',
+                'bird'       => __NAMESPACE__ . '\Gateways\Bird',
             ];
 
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
