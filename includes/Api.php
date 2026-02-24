@@ -24,6 +24,7 @@ class Api {
             Api\Tools::class,
             Api\Status::class,
             Api\Send::class,
+            Api\Metrics::class,
         ];
 
         add_action( 'rest_api_init', [ $this, 'init_api' ] );

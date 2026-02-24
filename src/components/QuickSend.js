@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
-import { Button, TextControl, TextareaControl } from '@wordpress/components';
 import { toast } from 'react-toastify';
 
 function QuickSend() {
@@ -27,6 +26,8 @@ function QuickSend() {
 
         if (resp.success) {
           toast.success(__('Message has been sent.', 'texty'));
+          setPhoneNumber('');
+          setMessage('');
         } else {
           toast.error(
             __('Error, message could not be sent.', 'texty') +
@@ -38,35 +39,45 @@ function QuickSend() {
       .catch((err) => {
         setIsSending(false);
         console.log(err);
-        // toast.error(err.message);
       });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="texty-settings__form">
-      <fieldset disabled={isSending}>
-        <TextControl
-          label={__('Phone Number', 'texty')}
-          placeholder="+123456789"
+    <form onSubmit={handleSubmit} className="texty-quick-send-form">
+      <div className="form-group">
+        <label htmlFor="phone-number">{__('Phone Number', 'texty')}</label>
+        <input
+          id="phone-number"
           type="tel"
+          placeholder="+123456789"
           value={phoneNumber}
-          onChange={(value) => setPhoneNumber(value)}
+          onChange={(e) => setPhoneNumber(e.target.value)}
           required
+          disabled={isSending}
         />
+      </div>
 
-        <TextareaControl
-          label={__('Message', 'texty')}
+      <div className="form-group">
+        <label htmlFor="message">{__('Message', 'texty')}</label>
+        <textarea
+          id="message"
           value={message}
           placeholder={__('Write your message...', 'texty')}
-          onChange={(value) => setMessage(value)}
+          onChange={(e) => setMessage(e.target.value)}
           required
-        />
-      </fieldset>
+          disabled={isSending}
+          rows="4"
+        ></textarea>
+      </div>
 
       <div className="submit-area">
-        <Button type="submit" isPrimary={true} isBusy={isSending}>
+        <button
+          type="submit"
+          className="button button-primary"
+          disabled={isSending}
+        >
           {isSending ? __('Sending...', 'texty') : __('Send Message', 'texty')}
-        </Button>
+        </button>
       </div>
     </form>
   );

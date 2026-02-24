@@ -53,4 +53,30 @@ class Dispatcher {
         $notifier->set_comment( $comment_id );
         $notifier->send();
     }
+
+    /**
+     * Log SMS message to database
+     *
+     * @param string $to           Recipient phone number
+     * @param string $reference_id Gateway message SID/ID (optional)
+     * @return bool True on success, false on failure
+     */
+    public static function log_sms( $to, $reference_id = null ) {
+        global $wpdb;
+
+        $table_name = $wpdb->prefix . 'texty_sms_stat';
+        $gateway    = texty()->settings()->gateway();
+
+        $data = [
+            'receiver'     => $to,
+            'gateway'      => $gateway ? $gateway : '',
+            'status'       => null,
+            'timestamp'    => current_time( 'mysql' ),
+            'reference_id' => $reference_id,
+        ];
+
+        $result = $wpdb->insert( $table_name, $data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+
+        return $result !== false;
+    }
 }

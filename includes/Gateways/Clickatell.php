@@ -75,7 +75,7 @@ class Clickatell implements GatewayInterface {
      * @param string $to
      * @param string $message
      *
-     * @return WP_Error|true
+     * @return WP_Error|array
      */
     public function send( $to, $message ) {
         $creds = texty()->settings()->get( 'clickatell' );
@@ -129,7 +129,10 @@ class Clickatell implements GatewayInterface {
         }
         // phpcs:enable
 
-        return true;
+        return [
+            'success'      => true,
+            'reference_id' => null,
+        ];
     }
 
     /**

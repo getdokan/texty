@@ -53,13 +53,16 @@ class Fake implements GatewayInterface {
      * @param string $to
      * @param string $message
      *
-     * @return WP_Error|true
+     * @return WP_Error|array
      */
     public function send( $to, $message ) {
         $message = sprintf( 'To: %s; Message: %s', $to, $message );
         error_log( $message );
 
-        return true;
+        return [
+            'success'      => true,
+            'reference_id' => 'fake_' . time(),
+        ];
     }
 
     /**

@@ -87,7 +87,7 @@ class Vonage implements GatewayInterface {
      * @param string $to
      * @param string $message
      *
-     * @return WP_Error|bool
+     * @return WP_Error|array
      */
     public function send( $to, $message ) {
         $creds = texty()->settings()->get( 'vonage' );
@@ -117,7 +117,10 @@ class Vonage implements GatewayInterface {
             );
         }
 
-        return true;
+        return [
+            'success'      => true,
+            'reference_id' => isset( $body->messages[0]->{'message-id'} ) ? $body->messages[0]->{'message-id'} : null,
+        ];
     }
 
     /**

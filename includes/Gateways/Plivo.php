@@ -87,7 +87,7 @@ class Plivo implements GatewayInterface {
      * @param string $to
      * @param string $message
      *
-     * @return WP_Error|true
+     * @return WP_Error|array
      */
     public function send( $to, $message ) {
         $creds = texty()->settings()->get( 'plivo' );
@@ -111,7 +111,10 @@ class Plivo implements GatewayInterface {
             return new WP_Error( $body->code, $body->message );
         }
 
-        return true;
+        return [
+            'success'      => true,
+            'reference_id' => isset( $body->message_uuid ) ? $body->message_uuid : null,
+        ];
     }
 
     /**

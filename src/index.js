@@ -6,6 +6,7 @@ import App from './App';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-phone-input-2/lib/style.css';
 import './style.scss';
+import './app.css';
 
 domReady(() => {
 

@@ -1,7 +1,8 @@
-import { HashRouter as Router, Switch, Route } from 'react-router-dom';
+import { HashRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import Header from './components/Header';
+import Dashboard from './pages/Dashboard';
 import Notifications from './pages/Notifications';
 import Settings from './pages/Settings';
 import Tools from './pages/Tools';
@@ -26,9 +27,11 @@ function App() {
       <div className="wrap texty">
         <div className="texty-container">
           <Switch>
+            <Route path="/dashboard" component={Dashboard} />
             <Route path="/notifications" component={Notifications} />
             <Route path="/tools" component={Tools} />
-            <Route path="/" exact component={Settings} />
+            <Route path="/settings" component={Settings} />
+            <Redirect from="/" to="/dashboard" />
           </Switch>
         </div>
       </div>
