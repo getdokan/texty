@@ -46,35 +46,52 @@ class Metrics extends Base {
     public function get_metrics( $request ) {
         global $wpdb;
 
-        $table_name      = $wpdb->prefix . 'texty_sms_stat';
-        $gateway_name    = texty()->settings()->gateway();
-        $gateway_status  = $gateway_name ? true : false;
-        $current_month   = current_time( 'Y-m' );
-        $last_month      = gmdate( 'Y-m', current_time( 'timestamp' ) - 30 * DAY_IN_SECONDS );
+        $table_name     = $wpdb->prefix . 'texty_sms_stat';
+        $gateway_name   = texty()->settings()->gateway();
+        $gateway_status = $gateway_name ? true : false;
+        $tz             = wp_timezone();
+        $current        = new \DateTimeImmutable( 'first day of this month', $tz );
+        $current_month  = $current->format( 'Y-m' );
+        $last_month     = $current->modify( '-1 month' )->format( 'Y-m' );
 
-        // Get current month usage (sent messages only)
-        $monthly_usage = (int) $wpdb->get_var(
+        // Today's date number (e.g., 10 if today is the 10th)
+        // Used for fair comparison: this month's 10 days vs last month's same 10 days
+        $current_day = (int) gmdate( 'd' );
+
+        // OPTIMIZED: Single query to get both current and last month usage
+        // Uses same date range (DAY <= current_day) for fair comparison
+        $results = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$table_name} WHERE DATE_FORMAT(created_at, %s) = %s AND status = 'sent'",
-                '%Y-%m',
-                $current_month
+                "SELECT DATE_FORMAT(created_at, '%%Y-%%m') as month, COUNT(*) as total
+                 FROM {$table_name}
+                 WHERE DATE_FORMAT(created_at, '%%Y-%%m') IN (%s, %s)
+                 AND DAY(created_at) <= %d
+                 AND status = 'sent'
+                 GROUP BY DATE_FORMAT(created_at, '%%Y-%%m')",
+                $current_month,
+                $last_month,
+                $current_day
             )
         );
 
-        // Get last month usage for comparison (sent messages only)
-        $last_month_usage = (int) $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$table_name} WHERE DATE_FORMAT(created_at, %s) = %s AND status = 'sent'",
-                '%Y-%m',
-                $last_month
-            )
-        );
+        // Parse results into variables
+        $monthly_usage    = 0;
+        $last_month_usage = 0;
+
+        foreach ( $results as $row ) {
+            if ( $row->month === $current_month ) {
+                $monthly_usage = (int) $row->total;
+            } else {
+                $last_month_usage = (int) $row->total;
+            }
+        }
 
         // Calculate usage change percentage
         $usage_change = 0;
         if ( $last_month_usage > 0 ) {
             $usage_change = round( ( ( $monthly_usage - $last_month_usage ) / $last_month_usage ) * 100, 1 );
         } elseif ( $monthly_usage > 0 ) {
+            // Last month had 0, this month has data = 100% increase
             $usage_change = 100;
         }
 
@@ -98,6 +115,7 @@ class Metrics extends Base {
 
     /**
      * Calculate delivery rate for last 30 days
+     * OPTIMIZED: Single query using SUM+CASE instead of two separate queries
      *
      * @param string $table_name The table name
      *
@@ -108,33 +126,30 @@ class Metrics extends Base {
 
         $thirty_days_ago = gmdate( 'Y-m-d H:i:s', current_time( 'timestamp' ) - 30 * DAY_IN_SECONDS );
 
-        // Total SMS attempts in last 30 days
-        $total = (int) $wpdb->get_var(
+        // OPTIMIZED: Get total and delivered in a single query
+        $row = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$table_name} WHERE created_at >= %s",
+                "SELECT
+                    COUNT(*) as total,
+                    SUM(CASE WHEN status = 'sent' THEN 1 ELSE 0 END) as delivered
+                 FROM {$table_name}
+                 WHERE created_at >= %s",
                 $thirty_days_ago
             )
         );
 
-        if ( $total === 0 ) {
+        if ( ! $row || (int) $row->total === 0 ) {
             return null;
         }
 
-        // Delivered SMS in last 30 days
-        $delivered = (int) $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$table_name} WHERE created_at >= %s AND status = 'sent'",
-                $thirty_days_ago
-            )
-        );
-
-        $rate = ( $delivered / $total ) * 100;
+        $rate = ( (int) $row->delivered / (int) $row->total ) * 100;
 
         return round( $rate, 1 );
     }
 
     /**
      * Get volume chart data for last 12 months (sent messages only)
+     * OPTIMIZED: Single query for all 12 months instead of 12 separate queries
      *
      * @param string $table_name The table name
      *
@@ -143,26 +158,43 @@ class Metrics extends Base {
     private function get_volume_chart( $table_name ) {
         global $wpdb;
 
-        $months     = [];
-        $chart_data = [];
+        // Generate last 12 months list
+        $current      = new \DateTimeImmutable( 'first day of this month', wp_timezone() );
+        $months       = [];
+        $months_map   = [];
 
-        // Generate last 12 months
         for ( $i = 11; $i >= 0; $i-- ) {
-            $timestamp = current_time( 'timestamp' ) - ( $i * 30 * DAY_IN_SECONDS );
-            $months[]  = gmdate( 'Y-m', $timestamp );
+            $month_key          = $current->modify( "-{$i} months" )->format( 'Y-m' );
+            $months[]           = $month_key;
+            $months_map[ $month_key ] = 0; // default count = 0
         }
 
-        foreach ( $months as $month ) {
-            $count = (int) $wpdb->get_var(
-                $wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$table_name} WHERE DATE_FORMAT(created_at, %s) = %s AND status = 'sent'",
-                    '%Y-%m',
-                    $month
-                )
-            );
+        // OPTIMIZED: Single query for all 12 months at once
+        $oldest_month = $months[0] . '-01'; // e.g., 2024-02-01
 
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT DATE_FORMAT(created_at, '%%Y-%%m') as month, COUNT(*) as total
+                 FROM {$table_name}
+                 WHERE created_at >= %s
+                 AND status = 'sent'
+                 GROUP BY DATE_FORMAT(created_at, '%%Y-%%m')",
+                $oldest_month
+            )
+        );
+
+        // Fill results into the map
+        foreach ( $results as $row ) {
+            if ( isset( $months_map[ $row->month ] ) ) {
+                $months_map[ $row->month ] = (int) $row->total;
+            }
+        }
+
+        // Build final chart data with short month names
+        $chart_data = [];
+        foreach ( $months_map as $month_key => $count ) {
             $chart_data[] = [
-                'month' => gmdate( 'M', strtotime( $month . '-01' ) ),
+                'month' => gmdate( 'M', strtotime( $month_key . '-01' ) ),
                 'count' => $count,
             ];
         }

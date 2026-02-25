@@ -39,10 +39,18 @@ function VolumeChart({ data }) {
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip cursor={{ fill: '#f0fdf4' }} />
+            <Tooltip
+              cursor={{ fill: '#f0fdf4' }}
+              contentStyle={{
+                background: '#fff',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              }}
+            />
             <Bar
               dataKey="count"
-              fill="#16a34a"
+              fill="#2271b1"
               radius={[4, 4, 0, 0]}
               barSize={40}
             />
