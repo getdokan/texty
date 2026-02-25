@@ -84,6 +84,12 @@ class Base extends Notification {
      * @return array
      */
     public function get_recipients() {
+        if ( 'user' === $this->get_type() ) {
+            $number = $this->order->get_billing_phone();
+
+            return $number ? [ $number ] : [];
+        }
+
         return $this->get_numbers_by_roles();
     }
 
@@ -110,83 +116,28 @@ class Base extends Notification {
         ];
     }
 
-    public function send() {
-        if ( ! $this->enabled() ) {
-            return;
+    /**
+     * @inheritDoc
+     */
+    public function send(): bool {
+        if ( ! $this->order ) {
+            return false;
         }
 
         $meta_key = '_texty_' . $this->get_id();
         $has_sent = $this->order->get_meta( $meta_key, true );
 
-        // if we've already sent the message, don't send again
         if ( $has_sent ) {
-            return;
+            return false;
         }
 
-        // mark as sent
-        $this->order->add_meta_data( $meta_key, 1 );
-        $this->order->save_meta_data();
+        $is_sent = parent::send();
 
-        if ( 'user' === $this->get_type() ) {
-            $number = $this->order->get_billing_phone();
-
-            $recipients = $number ? [ $number ] : [];
-        } else {
-            $recipients = $this->get_recipients();
+        if ( $is_sent ) {
+            $this->order->add_meta_data( $meta_key, 1 );
+            $this->order->save_meta_data();
         }
 
-        /**
-         * Filter the recipients for a notification.
-         *
-         * @param array        $recipients   The recipient phone numbers
-         * @param Notification $notification The notification instance
-         */
-        $recipients = apply_filters( 'texty_notification_recipients', $recipients, $this );
-
-        if ( ! $recipients ) {
-            return;
-        }
-
-        $content = $this->get_message();
-
-        /**
-         * Filter the notification message content.
-         *
-         * @param string       $content      The message content
-         * @param Notification $notification The notification instance
-         */
-        $content = apply_filters( 'texty_notification_message', $content, $this );
-
-        /**
-         * Filter the message for a specific notification type.
-         *
-         * @param string       $content      The message content
-         * @param Notification $notification The notification instance
-         */
-        $content = apply_filters( 'texty_notification_message_' . $this->get_id(), $content, $this );
-
-        /**
-         * Fires before the notification send loop.
-         *
-         * @param Notification $notification The notification instance
-         * @param array        $recipients   The recipient phone numbers
-         * @param string       $content      The message content
-         */
-        do_action( 'texty_before_notification', $this, $recipients, $content );
-
-        $gateway = texty()->gateways();
-
-        foreach ( $recipients as $number ) {
-            $gateway->send( $number, $content );
-        }
-
-        /**
-         * Fires after the notification send loop.
-         *
-         * @param Notification $notification The notification instance
-         * @param array        $recipients   The recipient phone numbers
-         * @param string       $content      The message content
-         */
-        do_action( 'texty_after_notification', $this, $recipients, $content );
+        return $is_sent;
     }
 }
