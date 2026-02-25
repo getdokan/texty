@@ -19,6 +19,9 @@ class Dispatcher {
         add_action( 'user_register', [ $this, 'user_register' ] );
         add_action( 'comment_post', [ $this, 'new_comment' ] );
 
+        // SMS Logging via gateway hooks
+        add_action( 'texty_after_send_sms', [ $this, 'log_sms' ], 10, 4 );
+
         // Load integrations
         $this->register_integrations();
     }
@@ -78,28 +81,48 @@ class Dispatcher {
     }
 
     /**
-     * Log SMS message to database
+     * Log SMS message to database via gateway hook
      *
-     * @param string $to           Recipient phone number
-     * @param string $reference_id Gateway message SID/ID (optional)
-     * @return bool True on success, false on failure
+     * @param mixed                  $result  The send result (bool, array, or WP_Error)
+     * @param string                 $to      Recipient phone number
+     * @param string                 $message The message body
+     * @param GatewayInterface|false $gateway The gateway instance or false
+     *
+     * @return void
      */
-    public static function log_sms( $to, $reference_id = null ) {
+    public function log_sms( $result, $to, $message, $gateway ) {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'texty_sms_stat';
-        $gateway    = texty()->settings()->gateway();
+        $gateway_name = texty()->settings()->gateway();
+
+        // Determine status
+        $status = is_wp_error( $result ) ? 'failed' : 'sent';
+
+        // Extract reference_id from result
+        $reference_id = null;
+        if ( is_array( $result ) ) {
+            // Try different key names used by various gateways
+            if ( isset( $result['sid'] ) ) {
+                $reference_id = $result['sid'];
+            } elseif ( isset( $result['message-id'] ) ) {
+                $reference_id = $result['message-id'];
+            } elseif ( isset( $result['message_uuid'] ) ) {
+                $reference_id = $result['message_uuid'];
+            }
+        }
+
+        $current_time = current_time( 'mysql' );
 
         $data = [
             'receiver'     => $to,
-            'gateway'      => $gateway ? $gateway : '',
-            'status'       => null,
-            'timestamp'    => current_time( 'mysql' ),
+            'gateway'      => $gateway_name ? $gateway_name : '',
+            'status'       => $status,
+            'created_at'   => $current_time,
+            'updated_at'   => $current_time,
             'reference_id' => $reference_id,
         ];
 
-        $result = $wpdb->insert( $table_name, $data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-
-        return $result !== false;
+        $wpdb->insert( $table_name, $data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
     }
 }

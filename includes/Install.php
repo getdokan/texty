@@ -13,11 +13,9 @@ class Install {
     public function run() {
          $this->create_tables();
         $installed = get_option( 'texty_installed' );
-        error_log( 'Texty Installer: ' . ( $installed ? 'Already installed' : 'Running installer' ) );
 
         if ( ! $installed ) {
             update_option( 'texty_installed', time() );
-            $this->create_tables();
         }
 
         update_option( 'texty_version', TEXTY_VERSION );
@@ -34,7 +32,6 @@ class Install {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
         $charset_collate = $wpdb->get_charset_collate();
-        error_log ( "Creating table with charset: {$charset_collate}" );
         $table_name      = $wpdb->prefix . 'texty_sms_stat';
 
         $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (

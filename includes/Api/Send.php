@@ -2,7 +2,6 @@
 
 namespace Texty\Api;
 
-use Texty\Dispatcher;
 use WP_REST_Server;
 
 class Send extends Base {
@@ -65,12 +64,6 @@ class Send extends Base {
             'success' => is_wp_error( $status ) ? false : true,
             'message' => is_wp_error( $status ) ? $status->get_error_message() : '',
         ];
-
-        // Log the SMS if it was sent successfully
-        if ( ! is_wp_error( $status ) && is_array( $status ) && isset( $status['success'] ) && $status['success'] ) {
-            $reference_id = isset( $status['reference_id'] ) ? $status['reference_id'] : null;
-            Dispatcher::log_sms( $to, $reference_id );
-        }
 
         return rest_ensure_response( $response );
     }

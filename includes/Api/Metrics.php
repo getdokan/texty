@@ -47,23 +47,24 @@ class Metrics extends Base {
         global $wpdb;
 
         $table_name      = $wpdb->prefix . 'texty_sms_stat';
-        $gateway_status  = texty()->settings()->gateway() ? true : false;
+        $gateway_name    = texty()->settings()->gateway();
+        $gateway_status  = $gateway_name ? true : false;
         $current_month   = current_time( 'Y-m' );
         $last_month      = gmdate( 'Y-m', current_time( 'timestamp' ) - 30 * DAY_IN_SECONDS );
 
-        // Get current month usage
+        // Get current month usage (sent messages only)
         $monthly_usage = (int) $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$table_name} WHERE DATE_FORMAT(timestamp, %s) = %s",
+                "SELECT COUNT(*) FROM {$table_name} WHERE DATE_FORMAT(created_at, %s) = %s AND status = 'sent'",
                 '%Y-%m',
                 $current_month
             )
         );
 
-        // Get last month usage for comparison
+        // Get last month usage for comparison (sent messages only)
         $last_month_usage = (int) $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$table_name} WHERE DATE_FORMAT(timestamp, %s) = %s",
+                "SELECT COUNT(*) FROM {$table_name} WHERE DATE_FORMAT(created_at, %s) = %s AND status = 'sent'",
                 '%Y-%m',
                 $last_month
             )
@@ -77,14 +78,18 @@ class Metrics extends Base {
             $usage_change = 100;
         }
 
+        // Calculate delivery rate for last 30 days
+        $delivery_rate = $this->get_delivery_rate( $table_name );
+
         // Build volume chart data for last 12 months
         $volume_chart = $this->get_volume_chart( $table_name );
 
         $response = [
             'gateway_status' => $gateway_status,
+            'gateway_name'   => $gateway_name,
             'monthly_usage'  => $monthly_usage,
             'usage_change'   => $usage_change,
-            'delivery_rate'  => null,
+            'delivery_rate'  => $delivery_rate,
             'volume_chart'   => $volume_chart,
         ];
 
@@ -92,7 +97,44 @@ class Metrics extends Base {
     }
 
     /**
-     * Get volume chart data for last 12 months
+     * Calculate delivery rate for last 30 days
+     *
+     * @param string $table_name The table name
+     *
+     * @return float|null Delivery rate as percentage (e.g., 94.5) or null if no data
+     */
+    private function get_delivery_rate( $table_name ) {
+        global $wpdb;
+
+        $thirty_days_ago = gmdate( 'Y-m-d H:i:s', current_time( 'timestamp' ) - 30 * DAY_IN_SECONDS );
+
+        // Total SMS attempts in last 30 days
+        $total = (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$table_name} WHERE created_at >= %s",
+                $thirty_days_ago
+            )
+        );
+
+        if ( $total === 0 ) {
+            return null;
+        }
+
+        // Delivered SMS in last 30 days
+        $delivered = (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$table_name} WHERE created_at >= %s AND status = 'sent'",
+                $thirty_days_ago
+            )
+        );
+
+        $rate = ( $delivered / $total ) * 100;
+
+        return round( $rate, 1 );
+    }
+
+    /**
+     * Get volume chart data for last 12 months (sent messages only)
      *
      * @param string $table_name The table name
      *
@@ -113,7 +155,7 @@ class Metrics extends Base {
         foreach ( $months as $month ) {
             $count = (int) $wpdb->get_var(
                 $wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$table_name} WHERE DATE_FORMAT(timestamp, %s) = %s",
+                    "SELECT COUNT(*) FROM {$table_name} WHERE DATE_FORMAT(created_at, %s) = %s AND status = 'sent'",
                     '%Y-%m',
                     $month
                 )

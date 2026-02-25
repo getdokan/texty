@@ -16,10 +16,13 @@
   },
   "dependencies": {
     "classnames": "^2.2.6",
+    "lucide-react": "^0.468.0",
+    "recharts": "^2.10.3",
     "react-phone-input-2": "^2.13.9",
     "react-router-dom": "^5.2.0",
     "react-select": "^5.8.0",
-    "react-toastify": "^6.2.0"
+    "react-toastify": "^6.2.0",
+    "@wedevs/plugin-ui": "git+https://github.com/mrabbani/plugin-ui.git"
   },
   "devDependencies": {
     "@wordpress/components": "^28.0.0",
