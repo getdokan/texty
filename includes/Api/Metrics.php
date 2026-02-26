@@ -57,7 +57,7 @@ class Metrics extends Base {
         // Used for fair comparison: this month's 10 days vs last month's same 10 days
         $current_day = (int) ( new \DateTimeImmutable( 'now', wp_timezone() ) )->format( 'd' );
 
-        // OPTIMIZED: Single query to get both current and last month usage
+        // Single query to get both current and last month usage
         // Uses same date range (DAY <= current_day) for fair comparison
         $results = $wpdb->get_results(
             $wpdb->prepare(
@@ -114,7 +114,7 @@ class Metrics extends Base {
 
     /**
      * Calculate delivery rate for last 30 days
-     * OPTIMIZED: Single query using SUM+CASE instead of two separate queries
+     * Single query using SUM+CASE instead of two separate queries
      *
      * @param string $table_name The table name
      *
@@ -125,7 +125,7 @@ class Metrics extends Base {
 
         $thirty_days_ago = ( new \DateTimeImmutable( 'now', wp_timezone() ) )->modify( '-30 days' )->format( 'Y-m-d H:i:s' );
 
-        // OPTIMIZED: Get total and delivered in a single query
+        //Get total and delivered in a single query
         $row = $wpdb->get_row(
             $wpdb->prepare(
                 "SELECT
@@ -148,7 +148,7 @@ class Metrics extends Base {
 
     /**
      * Get volume chart data for last 12 months (sent messages only)
-     * OPTIMIZED: Single query for all 12 months instead of 12 separate queries
+     * Single query for all 12 months instead of 12 separate queries
      *
      * @param string $table_name The table name
      *
@@ -168,7 +168,7 @@ class Metrics extends Base {
             $months_map[ $month_key ] = 0; // default count = 0
         }
 
-        // OPTIMIZED: Single query for all 12 months at once
+        // Single query for all 12 months at once
         $oldest_month = $months[0] . '-01';
 
         $results = $wpdb->get_results(
