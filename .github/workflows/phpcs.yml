@@ -40,11 +40,12 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress || composer update --prefer-dist --no-progress
 
-      - id: changes
+      - name: Detect coding standard violations
         run: |
           URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
-          FILES=$(curl --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' -s -X GET -G $URL | jq -r '.[] | .filename' | xargs)
-          echo "files=$FILES" >> $GITHUB_OUTPUT
-
-      - name: Detect coding standard violations
-        run: vendor/bin/phpcs ${{ steps.changes.outputs.files }} -q --report=checkstyle | cs2pr --graceful-warnings
+          readarray -t FILES < <(curl --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' -s -X GET -G "$URL" | jq -r '.[] | .filename // empty')
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "No changed files found."
+            exit 0
+          fi
+          vendor/bin/phpcs "${FILES[@]}" -q --report=checkstyle | cs2pr --graceful-warnings
