@@ -49,14 +49,13 @@ class Metrics extends Base {
         $table_name     = $wpdb->prefix . 'texty_sms_stat';
         $gateway_name   = texty()->settings()->gateway();
         $gateway_status = $gateway_name ? true : false;
-        $tz             = wp_timezone();
-        $current        = new \DateTimeImmutable( 'first day of this month', $tz );
+        $current        = new \DateTimeImmutable( 'first day of this month', wp_timezone() );
         $current_month  = $current->format( 'Y-m' );
         $last_month     = $current->modify( '-1 month' )->format( 'Y-m' );
 
         // Today's date number (e.g., 10 if today is the 10th)
         // Used for fair comparison: this month's 10 days vs last month's same 10 days
-        $current_day = (int) gmdate( 'd' );
+        $current_day = (int) ( new \DateTimeImmutable( 'now', wp_timezone() ) )->format( 'd' );
 
         // OPTIMIZED: Single query to get both current and last month usage
         // Uses same date range (DAY <= current_day) for fair comparison
@@ -124,7 +123,7 @@ class Metrics extends Base {
     private function get_delivery_rate( $table_name ) {
         global $wpdb;
 
-        $thirty_days_ago = gmdate( 'Y-m-d H:i:s', current_time( 'timestamp' ) - 30 * DAY_IN_SECONDS );
+        $thirty_days_ago = ( new \DateTimeImmutable( 'now', wp_timezone() ) )->modify( '-30 days' )->format( 'Y-m-d H:i:s' );
 
         // OPTIMIZED: Get total and delivered in a single query
         $row = $wpdb->get_row(
@@ -170,7 +169,7 @@ class Metrics extends Base {
         }
 
         // OPTIMIZED: Single query for all 12 months at once
-        $oldest_month = $months[0] . '-01'; // e.g., 2024-02-01
+        $oldest_month = $months[0] . '-01';
 
         $results = $wpdb->get_results(
             $wpdb->prepare(
@@ -194,7 +193,7 @@ class Metrics extends Base {
         $chart_data = [];
         foreach ( $months_map as $month_key => $count ) {
             $chart_data[] = [
-                'month' => gmdate( 'M', strtotime( $month_key . '-01' ) ),
+                'month' => ( new \DateTimeImmutable( $month_key . '-01', wp_timezone() ) )->format( 'M' ),
                 'count' => $count,
             ];
         }

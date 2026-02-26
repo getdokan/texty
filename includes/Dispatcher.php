@@ -100,17 +100,7 @@ class Dispatcher {
         $status = is_wp_error( $result ) ? 'failed' : 'sent';
 
         // Extract reference_id from result
-        $reference_id = null;
-        if ( is_array( $result ) ) {
-            // Try different key names used by various gateways
-            if ( isset( $result['sid'] ) ) {
-                $reference_id = $result['sid'];
-            } elseif ( isset( $result['message-id'] ) ) {
-                $reference_id = $result['message-id'];
-            } elseif ( isset( $result['message_uuid'] ) ) {
-                $reference_id = $result['message_uuid'];
-            }
-        }
+        $reference_id = $this->extract_reference_id( $result );
 
         $current_time = current_time( 'mysql' );
 
@@ -124,5 +114,18 @@ class Dispatcher {
         ];
 
         $wpdb->insert( $table_name, $data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+    }
+    private function extract_reference_id( $result ) {
+        if ( ! is_array( $result ) ) return null;
+
+        $id_keys = ['sid', 'message-id', 'message_uuid', 'apiMsgId'];
+
+        foreach ( $id_keys as $key ) {
+            if ( ! empty( $result[ $key ] ) ) {
+                return $result[ $key ];
+            }
+        }
+
+        return null;
     }
 }

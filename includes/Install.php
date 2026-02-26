@@ -43,7 +43,5 @@ class Install {
             updated_at DATETIME NOT NULL,
             reference_id VARCHAR(100) DEFAULT NULL
         ) {$charset_collate};";
-
-        dbDelta( $sql );
     }
 }
