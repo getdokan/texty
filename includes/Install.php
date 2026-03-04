@@ -2,6 +2,10 @@
 
 namespace Texty;
 
+use Texty\Models\SmsStat;
+use Texty\Models\SmsStatStore;
+use WeDevs\WPKit\DataLayer\DataLayerFactory;
+
 /**
  * Installer Class
  */
@@ -11,7 +15,7 @@ class Install {
      * Run the isntaller
      */
     public function run() {
-         $this->create_tables();
+        $this->create_tables();
         $installed = get_option( 'texty_installed' );
 
         if ( ! $installed ) {

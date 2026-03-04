@@ -53,7 +53,6 @@ function Dashboard() {
     } else if (metrics.usage_change < 0) {
       return `${metrics.usage_change.toFixed(0)}% ${__('from last month', 'texty')}`;
     }
-    return __('No change from last month', 'texty');
   };
 
   return (

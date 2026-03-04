@@ -51,38 +51,22 @@ class Metrics extends Base {
             $store = DataLayerFactory::make_store( SmsStat::class );
 
             if ( null === $store ) {
-                error_log( 'Texty: SmsStat store is not initialized' );
                 return new \WP_Error( 'store_error', 'SMS data store not available', [ 'status' => 503 ] );
             }
 
             $gateway_name   = texty()->settings()->gateway();
             $gateway_status = $gateway_name ? true : false;
-            $current        = new \DateTimeImmutable( 'first day of this month', wp_timezone() );
-            $current_month  = $current->format( 'Y-m' );
-            $last_month     = $current->modify( '-1 month' )->format( 'Y-m' );
 
-            // Today's date number (e.g., 10 if today is the 10th)
-            // Used for fair comparison: this month's 10 days vs last month's same 10 days
-            $current_day = (int) ( new \DateTimeImmutable( 'now', wp_timezone() ) )->format( 'd' );
+            // Build volume chart data for last 12 months first.
+            // The last item in the chart is always the current month,
+            // so we reuse that count instead of running a separate query.
+            $volume_chart  = $this->get_volume_chart( $store );
+            $monthly_usage = ! empty( $volume_chart ) ? end( $volume_chart )['count'] : 0;
 
-            // Get monthly usage for current and last month
-            $monthly_usage    = $this->get_monthly_usage( $store, $current_month, $current_day );
-            $last_month_usage = $this->get_monthly_usage( $store, $last_month, $current_day );
-
-            // Calculate usage change percentage
+            // Calculate usage change vs previous month
             $usage_change = 0;
-            if ( $last_month_usage > 0 ) {
-                $usage_change = round( ( ( $monthly_usage - $last_month_usage ) / $last_month_usage ) * 100, 1 );
-            } elseif ( $monthly_usage > 0 ) {
-                // Last month had 0, this month has data = 100% increase
-                $usage_change = 100;
-            }
-
             // Calculate delivery rate for last 30 days
             $delivery_rate = $this->get_delivery_rate( $store );
-
-            // Build volume chart data for last 12 months
-            $volume_chart = $this->get_volume_chart( $store );
 
             $response = [
                 'gateway_status' => $gateway_status,
@@ -101,33 +85,6 @@ class Metrics extends Base {
     }
 
     /**
-     * Get monthly usage for a specific month
-     *
-     * Uses DataLayer to count sent SMS for a specific month up to a given day.
-     *
-     * @param SmsStatStore $store Store instance
-     * @param string       $month Month in 'Y-m' format
-     * @param int          $day   Day of month for comparison
-     *
-     * @return int Total sent messages
-     */
-    private function get_monthly_usage( $store, $month, $day ) {
-        // Calculate date range for this month up to the specified day
-        $month_start = $month . '-01';
-        $month_end   = $month . '-' . str_pad( $day, 2, '0', STR_PAD_LEFT );
-
-        try {
-            // Query using DataLayer: count sent SMS in date range
-            $result = SmsStat::get_uses_stats_between_dates( $month_start, $month_end );
-
-            return isset( $result['total'] ) ? (int) $result['total'] : 0;
-        } catch ( \Exception $e ) {
-            error_log( 'Texty: Error getting monthly usage - ' . $e->getMessage() );
-            return 0;
-        }
-    }
-
-    /**
      * Calculate delivery rate for last 30 days
      *
      * Uses DataLayer to fetch sent and failed SMS, then calculates rate.
@@ -138,17 +95,12 @@ class Metrics extends Base {
      */
     private function get_delivery_rate( $store ) {
         try {
-            $thirty_days_ago = date( 'Y-m-d', strtotime( '-30 days' ) );
+            $today           = new \DateTimeImmutable( 'now', wp_timezone() );
+            $thirty_days_ago = $today->modify( '-30 days' )->format( 'Y-m-d' );
+            $today_date      = $today->format( 'Y-m-d' );
 
-            // Query all SMS from last 30 days
-            $result = $store->query( [
-                'per_page'   => -1,
-                'date_query' => [
-                    'column' => 'created_at',
-                    'after'  => $thirty_days_ago,
-                ],
-                'no_cache'   => true,
-            ] );
+            // Query all SMS from last 30 days using SmsStat static method
+            $result = SmsStat::get_sent_sms_between_dates( $thirty_days_ago, $today_date );
 
             if ( empty( $result['total'] ) || (int) $result['total'] === 0 ) {
                 return null;
@@ -159,13 +111,13 @@ class Metrics extends Base {
             if ( ! empty( $result['items'] ) ) {
                 foreach ( $result['items'] as $row ) {
                     if ( isset( $row->status ) && 'sent' === $row->status ) {
-                        $delivered++;
+                        ++$delivered;
                     }
                 }
             }
 
-            $total   = (int) $result['total'];
-            $rate    = ( $delivered / $total ) * 100;
+            $total = (int) $result['total'];
+            $rate  = ( $delivered / $total ) * 100;
 
             return round( $rate, 1 );
         } catch ( \Exception $e ) {
@@ -178,10 +130,12 @@ class Metrics extends Base {
      * Get volume chart data for last 12 months (sent messages only)
      *
      * Uses DataLayer to fetch sent SMS for 12 months, groups by month in PHP.
+     * The last element of the returned array always represents the current month,
+     * and is reused by get_metrics() as monthly_usage — no extra query needed.
      *
      * @param SmsStatStore $store Store instance
      *
-     * @return array
+     * @return array  e.g. [ ['month' => 'Apr', 'count' => 42], ... ]
      */
     private function get_volume_chart( $store ) {
         try {
@@ -191,24 +145,18 @@ class Metrics extends Base {
             $months_map = [];
 
             for ( $i = 11; $i >= 0; $i-- ) {
-                $month_key          = $current->modify( "-{$i} months" )->format( 'Y-m' );
-                $months[]           = $month_key;
+                $month_key                = $current->modify( "-{$i} months" )->format( 'Y-m' );
+                $months[]                 = $month_key;
                 $months_map[ $month_key ] = 0;
             }
 
-            // Get the oldest month date
+            // Get the oldest month date and today
             $oldest_month = $months[0] . '-01';
+            $today        = new \DateTimeImmutable( 'now', wp_timezone() );
+            $today_date   = $today->format( 'Y-m-d' );
 
-            // Query using DataLayer: get all sent SMS for last 12 months
-            $result = $store->query( [
-                'per_page'   => -1,
-                'status'     => 'sent',
-                'date_query' => [
-                    'column' => 'created_at',
-                    'after'  => $oldest_month,
-                ],
-                'no_cache'   => true,
-            ] );
+            // Query using SmsStat static method: get all sent SMS for last 12 months
+            $result = SmsStat::get_sent_sms_between_dates( $oldest_month, $today_date );
 
             // Group records by month
             if ( ! empty( $result['items'] ) ) {
@@ -216,9 +164,9 @@ class Metrics extends Base {
                     if ( isset( $row->created_at ) ) {
                         // Extract Y-m from created_at string (format: YYYY-MM-DD HH:MM:SS)
                         $month_key = substr( $row->created_at, 0, 7 );
-                        
+
                         if ( isset( $months_map[ $month_key ] ) ) {
-                            $months_map[ $month_key ]++;
+                            ++$months_map[ $month_key ];
                         }
                     }
                 }
@@ -228,13 +176,12 @@ class Metrics extends Base {
             $chart_data = [];
             foreach ( $months_map as $month_key => $count ) {
                 try {
-                    $month_date = new \DateTimeImmutable( $month_key . '-01', wp_timezone() );
+                    $month_date   = new \DateTimeImmutable( $month_key . '-01', wp_timezone() );
                     $chart_data[] = [
                         'month' => $month_date->format( 'M' ),
                         'count' => $count,
                     ];
                 } catch ( \Exception $e ) {
-                    // Skip invalid dates
                     error_log( 'Texty: Invalid date format - ' . $month_key );
                 }
             }
