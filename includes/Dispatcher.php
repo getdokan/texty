@@ -100,7 +100,7 @@ class Dispatcher {
         // Determine status based on result
         $status = is_wp_error( $result ) ? 'failed' : 'sent';
 
-        // Extract reference_id from gateway response (root fix: never pass null)
+        // Extract reference_id from gateway response
         $reference_id = $this->extract_reference_id( $result );
         if ( null === $reference_id ) {
             $reference_id = '';
@@ -125,7 +125,7 @@ class Dispatcher {
     private function extract_reference_id( $result ) {
         if ( ! is_array( $result ) ) return null;
 
-        $id_keys = ['sid', 'message-id', 'message_uuid', 'apiMsgId'];
+        $id_keys = ['sid', 'message-id', 'message_uuid', 'apiMsgId', 'reference_id'];
 
         foreach ( $id_keys as $key ) {
             if ( ! empty( $result[ $key ] ) ) {
