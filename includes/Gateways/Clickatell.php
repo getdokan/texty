@@ -128,10 +128,14 @@ class Clickatell implements GatewayInterface {
             }
         }
         // phpcs:enable
-
+        $body = json_decode( $body );
+        $api_message_id = null;
+        if ( isset( $body->messages[0]->apiMessageId ) ) {
+            $api_message_id = $body->messages[0]->apiMessageId;
+        }
         return [
             'success'      => true,
-            'reference_id' => null,
+            'reference_id' => $api_message_id,
         ];
     }
 
