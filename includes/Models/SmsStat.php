@@ -229,15 +229,64 @@ class SmsStat extends BaseModel {
      */
     public static function get_sent_sms_between_dates( string $start_date, string $end_date ): array {
         $store = DataLayerFactory::make_store( SmsStat::class );
+        if ( ! $store ) {
+            error_log( sprintf( 'Texty SmsStat error: Failed to create data store for %s.', SmsStat::class ) );
+
+            return [
+                'total' => 0,
+                'items' => [],
+            ];
+        }
 
         $start_datetime = $start_date . ' 00:00:00';
         $end_datetime   = $end_date   . ' 23:59:59'; 
 
         $result = $store->query( [
             'per_page'   => -1,
-            'status'     => 'sent',
             'date_query' => [
                 'column' => 'created_at',
+                'after'  => $start_datetime,
+                'before' => $end_datetime,
+            ],
+        ] );
+
+        // Ensure result is an array with proper structure
+        if ( ! is_array( $result ) ) {
+            return [
+                'total' => 0,
+                'items' => [],
+            ];
+        }
+
+        return $result;
+    }
+        /**
+     * Get sent SMS records between two dates (for volume chart)
+     *
+     * @param string $start_date Date in 'Y-m-d' format
+     * @param string $end_date   Date in 'Y-m-d' format
+     *
+     * @return array Array with 'total' and 'items' keys
+     */
+    public static function get_successful_sent_sms_between_dates( string $start_date, string $end_date ): array {
+        $store = DataLayerFactory::make_store( SmsStat::class );
+        if ( ! $store ) {
+            error_log( sprintf( 'Texty SmsStat error: Failed to create data store for %s.', SmsStat::class ) );
+
+            return [
+                'total' => 0,
+                'items' => [],
+            ];
+        }
+
+        $start_datetime = $start_date . ' 00:00:00';
+        $end_datetime   = $end_date   . ' 23:59:59'; 
+
+        $result = $store->query( [
+            'per_page'   => -1,
+            'date_query' => [
+                'column' => 'created_at',
+                'status' => 'sent',
                 'after'  => $start_datetime,
                 'before' => $end_datetime,
             ],

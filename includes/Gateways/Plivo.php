@@ -113,7 +113,9 @@ class Plivo implements GatewayInterface {
 
         return [
             'success'      => true,
-            'reference_id' => isset( $body->message_uuid ) ? $body->message_uuid : null,
+            'reference_id' => isset( $body->message_uuid )
+                ? ( is_array( $body->message_uuid ) ? ( $body->message_uuid[0] ?? null ) : $body->message_uuid )
+                : null,
         ];
     }
 

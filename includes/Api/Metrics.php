@@ -80,7 +80,7 @@ class Metrics extends Base {
             return rest_ensure_response( $response );
         } catch ( \Exception $e ) {
             error_log( 'Texty Metrics Error: ' . $e->getMessage() . ' | ' . $e->getFile() . ':' . $e->getLine() );
-            return new \WP_Error( 'metrics_error', 'Failed to load metrics data: ' . $e->getMessage(), [ 'status' => 500 ] );
+            return new \WP_Error( 'metrics_error', __( 'Failed to load metrics data.', 'texty' ), [ 'status' => 500 ] );
         }
     }
 
@@ -100,7 +100,7 @@ class Metrics extends Base {
             $today_date      = $today->format( 'Y-m-d' );
 
             // Query all SMS from last 30 days using SmsStat static method
-            $result = SmsStat::get_sent_sms_between_dates( $thirty_days_ago, $today_date );
+            $result = SmsStat::get_successful_sent_sms_between_dates( $thirty_days_ago, $today_date );
 
             if ( empty( $result['total'] ) || (int) $result['total'] === 0 ) {
                 return null;
