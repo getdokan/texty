@@ -17,15 +17,6 @@ class Vonage implements GatewayInterface {
     const ENDPOINT = 'https://rest.nexmo.com';
 
     /**
-     * Get the display order.
-     *
-     * @return int
-     */
-    public function order() {
-        return 10;
-    }
-
-    /**
      * Get the name
      *
      * @return string
