@@ -17,6 +17,15 @@ class Clickatell implements GatewayInterface {
     const ENDPOINT = 'https://platform.clickatell.com/messages';
 
     /**
+     * Get the display order.
+     *
+     * @return int
+     */
+    public function order() {
+        return 10;
+    }
+
+    /**
      * Get the name
      *
      * @return string

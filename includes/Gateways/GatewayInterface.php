@@ -50,4 +50,14 @@ interface GatewayInterface {
      * @return WP_Error|true
      */
     public function validate( $request );
+
+    /**
+     * Get the display order for this gateway.
+     *
+     * Lower values appear first in the gateway dropdown.
+     * Default is 10. Use higher values (e.g. 99) to push gateways to the end.
+     *
+     * @return int
+     */
+    public function order();
 }

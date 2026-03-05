@@ -232,6 +232,7 @@ class SettingsController extends BaseSettingsRESTController {
 				'page_id'      => 'settings',
 				'title'        => __( 'Twilio Settings', 'texty' ),
 				'description'  => __( 'Configure your Twilio SMS gateway credentials.', 'texty' ),
+				'priority'     => 10,
 				'dependencies' => [
 					[
 						'key'        => 'gateway_selection.gateway',
@@ -281,6 +282,7 @@ class SettingsController extends BaseSettingsRESTController {
 				'page_id'      => 'settings',
 				'title'        => __( 'Vonage Settings', 'texty' ),
 				'description'  => __( 'Configure your Vonage (Nexmo) SMS gateway credentials.', 'texty' ),
+				'priority'     => 10,
 				'dependencies' => [
 					[
 						'key'        => 'gateway_selection.gateway',
@@ -329,6 +331,7 @@ class SettingsController extends BaseSettingsRESTController {
 				'page_id'      => 'settings',
 				'title'        => __( 'Clickatell Settings', 'texty' ),
 				'description'  => __( 'Configure your Clickatell SMS gateway credentials.', 'texty' ),
+				'priority'     => 10,
 				'dependencies' => [
 					[
 						'key'        => 'gateway_selection.gateway',
@@ -357,6 +360,7 @@ class SettingsController extends BaseSettingsRESTController {
 				'page_id'      => 'settings',
 				'title'        => __( 'Plivo Settings', 'texty' ),
 				'description'  => __( 'Configure your Plivo SMS gateway credentials.', 'texty' ),
+				'priority'     => 10,
 				'dependencies' => [
 					[
 						'key'        => 'gateway_selection.gateway',
@@ -406,6 +410,7 @@ class SettingsController extends BaseSettingsRESTController {
 				'page_id'      => 'settings',
 				'title'        => __( 'Fake Gateway', 'texty' ),
 				'description'  => __( 'This is a fake gateway that logs messages to debug.log without sending actual SMS.', 'texty' ),
+				'priority'     => 99,
 				'dependencies' => [
 					[
 						'key'        => 'gateway_selection.gateway',
@@ -415,6 +420,45 @@ class SettingsController extends BaseSettingsRESTController {
 				],
 			];
 		}
+
+		/**
+		 * Filter the settings schema to allow third-party gateways to register
+		 * their own sections and fields.
+		 *
+		 * Third-party plugins can add gateway sections and fields by appending
+		 * to the schema array. Each gateway section should include:
+		 * - 'type' => 'section' with a unique 'id' matching the gateway key
+		 * - 'priority' => int (default 10, higher values appear later)
+		 * - 'dependencies' pointing to 'gateway_selection.gateway'
+		 * - Corresponding 'type' => 'field' entries with 'section_id' matching the gateway key
+		 *
+		 * Example:
+		 * add_filter( 'texty_settings_schema', function( $schema ) {
+		 *     $schema[] = [
+		 *         'type'         => 'section',
+		 *         'id'           => 'my_gateway',
+		 *         'page_id'      => 'settings',
+		 *         'title'        => 'My Gateway Settings',
+		 *         'priority'     => 15,
+		 *         'dependencies' => [
+		 *             [ 'key' => 'gateway_selection.gateway', 'value' => 'my_gateway', 'comparison' => '===' ],
+		 *         ],
+		 *     ];
+		 *     $schema[] = [
+		 *         'type'       => 'field',
+		 *         'id'         => 'api_key',
+		 *         'variant'    => 'text',
+		 *         'page_id'    => 'settings',
+		 *         'section_id' => 'my_gateway',
+		 *         'title'      => 'API Key',
+		 *         'default'    => '',
+		 *     ];
+		 *     return $schema;
+		 * } );
+		 *
+		 * @param array[] $schema Flat array of settings elements.
+		 */
+		$schema = apply_filters( 'texty_settings_schema', $schema );
 
 		return $schema;
 	}
@@ -426,18 +470,36 @@ class SettingsController extends BaseSettingsRESTController {
 	 */
 	private function get_gateway_options(): array {
 		$gateways = texty()->gateways()->all();
-		$options  = [
+		$items    = [];
+
+		foreach ( $gateways as $key => $class ) {
+			$obj     = new $class();
+			$items[] = [
+				'label' => $obj->name(),
+				'value' => $key,
+				'order' => method_exists( $obj, 'order' ) ? $obj->order() : 10,
+			];
+		}
+
+		// Sort by order, then alphabetically by label.
+		usort( $items, function ( $a, $b ) {
+			$order_diff = $a['order'] - $b['order'];
+
+			return 0 !== $order_diff ? $order_diff : strcmp( $a['label'], $b['label'] );
+		} );
+
+		// Build final options with placeholder first.
+		$options = [
 			[
 				'label' => __( 'Select a Gateway', 'texty' ),
 				'value' => '',
 			],
 		];
 
-		foreach ( $gateways as $key => $class ) {
-			$obj       = new $class();
+		foreach ( $items as $item ) {
 			$options[] = [
-				'label' => $obj->name(),
-				'value' => $key,
+				'label' => $item['label'],
+				'value' => $item['value'],
 			];
 		}
 

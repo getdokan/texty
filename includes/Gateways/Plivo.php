@@ -17,6 +17,15 @@ class Plivo implements GatewayInterface {
     const ENDPOINT = 'https://api.plivo.com/v1/Account/{auth_id}/Message/';
 
     /**
+     * Get the display order.
+     *
+     * @return int
+     */
+    public function order() {
+        return 10;
+    }
+
+    /**
      * Get the name
      *
      * @return string

@@ -17,6 +17,15 @@ class Twilio implements GatewayInterface {
     const ENDPOINT = 'https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json';
 
     /**
+     * Get the display order.
+     *
+     * @return int
+     */
+    public function order() {
+        return 10;
+    }
+
+    /**
      * Get the name
      *
      * @return string

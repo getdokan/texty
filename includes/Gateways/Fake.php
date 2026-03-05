@@ -12,6 +12,15 @@ use WP_Error;
 class Fake implements GatewayInterface {
 
     /**
+     * Get the display order.
+     *
+     * @return int
+     */
+    public function order() {
+        return 99;
+    }
+
+    /**
      * Get the name
      *
      * @return string
