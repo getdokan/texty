@@ -4,7 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
 import Notifications from './pages/Notifications';
-import Settings from './pages/Settings';
+import SettingsPage from './pages/SettingsPage';
 import Tools from './pages/Tools';
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/notifications" component={Notifications} />
             <Route path="/tools" component={Tools} />
-            <Route path="/settings" component={Settings} />
+            <Route path="/settings" component={SettingsPage} />
             <Redirect from="/" to="/dashboard" />
           </Switch>
         </div>

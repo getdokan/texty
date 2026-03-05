@@ -66,12 +66,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/getdokan/wp-kit.git",
-                "reference": "47d86d1cb17c8bc7fc6087dce390ec2320fccc3b"
+                "reference": "e8de3cc6dd090965469f072dc1065247e73181b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getdokan/wp-kit/zipball/47d86d1cb17c8bc7fc6087dce390ec2320fccc3b",
-                "reference": "47d86d1cb17c8bc7fc6087dce390ec2320fccc3b",
+                "url": "https://api.github.com/repos/getdokan/wp-kit/zipball/e8de3cc6dd090965469f072dc1065247e73181b5",
+                "reference": "e8de3cc6dd090965469f072dc1065247e73181b5",
                 "shasum": ""
             },
             "require": {
@@ -120,7 +120,7 @@
                 "source": "https://github.com/getdokan/wp-kit/tree/main",
                 "issues": "https://github.com/getdokan/wp-kit/issues"
             },
-            "time": "2026-03-03T04:43:09+00:00"
+            "time": "2026-03-05T05:55:18+00:00"
         }
     ],
     "packages-dev": [

@@ -25,6 +25,7 @@ class Api {
             Api\Status::class,
             Api\Send::class,
             Api\Metrics::class,
+            Api\SettingsController::class,
         ];
 
         add_action( 'rest_api_init', [ $this, 'init_api' ] );
