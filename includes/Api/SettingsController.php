@@ -208,6 +208,7 @@ class SettingsController extends BaseSettingsRESTController {
 				'page_id'     => 'settings',
 				'title'       => __( 'SMS Gateway', 'texty' ),
 				'description' => __( 'Select and configure your SMS gateway provider.', 'texty' ),
+				'priority'     => 9,
 			],
 
 			// Field: Gateway selector (stored at root: texty_settings['gateway']).
