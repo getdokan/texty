@@ -3,8 +3,6 @@
 namespace Texty\Api;
 
 use Texty\Models\SmsStat;
-use Texty\Models\SmsStatStore;
-use WeDevs\WPKit\DataLayer\DataLayerFactory;
 use WP_REST_Server;
 
 class Metrics extends Base {
@@ -48,25 +46,19 @@ class Metrics extends Base {
      */
     public function get_metrics( $request ) {
         try {
-            $store = DataLayerFactory::make_store( SmsStat::class );
-
-            if ( null === $store ) {
-                return new \WP_Error( 'store_error', 'SMS data store not available', [ 'status' => 503 ] );
-            }
-
             $gateway_name   = texty()->settings()->gateway();
             $gateway_status = $gateway_name ? true : false;
 
             // Build volume chart data for last 12 months first.
             // The last item in the chart is always the current month,
             // so we reuse that count instead of running a separate query.
-            $volume_chart  = $this->get_volume_chart( $store );
+            $volume_chart  = $this->get_volume_chart();
             $monthly_usage = ! empty( $volume_chart ) ? end( $volume_chart )['count'] : 0;
 
             // Calculate usage change vs previous month
             $usage_change = 0;
             // Calculate delivery rate for last 30 days
-            $delivery_rate = $this->get_delivery_rate( $store );
+            $delivery_rate = $this->get_delivery_rate();
 
             $response = [
                 'gateway_status' => $gateway_status,
@@ -87,26 +79,24 @@ class Metrics extends Base {
     /**
      * Calculate delivery rate for last 30 days
      *
-     * Uses DataLayer to fetch sent and failed SMS, then calculates rate.
-     *
-     * @param SmsStatStore $store Store instance
+     * Fetches all SMS (sent + failed) from last 30 days, then calculates rate.
      *
      * @return float|null Delivery rate as percentage (e.g., 94.5) or null if no data
      */
-    private function get_delivery_rate( $store ) {
+    private function get_delivery_rate() {
         try {
             $today           = new \DateTimeImmutable( 'now', wp_timezone() );
             $thirty_days_ago = $today->modify( '-30 days' )->format( 'Y-m-d' );
             $today_date      = $today->format( 'Y-m-d' );
 
-            // Query all SMS from last 30 days using SmsStat static method
+            // Query ALL SMS from last 30 days (sent + failed) to calculate real delivery rate
             $result = SmsStat::get_successful_sent_sms_between_dates( $thirty_days_ago, $today_date );
 
             if ( empty( $result['total'] ) || (int) $result['total'] === 0 ) {
                 return null;
             }
 
-            // Count 'sent' status from fetched records
+            // Count only 'sent' status from all fetched records
             $delivered = 0;
             if ( ! empty( $result['items'] ) ) {
                 foreach ( $result['items'] as $row ) {
@@ -133,11 +123,9 @@ class Metrics extends Base {
      * The last element of the returned array always represents the current month,
      * and is reused by get_metrics() as monthly_usage — no extra query needed.
      *
-     * @param SmsStatStore $store Store instance
-     *
      * @return array  e.g. [ ['month' => 'Apr', 'count' => 42], ... ]
      */
-    private function get_volume_chart( $store ) {
+    private function get_volume_chart() {
         try {
             // Generate last 12 months list
             $current    = new \DateTimeImmutable( 'first day of this month', wp_timezone() );

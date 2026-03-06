@@ -109,6 +109,11 @@ class Dispatcher {
         // Get DataLayerFactory store
         $store = DataLayerFactory::make_store( SmsStat::class );
 
+        if ( ! $store ) {
+            error_log( sprintf( 'Texty log_sms error: Failed to create data store for %s.', SmsStat::class ) );
+            return;
+        }
+
         // Create and save SMS record using DataLayer
         $sms = new SmsStat();
         $sms->set_props( [

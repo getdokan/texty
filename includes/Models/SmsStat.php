@@ -284,9 +284,9 @@ class SmsStat extends BaseModel {
 
         $result = $store->query( [
             'per_page'   => -1,
+            'status'     => 'sent',
             'date_query' => [
                 'column' => 'created_at',
-                'status' => 'sent',
                 'after'  => $start_datetime,
                 'before' => $end_datetime,
             ],
