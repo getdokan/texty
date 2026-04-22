@@ -8,28 +8,33 @@
   "license": "ISC",
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "wp-scripts build",
-    "start": "wp-scripts start",
+    "build": "wp-scripts build --progress",
+    "start": "wp-scripts start --progress",
+    "typecheck": "tsc --noEmit",
     "makepot": "wp i18n make-pot --exclude='dist,node_modules,vendors' . --headers='{\"Last-Translator\":\"support@wedevs.com\",\"Report-Msgid-Bugs-To\":\"https://github.com/weDevsOfficial/texty/issues\"}' --file-comment=\"Copyright (c) $(date +'%Y') weDevs Pte. Ltd. All Rights Reserved.\" languages/texty.pot",
     "pot2json": "po2json languages/texty.pot languages/texty.json --format jed --pretty",
     "readme": "wp-readme-to-md"
   },
   "dependencies": {
+    "@wedevs/plugin-ui": "github:getdokan/plugin-ui",
     "classnames": "^2.2.6",
     "lucide-react": "^0.468.0",
-    "recharts": "^2.10.3",
     "react-phone-input-2": "^2.13.9",
     "react-router-dom": "^5.2.0",
     "react-select": "^5.8.0",
     "react-toastify": "^6.2.0",
-    "@wedevs/plugin-ui": "git+https://github.com/mrabbani/plugin-ui.git"
+    "recharts": "^2.10.3"
   },
   "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/wordpress__element": "^2.4.1",
     "@wordpress/components": "^28.0.0",
     "@wordpress/scripts": "^30.12.0",
     "po2json": "^0.4.5",
     "prettier": "^2.2.1",
     "sass": "^1.83.4",
+    "typescript": "^6.0.3",
     "wp-readme-to-markdown": "^1.0.1"
   }
 }
