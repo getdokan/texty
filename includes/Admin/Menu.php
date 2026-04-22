@@ -51,6 +51,10 @@ class Menu {
 					'title' => __( 'Dashboard', 'texty' ),
 				],
                 [
+                    'id' => 'settings',
+                    'title' => __( 'Gateway', 'texty' ),
+                ],
+                [
 					'id' => 'notifications',
 					'title' => __( 'Notifications', 'texty' ),
 				],

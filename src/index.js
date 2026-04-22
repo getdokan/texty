@@ -5,6 +5,7 @@ import { ThemeProvider } from '@wedevs/plugin-ui';
 import menuFix from './utils/admin-menu-fix';
 import App from './App';
 import '@wedevs/plugin-ui/styles.css';
+import './base-tailwind.css';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-phone-input-2/lib/style.css';
 import './style.scss';

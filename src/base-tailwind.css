@@ -1,0 +1,22 @@
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+
+@source "../src/";
+@source "../node_modules/@wedevs/plugin-ui/dist";
+
+/* Scoped Layout — Preflight + Utilities + Components
+   Utilities only apply inside the Texty app root and plugin-ui containers,
+   so WordPress admin styles outside remain untouched. */
+#texty-app,
+.pui-root {
+  @import 'tailwindcss/preflight.css' layer(base);
+  @import 'tailwindcss/utilities.css' important;
+}
+
+#texty-app .wrap {
+  margin: 10px 0 0 0;
+}
+
+#wpcontent:has(#texty-app) {
+  padding-left: 0 !important;
+}
