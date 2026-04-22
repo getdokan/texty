@@ -40,7 +40,9 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<!-- Value: replace the text domain used. -->
-			<property name="text_domain" type="array" value="texty"/>
+			<property name="text_domain" type="array">
+				<element value="texty"/>
+			</property>
 		</properties>
 	</rule>
 	<rule ref="WordPress.WhiteSpace.ControlStructureSpacing">
@@ -94,7 +96,7 @@
 	<rule ref="WordPress.PHP.StrictInArray.MissingTrueStrict">
 		<type>error</type>
 	</rule>
-	<rule ref="WordPress.PHP.StrictComparisons.LooseComparison">
+	<rule ref="Universal.Operators.StrictComparisons">
 		<type>error</type>
 	</rule>
 	<rule ref="WordPress.DB.DirectDatabaseQuery.DirectQuery">
@@ -110,6 +112,9 @@
 		<severity>0</severity>
 	</rule>
 	<rule ref="Generic.Arrays.DisallowShortArraySyntax">
+		<severity>0</severity>
+	</rule>
+	<rule ref="Universal.Arrays.DisallowShortArraySyntax">
 		<severity>0</severity>
 	</rule>
 </ruleset>
