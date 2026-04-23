@@ -1,6 +1,6 @@
 import { createRoot } from '@wordpress/element';
 import domReady from '@wordpress/dom-ready';
-import { ThemeProvider } from '@wedevs/plugin-ui';
+import { ThemeProvider, type ThemeTokens } from '@wedevs/plugin-ui';
 
 import menuFix from './utils/admin-menu-fix';
 import App from './App';
@@ -8,11 +8,11 @@ import '@wedevs/plugin-ui/styles.css';
 import './base-tailwind.css';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-phone-input-2/lib/style.css';
-import './style.scss';
-import './app.css';
+import './styles/style.scss';
+import './styles/app.css';
 
 // WordPress default blue theme for Texty (#2271b1)
-const textyTheme = {
+const textyTheme: ThemeTokens = {
     background: 'oklch(1 0 0)',
     foreground: 'oklch(0.1450 0 0)',
     card: 'oklch(1 0 0)',
@@ -38,8 +38,11 @@ const textyTheme = {
 };
 
 domReady(() => {
-
     const mountNode = document.getElementById('texty-app');
+    if (!mountNode) {
+        return;
+    }
+
     const root = createRoot(mountNode);
     root.render(
         <ThemeProvider pluginId="texty" tokens={textyTheme}>
