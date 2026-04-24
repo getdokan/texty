@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
-    "@wedevs/plugin-ui": "github:getdokan/plugin-ui",
+    "@wedevs/plugin-ui": "file:../plugin-ui",
     "classnames": "^2.2.6",
     "lucide-react": "^0.468.0",
     "react-phone-input-2": "^2.13.9",

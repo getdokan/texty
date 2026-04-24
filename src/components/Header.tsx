@@ -1,69 +1,154 @@
 import { __ } from '@wordpress/i18n';
-import { Crown, CircleHelp } from 'lucide-react';
+import { CircleHelp, BookOpen, Headphones, Lightbulb } from 'lucide-react';
+import {
+  TopBar,
+  Button,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@wedevs/plugin-ui';
+
+const Logo = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 97 28"
+    width="80"
+    height="24"
+    className="block"
+  >
+    <g fill="none" fillRule="nonzero">
+      <path
+        fill="#FF0F45"
+        d="M15.617 0c.893 0 1.766.084 2.613.244a7.954 7.954 0 00-1.633 4.087 9.766 9.766 0 00-.98-.05c-5.36 0-9.706 4.346-9.706 9.706 0 2.262.774 4.4 2.17 6.117l.933 1.148-1.433 2.44h8.036c5.36 0 9.705-4.345 9.705-9.705 0-.3-.013-.597-.04-.89a7.948 7.948 0 004.102-1.594c.145.806.22 1.636.22 2.484 0 7.725-6.262 13.988-13.987 13.988H0l3.862-6.405-.018-.028a13.934 13.934 0 01-2.214-7.555C1.63 6.262 7.892 0 15.617 0zm8.932 0a5.138 5.138 0 110 10.276A5.138 5.138 0 0124.55 0z"
+      />
+      <path
+        fill="#111827"
+        d="M87.482 7.8l2.65 8.9 2.636-8.9h4.087l-5.734 16.53-.317.755-.039.084c-.856 1.813-2.25 2.72-4.18 2.72a5.977 5.977 0 01-1.687-.252v-2.896l.58.013h.09c.676-.01 1.184-.12 1.525-.33.356-.221.635-.587.837-1.098l.449-1.177-4.997-14.35h4.1zm-43.91-3.518V7.8h2.44v2.803h-2.44v7.142l.001.071c.009.492.11.847.303 1.066.202.23.589.344 1.16.344.422 0 .795-.03 1.12-.093v2.897l-.14.041a7.825 7.825 0 01-2.167.302c-2.671 0-4.033-1.353-4.086-4.06v-7.71H37.68V7.8h2.083V4.282h3.81zm9.894 3.253c1.95 0 3.486.617 4.607 1.852 1.1 1.211 1.66 2.92 1.68 5.127v1.683h-9.082l.013.093c.135.892.502 1.61 1.1 2.156.62.564 1.405.846 2.354.846 1.437 0 2.567-.511 3.389-1.534l.052-.066 1.871 2.103-.061.086c-.565.77-1.318 1.374-2.259 1.811-.975.454-2.056.681-3.243.681-2.091 0-3.794-.643-5.108-1.93-1.29-1.265-1.947-2.941-1.97-5.03v-.628c.018-1.38.295-2.617.83-3.712.554-1.133 1.338-2.006 2.353-2.619 1.015-.612 2.173-.919 3.474-.919zm26.533-3.253V7.8h2.44v2.803h-2.44v7.142l.001.071c.009.492.11.847.303 1.066.202.23.589.344 1.16.344.422 0 .795-.03 1.12-.093v2.897l-.14.041a7.825 7.825 0 01-2.167.302c-2.671 0-4.034-1.353-4.086-4.06v-7.71h-2.083V7.8h2.083V4.282H80zM64.541 7.8l2.347 4.271 2.4-4.271h4.072l-4.06 7.009 4.232 7.3h-4.087l-2.544-4.497-2.531 4.497h-4.1l4.232-7.3-4.047-7.01h4.086zm-11.089 2.83c-.755 0-1.368.255-1.839.767-.454.494-.75 1.193-.888 2.097l-.015.098h5.3v-.304l-.003-.087c-.03-.804-.258-1.43-.683-1.877-.44-.463-1.063-.694-1.872-.694z"
+      />
+    </g>
+  </svg>
+);
+
+type HelpItem = {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  href: string;
+};
 
 function Header() {
-  const liteVersion = window.texty?.version?.lite ?? '1.1.5';
-  const businessVersion = window.texty?.version?.business;
-  const docsUrl = window.texty?.docs_url ?? 'https://wedevs.com/docs/texty/';
+  const {
+    version: { lite: liteVersion = '1.1.5', business: businessVersion } = {},
+    docs_url: docsUrl = 'https://wedevs.com/docs/texty/',
+    support_url: supportUrl = 'https://wedevs.com/contact/',
+    feature_request_url: featureRequestUrl = 'https://wedevs.com/contact/',
+  } = window.texty ?? {};
+
+  const versions = [
+    ...(liteVersion
+      ? [
+          {
+            version: `${__('Lite:', 'texty')} ${liteVersion}`,
+            isPro: false,
+            className: 'border-gray-200!',
+          },
+        ]
+      : []),
+    ...(businessVersion
+      ? [
+          {
+            version: `${__('Business:', 'texty')} ${businessVersion}`,
+            isPro: true,
+            className: 'border-gray-200!',
+          },
+        ]
+      : []),
+  ];
+
+  const helpItems: HelpItem[] = [
+    {
+      icon: <BookOpen className="size-5" />,
+      title: __('Documentation', 'texty'),
+      description: __(
+        'Learn how to set up gateways and create notification workflows.',
+        'texty'
+      ),
+      href: docsUrl,
+    },
+    {
+      icon: <Headphones className="size-5" />,
+      title: __('Get Support', 'texty'),
+      description: __(
+        'Need help with Twilio, Vonage, or message delivery? We have got you.',
+        'texty'
+      ),
+      href: supportUrl,
+    },
+    {
+      icon: <Lightbulb className="size-5" />,
+      title: __('Feature Request', 'texty'),
+      description: __(
+        'Want new notification triggers or gateway integrations? Tell us.',
+        'texty'
+      ),
+      href: featureRequestUrl,
+    },
+  ];
 
   return (
-    <div className="sticky top-8 z-100 w-full bg-white border-b border-gray-200 shadow-sm">
-      <div className="texty-container">
-        <div className="flex items-center gap-4 h-16">
-          <div className="flex items-center shrink-0">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 97 28"
-              width="80"
-              height="24"
-              className="block"
+    <div className="sticky top-8 z-10 w-full border-b border-gray-200 shadow-sm">
+      <TopBar
+        className="px-12"
+        logo={<Logo />}
+        versions={versions}
+        rightSideComponents={
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="default"
+                  size="icon"
+                  className="size-9 rounded-full border border-gray-200 bg-white text-gray-700 hover:bg-gray-900 hover:text-white hover:border-gray-900 aria-expanded:bg-gray-900 aria-expanded:text-white aria-expanded:border-gray-900"
+                  title={__('Help', 'texty')}
+                  aria-label={__('Help', 'texty')}
+                />
+              }
             >
-              <g fill="none" fillRule="nonzero">
-                <path
-                  fill="#FF0F45"
-                  d="M15.617 0c.893 0 1.766.084 2.613.244a7.954 7.954 0 00-1.633 4.087 9.766 9.766 0 00-.98-.05c-5.36 0-9.706 4.346-9.706 9.706 0 2.262.774 4.4 2.17 6.117l.933 1.148-1.433 2.44h8.036c5.36 0 9.705-4.345 9.705-9.705 0-.3-.013-.597-.04-.89a7.948 7.948 0 004.102-1.594c.145.806.22 1.636.22 2.484 0 7.725-6.262 13.988-13.987 13.988H0l3.862-6.405-.018-.028a13.934 13.934 0 01-2.214-7.555C1.63 6.262 7.892 0 15.617 0zm8.932 0a5.138 5.138 0 110 10.276A5.138 5.138 0 0124.55 0z"
-                />
-                <path
-                  fill="#111827"
-                  d="M87.482 7.8l2.65 8.9 2.636-8.9h4.087l-5.734 16.53-.317.755-.039.084c-.856 1.813-2.25 2.72-4.18 2.72a5.977 5.977 0 01-1.687-.252v-2.896l.58.013h.09c.676-.01 1.184-.12 1.525-.33.356-.221.635-.587.837-1.098l.449-1.177-4.997-14.35h4.1zm-43.91-3.518V7.8h2.44v2.803h-2.44v7.142l.001.071c.009.492.11.847.303 1.066.202.23.589.344 1.16.344.422 0 .795-.03 1.12-.093v2.897l-.14.041a7.825 7.825 0 01-2.167.302c-2.671 0-4.033-1.353-4.086-4.06v-7.71H37.68V7.8h2.083V4.282h3.81zm9.894 3.253c1.95 0 3.486.617 4.607 1.852 1.1 1.211 1.66 2.92 1.68 5.127v1.683h-9.082l.013.093c.135.892.502 1.61 1.1 2.156.62.564 1.405.846 2.354.846 1.437 0 2.567-.511 3.389-1.534l.052-.066 1.871 2.103-.061.086c-.565.77-1.318 1.374-2.259 1.811-.975.454-2.056.681-3.243.681-2.091 0-3.794-.643-5.108-1.93-1.29-1.265-1.947-2.941-1.97-5.03v-.628c.018-1.38.295-2.617.83-3.712.554-1.133 1.338-2.006 2.353-2.619 1.015-.612 2.173-.919 3.474-.919zm26.533-3.253V7.8h2.44v2.803h-2.44v7.142l.001.071c.009.492.11.847.303 1.066.202.23.589.344 1.16.344.422 0 .795-.03 1.12-.093v2.897l-.14.041a7.825 7.825 0 01-2.167.302c-2.671 0-4.034-1.353-4.086-4.06v-7.71h-2.083V7.8h2.083V4.282H80zM64.541 7.8l2.347 4.271 2.4-4.271h4.072l-4.06 7.009 4.232 7.3h-4.087l-2.544-4.497-2.531 4.497h-4.1l4.232-7.3-4.047-7.01h4.086zm-11.089 2.83c-.755 0-1.368.255-1.839.767-.454.494-.75 1.193-.888 2.097l-.015.098h5.3v-.304l-.003-.087c-.03-.804-.258-1.43-.683-1.877-.44-.463-1.063-.694-1.872-.694z"
-                />
-              </g>
-            </svg>
-          </div>
-
-          <div className="flex items-center gap-2.5 shrink-0">
-            {liteVersion && (
-              <span className="inline-flex items-center gap-1.5 py-1.25 px-3.5 border border-gray-200 rounded-full bg-white text-xs font-medium text-gray-700 leading-tight whitespace-nowrap">
-                {__('Lite:', 'texty')} {liteVersion}
-              </span>
-            )}
-            {businessVersion && (
-              <span className="inline-flex items-center gap-1.5 py-1.25 px-3.5 border border-gray-200 rounded-full bg-white text-xs font-medium text-gray-700 leading-tight whitespace-nowrap">
-                {__('Business:', 'texty')} {businessVersion}
-                <span
-                  aria-hidden="true"
-                  className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-400 text-gray-900 ml-0.5"
+              <CircleHelp className="size-5" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              sideOffset={8}
+              className="w-80 p-0"
+            >
+              {helpItems.map((item) => (
+                <DropdownMenuItem
+                  key={item.title}
+                  className="items-start gap-3 rounded-none px-4 py-3 focus:bg-gray-100! focus:**:text-inherit!"
+                  render={
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  }
                 >
-                  <Crown size={11} strokeWidth={2.5} />
-                </span>
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center ml-auto shrink-0">
-            <a
-              href={docsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={__('Help', 'texty')}
-              aria-label={__('Help', 'texty')}
-              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white border border-gray-200 text-gray-500 no-underline! shadow-none! transition-colors hover:text-gray-900 hover:border-gray-300 hover:bg-gray-50 hover:no-underline! focus:text-gray-900 focus:border-gray-300 focus:bg-gray-50 focus:no-underline!"
-            >
-              <CircleHelp size={18} />
-            </a>
-          </div>
-        </div>
-      </div>
+                  <span className="mt-0.5 text-gray-700">{item.icon}</span>
+                  <span className="flex flex-col gap-1">
+                    <span className="text-sm font-semibold text-gray-900">
+                      {item.title}
+                    </span>
+                    <span className="text-xs leading-relaxed text-gray-500">
+                      {item.description}
+                    </span>
+                  </span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        }
+      />
     </div>
   );
 }

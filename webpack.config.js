@@ -21,4 +21,7 @@ module.exports = {
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  watchOptions: {
+    ignored: ["**/dist/**"], // Ignore the generated build files to avoid unnecessary rebuilds
+  },
 };

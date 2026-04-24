@@ -4,6 +4,8 @@ export interface TextyGlobal {
         business?: string;
     };
     docs_url?: string;
+    support_url?: string;
+    feature_request_url?: string;
 }
 
 declare global {

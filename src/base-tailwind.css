@@ -9,8 +9,15 @@
    so WordPress admin styles outside remain untouched. */
 #texty-app,
 .pui-root {
-  @import 'tailwindcss/preflight.css' layer(base);
-  @import 'tailwindcss/utilities.css' important;
+  @import 'tailwindcss/preflight.css' layer(base) important;
+  @import 'tailwindcss/utilities.css' layer(utilities) important;
+
+  @layer base {
+    button:not(:disabled),
+    [role='button']:not(:disabled) {
+      @apply cursor-pointer;
+    }
+  }
 }
 
 #texty-app .wrap {
