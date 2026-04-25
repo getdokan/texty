@@ -1,7 +1,8 @@
+import Settings from '@/pages/Settings';
 import { __ } from '@wordpress/i18n';
 import Dashboard from '../pages/dashboard';
+import GatewayConfiguration from '../pages/gateway';
 import Notifications from '../pages/Notifications';
-import SettingsPage from '../pages/SettingsPage';
 import Tools from '../pages/Tools';
 import type { TextyRoute } from './index';
 
@@ -25,10 +26,16 @@ const routes: TextyRoute[] = [
     element: <Tools />,
   },
   {
+    id: 'texty-gateway',
+    title: __('Gateway Configuration', 'texty'),
+    path: '/gateway',
+    element: <GatewayConfiguration />,
+  },
+  {
     id: 'texty-settings',
-    title: __('Gateway Settings', 'texty'),
+    title: __('Settings', 'texty'),
     path: '/settings',
-    element: <SettingsPage />,
+    element: <Settings />,
   },
 ];
 

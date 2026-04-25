@@ -51,7 +51,7 @@ class Menu {
 					'title' => __( 'Dashboard', 'texty' ),
 				],
                 [
-                    'path' => 'settings',
+                    'path' => 'gateway',
                     'title' => __( 'Gateway', 'texty' ),
                 ],
                 [
