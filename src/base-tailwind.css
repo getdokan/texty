@@ -46,34 +46,6 @@
     [role='button']:not(:disabled) {
       @apply cursor-pointer;
     }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    p,
-    ul,
-    ol,
-    dl,
-    dd,
-    figure,
-    blockquote,
-    pre,
-    fieldset {
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-
-    ul,
-    ol {
-      list-style: none !important;
-    }
-
-    fieldset {
-      border: 0 !important;
-    }
   }
 }
 
@@ -83,4 +55,23 @@
 
 #wpcontent:has(#texty-app) {
   padding-left: 0 !important;
+}
+
+.texty-container h1,
+.texty-container h2,
+.texty-container h3,
+.texty-container h4,
+.texty-container h5,
+.texty-container h6,
+.texty-container p,
+.texty-container ul,
+.texty-container ol,
+.texty-container dl,
+.texty-container dd,
+.texty-container figure,
+.texty-container blockquote,
+.texty-container pre,
+.texty-container fieldset {
+  margin: 0 !important;
+  padding: 0 !important;
 }

@@ -2,8 +2,9 @@ import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import { useEffect, useState } from 'react';
 
+import GatewayStatus from '@/components/GatewayStatus';
+
 import DashboardSkeleton from './DashboardSkeleton';
-import GatewayStatus from './GatewayStatus';
 import QuickSendCard from './QuickSendCard';
 import StatCards from './StatCards';
 import type { DashboardMetrics, DashboardPeriod } from './types';
@@ -73,7 +74,19 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {metrics.gateway_status && metrics.gateway_name ? (
-        <GatewayStatus gatewayName={metrics.gateway_name} />
+        <div className="rounded-xl border border-border bg-background px-6 py-5 shadow-xs">
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <p className="m-0 text-sm text-muted-foreground">
+                {__('Gateway Status', 'texty')}
+              </p>
+              <p className="m-0 mt-1 text-xl font-bold text-foreground capitalize">
+                {metrics.gateway_name}
+              </p>
+            </div>
+            <GatewayStatus status="active" />
+          </div>
+        </div>
       ) : (
         <WelcomeBanner />
       )}
