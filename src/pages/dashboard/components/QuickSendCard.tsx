@@ -7,8 +7,9 @@ import {
   toast,
 } from '@wedevs/plugin-ui';
 import apiFetch from '@wordpress/api-fetch';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { useState, type ChangeEvent, type FormEvent } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 import PhoneInput from 'react-phone-input-2';
 
 const MAX_MESSAGE_LENGTH = 120;

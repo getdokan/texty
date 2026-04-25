@@ -1,6 +1,6 @@
+import { cloneElement, createElement, isValidElement } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
 import type { ComponentType, ReactElement, ReactNode } from 'react';
-import { cloneElement, createElement, isValidElement } from 'react';
 import {
   createSearchParams,
   redirect,

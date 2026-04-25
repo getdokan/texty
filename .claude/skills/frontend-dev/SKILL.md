@@ -281,6 +281,35 @@ for (const item of items) process(item);
 
 This rule does **not** apply to ternaries (`cond ? a : b`) or to JSX conditional rendering (`{cond && <Foo />}`) — those are expressions, not statements. Use those when you want concise inline branching; use a full `if` block when you have a statement to run.
 
+### 9. React runtime imports come from `@wordpress/element`, not `react`
+
+Every **runtime** React API — hooks (`useState`, `useEffect`, `useCallback`, `useMemo`, `useRef`, `useReducer`, `useContext`, `useLayoutEffect`, `useId`, `useTransition`, `useDeferredValue`, `useSyncExternalStore`), top-level helpers (`Fragment`, `forwardRef`, `memo`, `lazy`, `Suspense`, `createContext`, `cloneElement`, `createElement`, `isValidElement`, `Children`, `createRef`, `startTransition`), and portal helpers (`createPortal`) — is imported from `@wordpress/element`, never from `react`.
+
+**Type-only** imports (`ReactNode`, `ReactElement`, `ComponentType`, `ChangeEvent`, `FormEvent`, `MouseEvent`, `KeyboardEvent`, `RefObject`, `MutableRefObject`, `Dispatch`, `SetStateAction`, etc.) still come from `react` — `@wordpress/element` doesn't re-export them. Use `import type` so they get erased at build time.
+
+**Fallback rule:** if a runtime API genuinely isn't re-exported by `@wordpress/element` (rare — but e.g. `useInsertionEffect`, `act`, very-new React-18.3+ APIs), then importing from `react` is acceptable. Verify first by checking `node_modules/@wordpress/element/build-types/react.d.ts` (or attempting the `@wordpress/element` import) — don't assume it's missing. Default is `@wordpress/element`; `react` is the escape hatch.
+
+```tsx
+// ✅
+import { useState, useEffect, useCallback, useMemo, useRef, Fragment } from '@wordpress/element';
+import type { ChangeEvent, FormEvent, ReactNode, ComponentType } from 'react';
+
+const Foo = ({ children }: { children: ReactNode }) => {
+  const [value, setValue] = useState('');
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
+  return <input value={value} onChange={onChange} />;
+};
+
+// ❌
+import { useState, useEffect } from 'react';                        // runtime hook from react
+import { Fragment, cloneElement, isValidElement } from 'react';     // helpers from react
+import React, { useState } from 'react';                            // default + hooks from react
+```
+
+**Why:** `@wordpress/element` is the canonical React surface inside WordPress — it routes through the shared `wp.element` global, ensures every plugin uses the *same* React instance as core/Gutenberg (no duplicate copies, no hook-mismatch errors), and makes the bundle marginally smaller because `react` is provided as an external. Mixing `from 'react'` runtime imports with the WP-provided React is the classic source of "Invalid hook call" errors when the plugin loads alongside the block editor.
+
+**Migration note:** several existing files still `import { useState } from 'react'` (see `useDashboardMetrics.ts`, `QuickSendCard.tsx`, `gateway/index.tsx`, etc.) — they predate this rule. When you next touch one of those files, swap the runtime import to `@wordpress/element` in the same edit. Don't open a sweep PR just for the migration; convert opportunistically.
+
 ## File layout
 
 - **Pages** live in `src/pages/<page-name>/` with `index.tsx` as the entry. **Directory names are lowercase, kebab-case for multi-word** (`src/pages/dashboard/`, `src/pages/quick-send/`).
@@ -653,6 +682,7 @@ When a change touches admin routing or menus, the user clicks through every subm
 - **Numeric `size={20}` prop on a lucide icon** — use `className="size-5"` instead so it matches the rest of the app.
 - **`+` string concatenation (`'foo' + bar + '!'`)** — use a template literal `` `foo${bar}!` ``. Rule #7.
 - **Braceless `if (...) return;` / `if (...) doThing();`** — wrap every control-flow body in `{ ... }`. Rule #8.
+- **`import { useState } from 'react'` (or any runtime hook/helper from `'react'`)** — runtime imports come from `@wordpress/element`; only type-only imports (`ReactNode`, `ChangeEvent`, …) stay on `'react'`. Rule #9.
 - **`ChartConfig` import error** — type locally; not re-exported by plugin-ui's index.
 - **`asChild` / `delayDuration` errors on Tooltip** — plugin-ui is base-ui; use `render={...}` and `delay`.
 - **Missing `@wordpress/api-fetch` types** — extend `src/types/assets.d.ts`.
