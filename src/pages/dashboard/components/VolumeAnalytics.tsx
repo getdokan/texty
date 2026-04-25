@@ -17,7 +17,7 @@ import {
   YAxis,
 } from 'recharts';
 
-import type { DashboardPeriod, VolumePoint } from './types';
+import type { DashboardPeriod, VolumePoint } from '../types';
 
 type ChartConfig = Record<string, { label?: string; color?: string }>;
 
