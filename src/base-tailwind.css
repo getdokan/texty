@@ -4,6 +4,35 @@
 @source "../src/";
 @source "../node_modules/@wedevs/plugin-ui/dist";
 
+/* Bridge plugin-ui's runtime theme tokens (set by ThemeProvider) into
+   Tailwind utility names so `bg-background`, `border-border`, etc. resolve
+   inside texty's Tailwind compilation. plugin-ui's own bundle has the
+   same @theme block but it doesn't carry over to consumers. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius: var(--radius);
+}
+
 /* Scoped Layout — Preflight + Utilities + Components
    Utilities only apply inside the Texty app root and plugin-ui containers,
    so WordPress admin styles outside remain untouched. */
