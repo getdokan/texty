@@ -51,6 +51,7 @@ These will fail `composer phpcs`:
 
 ### Backend PHP — architecture (ERROR)
 
+- **Inline fully-qualified class names** — `\WP_Error`, `\Exception`, `\DateTimeImmutable`, `\WP_REST_Response` in code or PHPDoc. Every external class gets a `use ClassName;` at the top of the file; references in the body and docblocks use the short name. One `use` per line, no inline FQCN dodge. See `backend-dev: Class imports`.
 - **Direct instantiation of registry classes** — `new Gateways()`, `new Settings()`, `new Notifications()`. Use `texty()->gateways()`, `->settings()`, `->notifications()`.
 - **REST controller missing from `Api::__construct`** array — routes silently won't register.
 - **REST controller not extending `Api\Base`** — must inherit `admin_permissions_check`.

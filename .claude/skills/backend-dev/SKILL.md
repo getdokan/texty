@@ -64,6 +64,66 @@ Run `composer phpcs` before submitting. To check one file: `vendor/bin/phpcs -p 
 - **Constants:** `UPPER_SNAKE_CASE` — `TEXTY_VERSION`, `OPTION_KEY`.
 - **Hook names:** `snake_case` and **always prefixed with `texty_`** — `texty_after_send_sms`, `texty_register_gateways`. Never use unprefixed hook names; collisions with other plugins are real.
 
+## Class imports — `use` at the top, never inline FQCN
+
+Every class reference outside the current namespace goes through a `use` statement at the top of the file. **Never inline a fully-qualified class name (`\WP_Error`, `\Exception`, `\DateTimeImmutable`) in the body or in PHPDoc.** Every `use` statement gets its own line — don't combine them.
+
+```php
+// ✅
+namespace Texty\Api;
+
+use DateTimeImmutable;
+use Exception;
+use Texty\Models\SmsStat;
+use WeDevs\WPKit\DataLayer\DataLayerFactory;
+use WP_Error;
+use WP_REST_Request;
+use WP_REST_Response;
+use WP_REST_Server;
+
+class Metrics extends Base {
+
+    /**
+     * @param  WP_REST_Request $request
+     * @return WP_REST_Response|WP_Error
+     */
+    public function get_metrics( $request ) {
+        try {
+            $now = new DateTimeImmutable( 'now', wp_timezone() );
+            // ...
+        } catch ( Exception $e ) {
+            return new WP_Error( 'metrics_error', $e->getMessage() );
+        }
+    }
+}
+
+// ❌
+class Metrics extends Base {
+
+    /**
+     * @return \WP_REST_Response|\WP_Error           — FQCN in PHPDoc
+     */
+    public function get_metrics( $request ) {
+        try {
+            $now = new \DateTimeImmutable( 'now' );  — leading-backslash inline
+        } catch ( \Exception $e ) {                  — same
+            return new \WP_Error( ... );             — same
+        }
+    }
+}
+```
+
+**This applies to PHPDoc too.** `@param \WP_Error $err` is a violation; import `WP_Error` and write `@param WP_Error $err`. PHPCS's `WordPress.NamingConventions.ValidHookName` doesn't catch this — it's on you.
+
+**Why:**
+- Imports declare the file's external dependencies up front, so a reader sees what the class touches without scanning the body.
+- Renaming a global (e.g., a future `WP_Error` rename) changes one `use` line, not 12 inline references.
+- IDE refactors and static analyzers handle `use` correctly; inline FQCNs are easy to mistype (`\WP_Error` vs `\WP_error`) and silently work at runtime.
+
+**Exceptions:**
+- The class lives in the same namespace — no import needed at all (just reference by short name).
+- A name conflict with an already-imported class — alias it: `use Some\Other\Logger as OtherLogger;`. Don't dodge by inlining.
+
 ## Translation (i18n)
 
 **Text domain is always `'texty'`** — never empty, never hardcoded twice, never a variable.
@@ -489,6 +549,7 @@ Only `appsero/client` and `appsero/updater` are namespaced into `Texty\Dependenc
 - **`==` instead of `===`** — fails `phpcs` as an error.
 - **`in_array( $x, $arr )` without `true`** — fails `phpcs`.
 - **Missing text domain or wrong domain** — fails `phpcs` (`WordPress.WP.I18n`).
+- **Inline `\ClassName` instead of importing via `use`** — `\WP_Error` / `\Exception` / `\DateTimeImmutable` in code or PHPDoc are wrong. Add a `use ClassName;` at the top and reference by short name. See "Class imports".
 - **Direct `new Gateways()` / `new Settings()`** — bypasses the singleton; use `texty()->gateways()` / `->settings()`.
 - **Forgetting to register a new REST controller in `Api::__construct`** — routes silently never load.
 - **Overriding `WC\Base::send()` without re-applying `_texty_{id}` order meta** — duplicate SMSs on every status flip.
