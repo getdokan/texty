@@ -46,6 +46,34 @@
     [role='button']:not(:disabled) {
       @apply cursor-pointer;
     }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    ul,
+    ol,
+    dl,
+    dd,
+    figure,
+    blockquote,
+    pre,
+    fieldset {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    ul,
+    ol {
+      list-style: none !important;
+    }
+
+    fieldset {
+      border: 0 !important;
+    }
   }
 }
 
