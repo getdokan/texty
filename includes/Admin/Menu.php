@@ -130,7 +130,9 @@ class Menu {
      * @return array
      */
     public function localize_script() {
-        $i18n = [];
+        $i18n = [
+            'asset_url' => trailingslashit( TEXTY_URL ) . 'assets/',
+        ];
 
         return apply_filters( 'texty_localize_script', $i18n );
     }

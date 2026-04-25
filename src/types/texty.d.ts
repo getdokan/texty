@@ -6,6 +6,7 @@ export interface TextyGlobal {
     docs_url?: string;
     support_url?: string;
     feature_request_url?: string;
+    asset_url?: string;
 }
 
 declare global {
