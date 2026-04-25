@@ -240,12 +240,110 @@ Number of SMS: ${point.count}`;
 const tooltip = point.date + '\n' + 'Number of SMS: ' + point.count;
 ```
 
+### 8. Always use braces for `if` / `else` / `for` / `while`
+
+Every control-flow body gets `{ ... }`, even when it's a single statement. No single-line `if (x) return;`, no inline `if (x) doThing();`, no braceless `else`/`for`/`while`. Loop and conditional bodies are visible blocks even when they're one line.
+
+```tsx
+// ✅
+if (cancelled) {
+  return;
+}
+
+if (!data) {
+  return null;
+}
+
+if (onConfigure) {
+  onConfigure();
+}
+
+if (isAdmin) {
+  hydrateAdminUI();
+} else {
+  hydrateGuestUI();
+}
+
+for (const item of items) {
+  process(item);
+}
+
+// ❌
+if (cancelled) return;
+if (!data) return null;
+if (onConfigure) onConfigure();
+if (isAdmin) hydrateAdminUI();
+else hydrateGuestUI();
+for (const item of items) process(item);
+```
+
+**Why:** adding a second statement to a braceless body is the textbook source of "I changed two things and only one happened" bugs. Diffs read more cleanly when the block boundary is already there. Search-and-replace over conditionals is safer. The cost (one extra line per branch) is negligible.
+
+This rule does **not** apply to ternaries (`cond ? a : b`) or to JSX conditional rendering (`{cond && <Foo />}`) — those are expressions, not statements. Use those when you want concise inline branching; use a full `if` block when you have a statement to run.
+
 ## File layout
 
-- **Pages** live in `src/pages/<page-name>/` with `index.tsx` as the entry. **Directory names are lowercase, kebab-case for multi-word** (`src/pages/dashboard/`, `src/pages/quick-send/`). Co-locate page-only components beside `index.tsx` (see `src/pages/dashboard/` for the canonical example: `WelcomeBanner.tsx`, `StatCards.tsx`, `VolumeAnalytics.tsx`, `QuickSendCard.tsx`, `types.ts`).
-- **Cross-page components** go in `src/components/`. Don't put one-shot page sections there.
-- **Types**: shared types in `src/types/*.d.ts`. Page-local types in `src/pages/<Page>/types.ts`.
+- **Pages** live in `src/pages/<page-name>/` with `index.tsx` as the entry. **Directory names are lowercase, kebab-case for multi-word** (`src/pages/dashboard/`, `src/pages/quick-send/`).
+- **Feature-level reusable components / hooks** stay scoped to the feature in `src/pages/<page>/components/` and `src/pages/<page>/hooks/`. These are the building blocks of *one* page (or its nested routes / tabs).
+- **App-wide reusable components / hooks** go in `src/components/` and `src/hooks/`. These are imported by **two or more** pages or features.
+- **Types**: shared types in `src/types/*.d.ts`. Page-local types in `src/pages/<page>/types.ts`.
 - **Utilities**: `src/utils/`. Path alias `@/*` → `src/*` is configured in both `tsconfig.json` and `webpack.config.js`.
+
+### Where does this component / hook belong?
+
+Decide by **scope of use**, not by how generic it looks:
+
+| Used by | Lives at |
+|---|---|
+| One page only (incl. its tabs / nested routes) | `src/pages/<page>/components/` (or `hooks/`) |
+| Two or more pages | `src/components/` (or `src/hooks/`) |
+
+Start every new piece in the page it's first used in (`src/pages/<page>/components/`). **Promote it to `src/components/` only when a second page imports it** — not before. Premature globalization couples unrelated pages and produces "everything component" sprawl in `src/components/`. Going the other way (page-local → global) is a one-line move; going back from global → page-local is a refactor.
+
+### Page directory structure (mandatory for new pages)
+
+Every page directory follows this layout. Create `components/` and `hooks/` as soon as you introduce a reusable component or a custom hook — don't let them spread across the page root.
+
+```
+src/pages/<page-name>/
+├── index.tsx              # page entry (default-exported component)
+├── <SectionA>.tsx         # tab bodies / route-level subpages (top-level only)
+├── <SectionB>.tsx
+├── types.ts               # page-local TS types & contracts
+├── components/            # reusable components used by 2+ files in the page
+│   ├── <Card>.tsx
+│   └── <Row>.tsx
+└── hooks/                 # custom hooks scoped to this page
+    └── use<Thing>.ts
+```
+
+**Canonical example: `src/pages/notifications/`** —
+
+```
+notifications/
+├── index.tsx                 # Tabs container
+├── UserEvents.tsx            # tab body
+├── Integrations.tsx          # tab body
+├── Settings.tsx              # tab body
+├── IntegrationDetail.tsx     # nested route page
+├── types.ts                  # NotificationItem, NotificationsResponse, …
+├── components/
+│   ├── IntegrationCard.tsx
+│   ├── NotificationGroup.tsx
+│   └── NotificationRow.tsx
+└── hooks/
+    └── useNotifications.ts
+```
+
+**Rules for the structure:**
+
+1. **Top-level files = page entry, top-level subpages, types.** Anything that the page's own `index.tsx` (or its tab bodies / route children) imports directly. One file per top-level concern. Don't dump every component here.
+2. **`components/` = presentational pieces reused by 2+ siblings**, or that are clearly "primitives" of the page (cards, rows, list items, modals scoped to this page). Anything one-off used only by a single sibling can stay co-located with that sibling — but if it's worth giving its own file, it almost always belongs in `components/`.
+3. **`hooks/` = page-local custom hooks.** If `index.tsx` and one tab body share fetch + mutation logic, extract a `use<Thing>.ts` into `hooks/`. Don't leave hooks at the page root.
+4. **Promote to `src/components/` or `src/hooks/`** only when a *second* page imports it — see the "Where does this component / hook belong?" decision table above. A component looking generic isn't enough; the trigger is real cross-page reuse.
+5. **Imports cross the boundary as `'./components/<Name>'` / `'./hooks/<Name>'`** — never reach laterally between two pages' subdirs.
+
+The dashboard page (`src/pages/dashboard/`) currently keeps section components flat at the page root. That's a legacy layout — when you next touch it, fold reusable bits into `components/`. New pages always start with the structure above.
 
 ## The `.js` → `.tsx` shadow trap
 
@@ -554,9 +652,11 @@ When a change touches admin routing or menus, the user clicks through every subm
 - **Icons from `@wordpress/icons`, dashicons, inline SVG, or emoji** — use `lucide-react`. Rule #6.
 - **Numeric `size={20}` prop on a lucide icon** — use `className="size-5"` instead so it matches the rest of the app.
 - **`+` string concatenation (`'foo' + bar + '!'`)** — use a template literal `` `foo${bar}!` ``. Rule #7.
+- **Braceless `if (...) return;` / `if (...) doThing();`** — wrap every control-flow body in `{ ... }`. Rule #8.
 - **`ChartConfig` import error** — type locally; not re-exported by plugin-ui's index.
 - **`asChild` / `delayDuration` errors on Tooltip** — plugin-ui is base-ui; use `render={...}` and `delay`.
 - **Missing `@wordpress/api-fetch` types** — extend `src/types/assets.d.ts`.
 - **`Foo.js` shadowing new `Foo.tsx`** — delete the `.js`.
 - **Effect callback returning a promise** — wrap in inner async function with `cancelled` flag.
 - **Forgetting to update `Admin\Menu`** when adding a route — the page works but the WP submenu link is missing.
+- **Reusable components or hooks left at the page root** — fold them into `src/pages/<page>/components/` and `src/pages/<page>/hooks/`. See "Page directory structure". `notifications/` is the canonical example.

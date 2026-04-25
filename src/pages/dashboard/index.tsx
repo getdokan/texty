@@ -1,71 +1,17 @@
-import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState } from 'react';
 
 import GatewayStatus from '@/components/GatewayStatus';
 
-import DashboardSkeleton from './DashboardSkeleton';
-import QuickSendCard from './QuickSendCard';
-import StatCards from './StatCards';
-import type { DashboardMetrics, DashboardPeriod } from './types';
-import VolumeAnalytics from './VolumeAnalytics';
-import WelcomeBanner from './WelcomeBanner';
-
-const DEFAULT_METRICS: DashboardMetrics = {
-  period: 'this_month',
-  gateway_status: false,
-  gateway_name: '',
-  sms_sent: 0,
-  delivered: 0,
-  failed: 0,
-  delivery_rate: 0,
-  volume_chart: [],
-};
+import DashboardSkeleton from './components/DashboardSkeleton';
+import QuickSendCard from './components/QuickSendCard';
+import StatCards from './components/StatCards';
+import VolumeAnalytics from './components/VolumeAnalytics';
+import WelcomeBanner from './components/WelcomeBanner';
+import { useDashboardMetrics } from './hooks/useDashboardMetrics';
 
 const Dashboard = () => {
-  const [period, setPeriod] = useState<DashboardPeriod>('this_month');
-  const [metrics, setMetrics] = useState<DashboardMetrics>(DEFAULT_METRICS);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [refreshTick, setRefreshTick] = useState<number>(0);
-  const [hasLoaded, setHasLoaded] = useState<boolean>(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchMetrics = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await apiFetch<DashboardMetrics>({
-          path: `/texty/v1/metrics?period=${period}`,
-          method: 'GET',
-        });
-        if (cancelled) return;
-        setMetrics(data);
-      } catch (err) {
-        if (cancelled) return;
-        console.error('Failed to fetch metrics', err);
-        setError(__('Failed to load dashboard data.', 'texty'));
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-          setHasLoaded(true);
-        }
-      }
-    };
-
-    fetchMetrics();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [period, refreshTick]);
-
-  const handleSmsSent = (): void => {
-    setRefreshTick((tick: number) => tick + 1);
-  };
+  const { period, setPeriod, metrics, loading, hasLoaded, error, refresh } =
+    useDashboardMetrics();
 
   if (!hasLoaded) {
     return <DashboardSkeleton />;
@@ -112,7 +58,7 @@ const Dashboard = () => {
         loading={loading}
       />
 
-      <QuickSendCard onSent={handleSmsSent} />
+      <QuickSendCard onSent={refresh} />
     </div>
   );
 };
