@@ -4,6 +4,8 @@ import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 import AppLayout from './components/AppLayout';
 import Layout from './layout';
+import ErrorBoundary from './pages/error/ErrorBoundary';
+import NotFound from './pages/error/NotFound';
 import getRoutes, { withRouter } from './routing';
 
 const App = () => {
@@ -13,6 +15,7 @@ const App = () => {
     {
       path: '/',
       element: <AppLayout />,
+      errorElement: <ErrorBoundary />,
       children: [
         { index: true, element: <Navigate to="/dashboard" replace /> },
         ...routes.map((route) => {
@@ -22,6 +25,7 @@ const App = () => {
 
           return {
             path: route.path,
+            errorElement: <ErrorBoundary />,
             element: (
               <Layout
                 route={route}
@@ -36,6 +40,10 @@ const App = () => {
             ),
           };
         }),
+        {
+          path: '*',
+          element: <NotFound />,
+        },
       ],
     },
   ];

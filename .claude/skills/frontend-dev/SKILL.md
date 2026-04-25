@@ -412,6 +412,21 @@ Routes flow through `applyFilters('texty_routes', routes)` in `src/routing/index
 
 **Reference page:** `src/pages/testing/index.tsx` exercises every Layout customization point (route props, slot/fill, filters). It's WP_DEBUG-gated in the submenu so it doesn't ship to end users. Copy from it when scaffolding a new page.
 
+### Error pages
+
+`src/pages/error/` contains two boundary pages used by react-router-dom:
+
+| File | When it renders | Wired in |
+|---|---|---|
+| `NotFound.tsx` | User navigates to a hash that doesn't match any route. | `path: '*'` catch-all child route in `App.tsx`. |
+| `ErrorBoundary.tsx` | A component throws during render in any routed page. Uses `useRouteError()` to read the thrown value. | `errorElement: <ErrorBoundary />` on every route entry in `App.tsx` (parent + each child). |
+
+Both render directly inside `AppLayout` (so the WP TopBar shell stays intact) but **bypass the per-page `Layout` wrapper** — the page Layout depends on a real `route` and would be redundant on top of an error/404 card. If you need to hide the WP-admin-bar shell too, swap `errorElement` to a higher route boundary.
+
+The error boundary shows the error message inline plus the JS stack (if available) in a `<pre>` block — the React app is gated behind `manage_options`, so anyone reaching this screen already has the privilege to read the stack. It also `console.error`s the raw error so it shows up in browser devtools alongside the rendered card.
+
+Use `errorElement` on individual child routes (not just the parent) so a render crash on `/foo` only blanks that route's content area, not the whole app shell.
+
 ## Layout — `src/layout/`
 
 Every routed page is wrapped in `Layout` by `App.tsx` so each page gets a consistent header / content / footer scaffold. The layout reads from the `TextyRoute` and forwards override props.
