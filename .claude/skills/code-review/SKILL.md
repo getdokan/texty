@@ -88,6 +88,7 @@ Plus the framework-specific traps:
 - **`TooltipProvider delayDuration={...}`** — wrong prop and wrong nesting; `Tooltip` self-wraps, and the prop is `delay`.
 - **`react-toastify` import** — removed from this project; use `import { toast } from '@wedevs/plugin-ui'`.
 - **Direct recharts use without `ChartContainer`** — wraps it so theme tokens (`var(--color-<key>)`) flow.
+- **JS hook name not snake_case + `texty_` prefix** — `applyFilters('texty.routes', ...)` / `applyFilters('textyRoutes', ...)` / `applyFilters('routes', ...)` are all wrong. Must be `texty_routes`. Same convention as PHP hooks; see `frontend-dev: Hook names`. ERROR.
 - **`useEffect(async () => ...)`** — effect callbacks must not be async. Use inner async function plus `cancelled` flag.
 - **`Foo.js` left in place after creating `Foo.tsx`** — webpack resolves `.js` first, so the new file is shadowed.
 - **Missing route ↔ submenu sync** — adding `routes.tsx` entry without updating `Admin\Menu::register_menu` (or vice versa). Submenu `id` must equal route path without leading slash.

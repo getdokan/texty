@@ -1,10 +1,12 @@
 import { Toaster } from '@wedevs/plugin-ui';
+import type { ComponentType } from 'react';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 import AppLayout from './components/AppLayout';
+import Layout from './layout';
 import getRoutes, { withRouter } from './routing';
 
-function App() {
+const App = () => {
   const routes = getRoutes();
 
   const mappedRoutes = [
@@ -16,11 +18,21 @@ function App() {
         ...routes.map((route) => {
           const WithRouterComponent = withRouter(
             route.element
-          ) as React.ComponentType;
+          ) as ComponentType;
 
           return {
             path: route.path,
-            element: <WithRouterComponent />,
+            element: (
+              <Layout
+                route={route}
+                title={route.title}
+                backUrl={route.backUrl}
+                header={route.header}
+                footer={route.footer}
+              >
+                <WithRouterComponent />
+              </Layout>
+            ),
           };
         }),
       ],
@@ -35,6 +47,6 @@ function App() {
       <RouterProvider router={router} />
     </>
   );
-}
+};
 
 export default App;

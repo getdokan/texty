@@ -1,35 +1,34 @@
-import { isValidElement, cloneElement, createElement } from 'react';
 import { applyFilters } from '@wordpress/hooks';
+import type { ComponentType, ReactElement, ReactNode } from 'react';
+import { cloneElement, createElement, isValidElement } from 'react';
 import {
-  useNavigate,
-  useParams,
-  useLocation,
-  useSearchParams,
-  useMatches,
-  useNavigation,
   createSearchParams,
   redirect,
   replace,
-  type NavigateFunction,
+  useLocation,
+  useMatches,
+  useNavigate,
+  useNavigation,
+  useParams,
+  useSearchParams,
   type Location,
+  type NavigateFunction,
+  type Navigation,
   type Params,
   type RedirectFunction,
   type UIMatch,
-  type Navigation,
 } from 'react-router-dom';
-import type { ComponentType, ReactNode, ReactElement } from 'react';
 import routes from './routes';
 
 export type TextyRoute = {
-  id?: string;
+  id: string;
   title?: string;
   icon?: ReactNode;
   path: string;
   element: ReactElement | ComponentType<any>;
   header?: ReactNode;
   footer?: ReactNode;
-  capabilities?: string[];
-  parent?: string;
+  backUrl?: string;
 };
 
 export interface RouterProps {
@@ -86,11 +85,11 @@ export function withRouter(Component: ReactElement | ComponentType<any>) {
 }
 
 /**
- * Resolve the final route list after running the `texty.routes` filter.
+ * Resolve the final route list after running the `texty_routes` filter.
  * Extensions can add or remove routes via `addFilter`.
  */
 const getRoutes = (): TextyRoute[] => {
-  return applyFilters('texty.routes', routes) as TextyRoute[];
+  return applyFilters('texty_routes', routes) as TextyRoute[];
 };
 
 export default getRoutes;

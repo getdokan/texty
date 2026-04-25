@@ -414,6 +414,34 @@ Routes flow through `applyFilters('texty.routes', routes)` in `src/routing/index
 
 Tailwind utilities are scoped to `#texty-app, .pui-root` (see `src/base-tailwind.css`) so they don't bleed into the WP admin chrome. If a utility "isn't applying," check the rendered tree — it may be portaled outside that selector. plugin-ui's portal-rendered components (Tooltip, DropdownMenu, Select content, Modal) already inject `pui-root` on their portals, so this is usually only a concern for ad-hoc portals you build yourself.
 
+## Hook names — `snake_case`, prefixed `texty_`
+
+Every `@wordpress/hooks` call (`applyFilters`, `addFilter`, `doAction`, `addAction`) uses **snake_case** with the `texty_` prefix. Same convention as the PHP side — never dot-notation, kebab-case, or camelCase. This keeps JS and PHP hooks searchable as a single namespace and makes it obvious where a hook is consumed.
+
+```ts
+// ✅
+import { applyFilters, addFilter } from '@wordpress/hooks';
+
+const routes = applyFilters('texty_routes', baseRoutes);
+const title  = applyFilters(`texty_${slug}_header_title`, raw, route);
+
+addFilter('texty_dashboard_metrics', 'my-extension/scale', (data) => ({
+  ...data,
+  sms_sent: data.sms_sent * 2,
+}));
+
+// ❌
+applyFilters('texty.routes', baseRoutes);                      // dot-notation
+applyFilters('textyRoutes', baseRoutes);                       // camelCase
+applyFilters('texty-routes', baseRoutes);                      // kebab-case
+applyFilters('routes', baseRoutes);                            // missing prefix
+applyFilters(`texty.${route.id}.header.title`, ...);           // dot-notation w/ interpolation
+```
+
+When interpolating a route ID into a hook name, use `route.id` raw — don't slugify or transform it. The route's own ID is the authoritative key; consumers (`addFilter` callers) match against the literal string. So `texty_${route.id}_header_title` for `route.id = 'texty-dashboard'` produces `texty_texty-dashboard_header_title` — the dash in the middle is intentional and shouldn't be normalized.
+
+The single existing exception was `texty.routes` (predates this rule); it has been migrated to `texty_routes`. Do not introduce new dot-notation hooks.
+
 ## i18n
 
 Every user-facing string goes through `__('text', 'texty')` from `@wordpress/i18n`. After string changes:

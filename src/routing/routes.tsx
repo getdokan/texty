@@ -26,7 +26,7 @@ const routes: TextyRoute[] = [
   },
   {
     id: 'texty-settings',
-    title: __('Settings', 'texty'),
+    title: __('Gateway Settings', 'texty'),
     path: '/settings',
     element: <SettingsPage />,
   },

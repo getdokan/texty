@@ -3,12 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { Check, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-type Props = {
-  gatewayConnected: boolean;
-  gatewayName?: string;
-};
-
-const features = [
+const features: string[] = [
   __('SMS Notifications for events.', 'texty'),
   __('Supports WordPress, WooCommerce, Dokan.', 'texty'),
   __('User Consent for data collection.', 'texty'),
@@ -16,11 +11,8 @@ const features = [
   __('Assuring users vendor, affiliates and subscribers.', 'texty'),
 ];
 
-const WelcomeBanner = ({ gatewayConnected, gatewayName }: Props) => {
+const WelcomeBanner = () => {
   const navigate = useNavigate();
-  const ctaLabel: string = gatewayConnected
-    ? __('Manage Gateway', 'texty')
-    : __('Connect Gateway', 'texty');
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
@@ -36,7 +28,7 @@ const WelcomeBanner = ({ gatewayConnected, gatewayName }: Props) => {
             )}
           </p>
           <ul className="m-0 grid list-none gap-2 p-0">
-            {features.map((label) => (
+            {features.map((label: string) => (
               <li
                 key={label}
                 className="flex items-start gap-2 text-sm text-gray-700"
@@ -54,26 +46,17 @@ const WelcomeBanner = ({ gatewayConnected, gatewayName }: Props) => {
             {__('Offering', 'texty')}
           </span>
           <h3 className="mt-2 text-lg font-semibold leading-snug text-gray-900">
-            {gatewayConnected
-              ? __('Gateway connected.', 'texty')
-              : __('5+ SMS Gateway Integrations.', 'texty')}
+            {__('30+ SMS Gateway Integrations.', 'texty')}
           </h3>
           <p className="mt-1 mb-4 text-sm text-gray-600">
-            {gatewayConnected
-              ? __(
-                  `Currently sending via ${
-                    gatewayName ?? ''
-                  }. Update credentials any time.`,
-                  'texty'
-                )
-              : __('Please connect your preferred one.', 'texty')}
+            {__('Please connect your preferred one.', 'texty')}
           </p>
           <Button
             onClick={() => navigate('/settings')}
             className="self-start gap-2 bg-gray-900 text-white hover:bg-gray-800"
           >
             <Settings className="size-4" />
-            {ctaLabel}
+            {__('Connect Gateway', 'texty')}
           </Button>
         </div>
       </div>

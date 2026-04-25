@@ -5,7 +5,7 @@ function AppLayout() {
   return (
     <>
       <Header />
-      <div className="wrap texty">
+      <div className="wrap texty mt-8">
         <div className="texty-container">
           <Outlet />
         </div>

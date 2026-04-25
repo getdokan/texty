@@ -2,6 +2,8 @@ import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import { useEffect, useState } from 'react';
 
+import DashboardSkeleton from './DashboardSkeleton';
+import GatewayStatus from './GatewayStatus';
 import QuickSendCard from './QuickSendCard';
 import StatCards from './StatCards';
 import type { DashboardMetrics, DashboardPeriod } from './types';
@@ -25,6 +27,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshTick, setRefreshTick] = useState<number>(0);
+  const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -45,7 +48,10 @@ const Dashboard = () => {
         console.error('Failed to fetch metrics', err);
         setError(__('Failed to load dashboard data.', 'texty'));
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setHasLoaded(true);
+        }
       }
     };
 
@@ -60,12 +66,17 @@ const Dashboard = () => {
     setRefreshTick((tick: number) => tick + 1);
   };
 
+  if (!hasLoaded) {
+    return <DashboardSkeleton />;
+  }
+
   return (
-    <div className="space-y-6 py-8">
-      <WelcomeBanner
-        gatewayConnected={metrics.gateway_status}
-        gatewayName={metrics.gateway_name}
-      />
+    <div className="space-y-6">
+      {metrics.gateway_status && metrics.gateway_name ? (
+        <GatewayStatus gatewayName={metrics.gateway_name} />
+      ) : (
+        <WelcomeBanner />
+      )}
 
       {error && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
