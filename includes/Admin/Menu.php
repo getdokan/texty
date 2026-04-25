@@ -47,19 +47,19 @@ class Menu {
             'texty_admin_menu',
             [
                 [
-					'id' => 'dashboard',
+					'path' => 'dashboard',
 					'title' => __( 'Dashboard', 'texty' ),
 				],
                 [
-                    'id' => 'settings',
+                    'path' => 'settings',
                     'title' => __( 'Gateway', 'texty' ),
                 ],
                 [
-					'id' => 'notifications',
+					'path' => 'notifications',
 					'title' => __( 'Notifications', 'texty' ),
 				],
                 [
-					'id' => 'tools',
+					'path' => 'tools',
 					'title' => __( 'Tools', 'texty' ),
 				],
             ],
@@ -71,7 +71,7 @@ class Menu {
             $submenu[ $slug ][] = [ // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
                 $item['title'],
                 $capability,
-                'admin.php?page=' . $slug . '#/' . $item['id'],
+                'admin.php?page=' . $slug . '#/' . $item['path'],
             ];
         }
 
