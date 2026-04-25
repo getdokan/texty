@@ -26,13 +26,6 @@ The Texty admin UI is a React 18 + TypeScript SPA bundled by `wp-scripts` (webpa
 
 ## Before you start
 
-Run these to confirm the workspace is healthy:
-
-```bash
-npm run typecheck   # tsc --noEmit, strict mode
-npm run build       # full production build (validates webpack + asset emit)
-```
-
 `npm run start` runs the watch-mode dev build. There is no separate test suite for the frontend.
 
 **Use npm.** `npm install` is the install command; `package-lock.json` is the lockfile.
@@ -546,13 +539,9 @@ npm run makepot     # regenerate languages/texty.pot
 npm run pot2json    # convert POT → JSON for JS consumers
 ```
 
-## Build verification checklist
+## Manual verification
 
-After non-trivial frontend changes:
-
-1. `npm run typecheck` — must pass with zero errors. Webpack will still build with type errors, so this is the real gate.
-2. `npm run build` — should report only the standard "asset size limit" warnings (preexisting). Any new error from a missing import or runtime evaluation is a regression.
-3. If the change touches admin routing or menus, click through every submenu in the WP admin to confirm `menuFix` keeps the highlight in sync with the hash.
+When a change touches admin routing or menus, the user clicks through every submenu in the WP admin to confirm `menuFix` keeps the highlight in sync with the hash — that's their manual step.
 
 ## Common pitfalls
 

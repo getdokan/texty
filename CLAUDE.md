@@ -14,13 +14,16 @@ Texty is a WordPress SMS notification plugin: PHP plugin under `Texty\` (`includ
 >
 > Invoke before the first tool call so the rules are in your head as you write/review the first line, not the third.
 
+> **After edits, do not auto-run verification commands** (`npm run typecheck`, `npm run build`, `composer phpcs`, `php -l`, etc.). Stop after the Edit/Write. Two contexts where they DO run automatically: (1) inside `code-review` / PR review intent — those skills' "Pre-merge gates" require running them as part of the verdict; (2) when the user explicitly asks ("check types", "build it", "run phpcs"). Outside those two, end the turn after the edit.
+
 ## Common commands
 
 ```bash
 # Frontend (wp-scripts / webpack, output to dist/)
+# All commands below are USER-TRIGGERED — never auto-run after an edit.
 npm run start            # dev build with watch
-npm run build            # production build
 npm run typecheck        # tsc --noEmit (strict mode, src/** only)
+npm run build            # production build
 npm run makepot          # regenerate languages/texty.pot
 npm run pot2json         # POT → JSON for JS i18n
 
