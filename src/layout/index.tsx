@@ -12,6 +12,7 @@ type Props = {
   route: TextyRoute;
   title?: string;
   backUrl?: string;
+  backButtonLabel?: string;
   header?: ReactNode;
   footer?: ReactNode;
 };
@@ -21,6 +22,7 @@ const Layout = ({
   route,
   title,
   backUrl,
+  backButtonLabel,
   header,
   footer,
 }: Props) => {
@@ -38,7 +40,12 @@ const Layout = ({
     header !== undefined ? (
       header
     ) : (
-      <LayoutHeader route={route} title={title} backUrl={backUrl} />
+      <LayoutHeader
+        route={route}
+        title={title}
+        backUrl={backUrl}
+        backButtonLabel={backButtonLabel}
+      />
     );
 
   const footerNode: ReactNode =

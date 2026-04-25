@@ -4,12 +4,13 @@ import { __ } from '@wordpress/i18n';
 import { ChevronLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import getRoutes, { type TextyRoute } from '../routing';
+import type { TextyRoute } from '../routing';
 
 type Props = {
   route: TextyRoute;
   title?: string;
   backUrl?: string;
+  backButtonLabel?: string;
 };
 
 const parseBackUrl = (
@@ -21,15 +22,7 @@ const parseBackUrl = (
     (_match: string, key: string) => params[key] ?? ''
   );
 
-const resolveBackLabel = (backUrl: string): string => {
-  const path: string = backUrl.split(/[?#]/)[0];
-  const destination: TextyRoute | undefined = getRoutes().find(
-    (r: TextyRoute) => r.path === path
-  );
-  return destination?.title ?? __('Back', 'texty');
-};
-
-const LayoutHeader = ({ route, title, backUrl }: Props) => {
+const LayoutHeader = ({ route, title, backUrl, backButtonLabel }: Props) => {
   const navigate = useNavigate();
   const params = useParams();
 
@@ -51,33 +44,29 @@ const LayoutHeader = ({ route, title, backUrl }: Props) => {
     return null;
   }
 
-  const backLabel: string = filteredBackUrl
-    ? resolveBackLabel(filteredBackUrl)
-    : '';
+  const backLabel: string =
+    backButtonLabel ?? route.backButtonLabel ?? __('Back', 'texty');
 
   return (
-    <div className="texty-page-header flex justify-between gap-4">
-      <div className="flex gap-4 items-center">
+    <div className="texty-page-header flex items-center justify-between gap-4">
+      <div className="flex items-center gap-4">
         {filteredBackUrl && (
           <button
             type="button"
             onClick={() => navigate(parseBackUrl(filteredBackUrl, params))}
-            className="inline-flex cursor-pointer items-center gap-1 self-start text-sm text-gray-600 hover:text-gray-900"
+            className="inline-flex cursor-pointer items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
           >
             <ChevronLeft className="size-4" />
             {backLabel}
           </button>
         )}
         {filteredTitle && (
-          <h1 className="m-0 text-2xl font-bold text-gray-900">
+          <div className="text-2xl font-bold text-gray-900">
             {filteredTitle}
-          </h1>
+          </div>
         )}
       </div>
-      <Slot
-        name={`texty_${route.id}_header_actions`}
-        fillProps={{ route }}
-      />
+      <Slot name={`texty_${route.id}_header_actions`} fillProps={{ route }} />
     </div>
   );
 };

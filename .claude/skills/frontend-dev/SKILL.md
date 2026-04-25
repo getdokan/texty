@@ -404,11 +404,91 @@ to: phone.startsWith('+') ? phone : `+${phone}`,
 
 Adding a new admin page takes **three** coordinated edits:
 
-1. **Page**: `src/pages/<Name>/index.tsx`.
-2. **Route**: append a `TextyRoute` to `src/routing/routes.tsx`. `path` is the hash fragment (`/foo`); `id` and `title` drive the admin submenu.
+1. **Page**: `src/pages/<page-name>/index.tsx` (lowercase, kebab-case).
+2. **Route**: append a `TextyRoute` to `src/routing/routes.tsx`. Required fields: `id` (must be unique), `path` (hash fragment, `/foo`), `element`. Optional: `title`, `backUrl`, `header`, `footer`, `icon`.
 3. **WP submenu**: append `{ id: 'foo', title: __('Foo', 'texty') }` to the `$submenus` array in `includes/Admin/Menu.php::register_menu`. The link is built as `admin.php?page=texty#/<id>` — **the submenu `id` must equal the route path without the leading slash**, or `menuFix('texty')` (called from `src/index.tsx`) won't sync the active highlight.
 
-Routes flow through `applyFilters('texty.routes', routes)` in `src/routing/index.tsx`, so extensions can add/remove routes via `@wordpress/hooks`.
+Routes flow through `applyFilters('texty_routes', routes)` in `src/routing/index.tsx`, so extensions can add/remove routes via `@wordpress/hooks`.
+
+**Reference page:** `src/pages/testing/index.tsx` exercises every Layout customization point (route props, slot/fill, filters). It's WP_DEBUG-gated in the submenu so it doesn't ship to end users. Copy from it when scaffolding a new page.
+
+## Layout — `src/layout/`
+
+Every routed page is wrapped in `Layout` by `App.tsx` so each page gets a consistent header / content / footer scaffold. The layout reads from the `TextyRoute` and forwards override props.
+
+### Default chrome
+
+`Layout` renders three regions:
+
+```
+<SlotFillProvider>
+  <LayoutHeader />     ← title h1 + back link + actions slot
+  <main>{children}</main>
+  <LayoutFooter />     ← empty by default, fillable via filter
+</SlotFillProvider>
+```
+
+The header renders `null` if there's no `title` and no `backUrl` — bare pages have no chrome.
+
+### Override props (per-route or per-render)
+
+| Layout prop | Source | Effect |
+|---|---|---|
+| `title` | `route.title` (default) | Page heading — `text-2xl font-bold text-gray-900` |
+| `backUrl` | `route.backUrl` (default) | URL the back link navigates to. Supports `:param` placeholders that get resolved from `useParams()` on click. |
+| `backButtonLabel` | `route.backButtonLabel` (default) | Text shown next to the chevron in the back link. Defaults to `__('Back', 'texty')` when omitted — set explicitly to name the destination ("Dashboard", "Orders", etc.). |
+| `header` | `route.header` | Replace the entire default header. Pass `<></>` to hide. |
+| `footer` | `route.footer` | Replace the default footer. Default is empty. |
+
+The Header component supports `:param` placeholders in `backUrl` — they're substituted from `useParams()` on click, so a path like `/order/:id/edit` with `backUrl: '/order/:id'` navigates back to the same order.
+
+### Slot/Fill — UI extension
+
+The header has one slot for action buttons:
+
+```tsx
+<Slot name={`texty_${route.id}_header_actions`} fillProps={{ route }} />
+```
+
+**Render UI from a Fill** when extending — fills can use hooks, manage state, and unmount cleanly:
+
+```tsx
+import { Fill } from '@wordpress/components';
+
+<Fill name="texty_dashboard_header_actions">
+  {(fillProps: unknown) => {
+    const { route } = fillProps as { route: TextyRoute };
+    return (
+      <Button onClick={() => doThing(route)}>
+        {__('Custom Action', 'texty')}
+      </Button>
+    );
+  }}
+</Fill>
+```
+
+Cast `fillProps` inside the render callback — `@wordpress/components` types `Fill`'s children as `(fillProps: unknown) => ReactNode` and doesn't propagate the slot's prop types automatically.
+
+### Filter hooks (value transforms, not UI)
+
+Use filters when you only need to **transform a value** without replacing UI:
+
+| Hook | Args | Purpose |
+|---|---|---|
+| `texty_routes` | `(routes)` | Add or remove route entries |
+| `texty_<route.id>_header_title` | `(title, route)` | Override page title for one route |
+| `texty_<route.id>_header_back_url` | `(backUrl, route)` | Override back URL for one route |
+| `texty_layout_before_render` | `(pathname, route)` | Side-effect on every render |
+| `texty_layout_footer` | `(null)` | Inject content into the global footer slot |
+
+When interpolating route IDs, use `route.id` raw — don't slugify. So `texty_${route.id}_header_title` becomes `texty_texty-dashboard_header_title` for the dashboard route. Consumers match the literal string.
+
+### Slot vs Filter — which one to use?
+
+- **UI extension** (buttons, banners, custom widgets) → `Slot/Fill`. Fills can render anything React.
+- **Value transform** (string title, URL, boolean) → `applyFilters`. Filters compose; multiple subscribers each transform the previous value's output.
+
+Don't use filters to render UI (the `as JSX.Element` cast is a code smell). Don't use slots to transform values.
 
 ## Tailwind scoping
 

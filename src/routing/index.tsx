@@ -29,6 +29,7 @@ export type TextyRoute = {
   header?: ReactNode;
   footer?: ReactNode;
   backUrl?: string;
+  backButtonLabel?: string;
 };
 
 export interface RouterProps {

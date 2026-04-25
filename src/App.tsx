@@ -27,6 +27,7 @@ const App = () => {
                 route={route}
                 title={route.title}
                 backUrl={route.backUrl}
+                backButtonLabel={route.backButtonLabel}
                 header={route.header}
                 footer={route.footer}
               >
