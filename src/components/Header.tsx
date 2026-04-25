@@ -1,13 +1,14 @@
-import { __ } from '@wordpress/i18n';
-import { CircleHelp, BookOpen, Headphones, Lightbulb } from 'lucide-react';
 import {
-  TopBar,
   Button,
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
+  TopBar,
+  cn,
 } from '@wedevs/plugin-ui';
+import { __ } from '@wordpress/i18n';
+import { BookOpen, CircleHelp, Headphones, Lightbulb } from 'lucide-react';
 
 const Logo = () => (
   <svg
@@ -68,7 +69,7 @@ function Header() {
 
   const helpItems: HelpItem[] = [
     {
-      icon: <BookOpen className="size-5" />,
+      icon: <BookOpen className="size-5 text-gray-700!" />,
       title: __('Documentation', 'texty'),
       description: __(
         'Learn how to set up gateways and create notification workflows.',
@@ -77,7 +78,7 @@ function Header() {
       href: docsUrl,
     },
     {
-      icon: <Headphones className="size-5" />,
+      icon: <Headphones className="size-5 text-gray-700!" />,
       title: __('Get Support', 'texty'),
       description: __(
         'Need help with Twilio, Vonage, or message delivery? We have got you.',
@@ -86,7 +87,7 @@ function Header() {
       href: supportUrl,
     },
     {
-      icon: <Lightbulb className="size-5" />,
+      icon: <Lightbulb className="size-5 text-gray-700!" />,
       title: __('Feature Request', 'texty'),
       description: __(
         'Want new notification triggers or gateway integrations? Tell us.',
@@ -120,26 +121,35 @@ function Header() {
             <DropdownMenuContent
               align="end"
               sideOffset={8}
-              className="w-80 p-0"
+              className="w-80 overflow-hidden p-0"
             >
-              {helpItems.map((item) => (
+              {helpItems.map((item, index) => (
                 <DropdownMenuItem
                   key={item.title}
-                  className="items-start gap-3 rounded-none px-4 py-3 focus:bg-gray-100! focus:**:text-inherit!"
+                  className={cn(
+                    'items-start gap-3 rounded-none px-4 py-4 cursor-pointer outline-none ring-0',
+                    'hover:bg-gray-50! focus:bg-gray-50! data-highlighted:bg-gray-50!',
+                    'focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0',
+                    'not-data-[variant=destructive]:focus:**:text-inherit!',
+                    index !== helpItems.length - 1 && 'border-b border-gray-100'
+                  )}
                   render={
                     <a
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="text-inherit! no-underline! hover:text-inherit! focus:text-inherit!"
                     />
                   }
                 >
-                  <span className="mt-0.5 text-gray-700">{item.icon}</span>
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700!">
+                    {item.icon}
+                  </span>
                   <span className="flex flex-col gap-1">
-                    <span className="text-sm font-semibold text-gray-900">
+                    <span className="text-sm font-semibold text-gray-900!">
                       {item.title}
                     </span>
-                    <span className="text-xs leading-relaxed text-gray-500">
+                    <span className="text-xs leading-relaxed text-gray-500!">
                       {item.description}
                     </span>
                   </span>

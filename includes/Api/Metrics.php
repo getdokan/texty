@@ -2,9 +2,14 @@
 
 namespace Texty\Api;
 
+use DateTimeImmutable;
+use Exception;
 use Texty\Models\SmsStat;
 use Texty\Models\SmsStatStore;
 use WeDevs\WPKit\DataLayer\DataLayerFactory;
+use WP_Error;
+use WP_REST_Request;
+use WP_REST_Response;
 use WP_REST_Server;
 
 class Metrics extends Base {
@@ -33,7 +38,14 @@ class Metrics extends Base {
                     'methods'             => WP_REST_Server::READABLE,
                     'callback'            => [ $this, 'get_metrics' ],
                     'permission_callback' => [ $this, 'admin_permissions_check' ],
-                    'args'                => [],
+                    'args'                => [
+                        'period' => [
+                            'description' => __( 'The time range for metrics.', 'texty' ),
+                            'type'        => 'string',
+                            'enum'        => [ 'this_month', 'last_month', 'last_7_days', 'last_30_days', 'this_year' ],
+                            'default'     => 'this_month',
+                        ],
+                    ],
                 ],
             ]
         );
@@ -42,154 +54,191 @@ class Metrics extends Base {
     /**
      * Get metrics data
      *
-     * @param WP_Rest_Request $request
+     * @param WP_REST_Request $request
      *
-     * @return WP_Rest_Response|WP_Error
+     * @return WP_REST_Response|WP_Error
      */
     public function get_metrics( $request ) {
         try {
             $store = DataLayerFactory::make_store( SmsStat::class );
 
             if ( null === $store ) {
-                return new \WP_Error( 'store_error', 'SMS data store not available', [ 'status' => 503 ] );
+                return new WP_Error( 'store_error', __( 'SMS data store not available.', 'texty' ), [ 'status' => 503 ] );
             }
 
-            $gateway_name   = texty()->settings()->gateway();
-            $gateway_status = $gateway_name ? true : false;
+            $period = $request->get_param( 'period' );
+            $range  = $this->resolve_range( $period );
 
-            // Build volume chart data for last 12 months first.
-            // The last item in the chart is always the current month,
-            // so we reuse that count instead of running a separate query.
-            $volume_chart  = $this->get_volume_chart( $store );
-            $monthly_usage = ! empty( $volume_chart ) ? end( $volume_chart )['count'] : 0;
+            $items = $this->fetch_items( $range['start'], $range['end'] );
 
-            // Calculate usage change vs previous month
-            $usage_change = 0;
-            // Calculate delivery rate for last 30 days
-            $delivery_rate = $this->get_delivery_rate( $store );
+            $sent      = 0;
+            $delivered = 0;
+            $failed    = 0;
+            foreach ( $items as $row ) {
+                ++$sent;
+                if ( isset( $row->status ) ) {
+                    if ( 'sent' === $row->status ) {
+                        ++$delivered;
+                    } elseif ( 'failed' === $row->status ) {
+                        ++$failed;
+                    }
+                }
+            }
+
+            $delivery_rate = $sent > 0 ? round( ( $delivered / $sent ) * 100, 1 ) : 0;
+            $volume_chart  = $this->build_volume_chart( $items, $range );
+
+            $gateway_name = texty()->settings()->gateway();
 
             $response = [
-                'gateway_status' => $gateway_status,
-                'gateway_name'   => $gateway_name,
-                'monthly_usage'  => $monthly_usage,
-                'usage_change'   => $usage_change,
+                'period'         => $period,
+                'gateway_status' => $gateway_name ? true : false,
+                'gateway_name'   => $gateway_name ? $gateway_name : '',
+                'sms_sent'       => $sent,
+                'delivered'      => $delivered,
+                'failed'         => $failed,
                 'delivery_rate'  => $delivery_rate,
                 'volume_chart'   => $volume_chart,
             ];
 
             return rest_ensure_response( $response );
-        } catch ( \Exception $e ) {
+        } catch ( Exception $e ) {
             error_log( 'Texty Metrics Error: ' . $e->getMessage() . ' | ' . $e->getFile() . ':' . $e->getLine() );
-            return new \WP_Error( 'metrics_error', __( 'Failed to load metrics data.', 'texty' ), [ 'status' => 500 ] );
+            return new WP_Error( 'metrics_error', __( 'Failed to load metrics data.', 'texty' ), [ 'status' => 500 ] );
         }
     }
 
     /**
-     * Calculate delivery rate for last 30 days
+     * Translate a period key into a date range and bucket granularity.
      *
-     * Uses DataLayer to fetch sent and failed SMS, then calculates rate.
+     * @param string $period
      *
-     * @param SmsStatStore $store Store instance
-     *
-     * @return float|null Delivery rate as percentage (e.g., 94.5) or null if no data
+     * @return array{start:DateTimeImmutable,end:DateTimeImmutable,granularity:string,label:string}
      */
-    private function get_delivery_rate( $store ) {
-        try {
-            $today           = new \DateTimeImmutable( 'now', wp_timezone() );
-            $thirty_days_ago = $today->modify( '-30 days' )->format( 'Y-m-d' );
-            $today_date      = $today->format( 'Y-m-d' );
+    private function resolve_range( $period ) {
+        $tz  = wp_timezone();
+        $now = new DateTimeImmutable( 'now', $tz );
 
-            // Query all SMS from last 30 days using SmsStat static method
-            $result = SmsStat::get_successful_sent_sms_between_dates( $thirty_days_ago, $today_date );
+        switch ( $period ) {
+            case 'last_month':
+                $start = $now->modify( 'first day of last month' )->setTime( 0, 0, 0 );
+                $end   = $now->modify( 'last day of last month' )->setTime( 23, 59, 59 );
+                $label = __( 'Last Month', 'texty' );
+                $gran  = 'day';
+                break;
 
-            if ( empty( $result['total'] ) || (int) $result['total'] === 0 ) {
-                return null;
-            }
+            case 'last_7_days':
+                $start = $now->modify( '-6 days' )->setTime( 0, 0, 0 );
+                $end   = $now->setTime( 23, 59, 59 );
+                $label = __( 'Last 7 Days', 'texty' );
+                $gran  = 'day';
+                break;
 
-            // Count 'sent' status from fetched records
-            $delivered = 0;
-            if ( ! empty( $result['items'] ) ) {
-                foreach ( $result['items'] as $row ) {
-                    if ( isset( $row->status ) && 'sent' === $row->status ) {
-                        ++$delivered;
-                    }
-                }
-            }
+            case 'last_30_days':
+                $start = $now->modify( '-29 days' )->setTime( 0, 0, 0 );
+                $end   = $now->setTime( 23, 59, 59 );
+                $label = __( 'Last 30 Days', 'texty' );
+                $gran  = 'day';
+                break;
 
-            $total = (int) $result['total'];
-            $rate  = ( $delivered / $total ) * 100;
+            case 'this_year':
+                $start = $now->modify( 'first day of January' )->setTime( 0, 0, 0 );
+                $end   = $now->setTime( 23, 59, 59 );
+                $label = __( 'This Year', 'texty' );
+                $gran  = 'month';
+                break;
 
-            return round( $rate, 1 );
-        } catch ( \Exception $e ) {
-            error_log( 'Texty: Error calculating delivery rate - ' . $e->getMessage() );
-            return null;
+            case 'this_month':
+            default:
+                $start = $now->modify( 'first day of this month' )->setTime( 0, 0, 0 );
+                $end   = $now->modify( 'last day of this month' )->setTime( 23, 59, 59 );
+                $label = __( 'This Month', 'texty' );
+                $gran  = 'day';
+                break;
         }
+
+        return [
+            'start'       => $start,
+            'end'         => $end,
+            'granularity' => $gran,
+            'label'       => $label,
+        ];
     }
 
     /**
-     * Get volume chart data for last 12 months (sent messages only)
+     * Fetch SMS records in the given range.
      *
-     * Uses DataLayer to fetch sent SMS for 12 months, groups by month in PHP.
-     * The last element of the returned array always represents the current month,
-     * and is reused by get_metrics() as monthly_usage — no extra query needed.
+     * @param DateTimeImmutable $start
+     * @param DateTimeImmutable $end
      *
-     * @param SmsStatStore $store Store instance
-     *
-     * @return array  e.g. [ ['month' => 'Apr', 'count' => 42], ... ]
+     * @return array
      */
-    private function get_volume_chart( $store ) {
-        try {
-            // Generate last 12 months list
-            $current    = new \DateTimeImmutable( 'first day of this month', wp_timezone() );
-            $months     = [];
-            $months_map = [];
+    private function fetch_items( $start, $end ) {
+        $result = SmsStat::get_sent_sms_between_dates(
+            $start->format( 'Y-m-d' ),
+            $end->format( 'Y-m-d' )
+        );
 
-            for ( $i = 11; $i >= 0; $i-- ) {
-                $month_key                = $current->modify( "-{$i} months" )->format( 'Y-m' );
-                $months[]                 = $month_key;
-                $months_map[ $month_key ] = 0;
-            }
-
-            // Get the oldest month date and today
-            $oldest_month = $months[0] . '-01';
-            $today        = new \DateTimeImmutable( 'now', wp_timezone() );
-            $today_date   = $today->format( 'Y-m-d' );
-
-            // Query using SmsStat static method: get all sent SMS for last 12 months
-            $result = SmsStat::get_sent_sms_between_dates( $oldest_month, $today_date );
-
-            // Group records by month
-            if ( ! empty( $result['items'] ) ) {
-                foreach ( $result['items'] as $row ) {
-                    if ( isset( $row->created_at ) ) {
-                        // Extract Y-m from created_at string (format: YYYY-MM-DD HH:MM:SS)
-                        $month_key = substr( $row->created_at, 0, 7 );
-
-                        if ( isset( $months_map[ $month_key ] ) ) {
-                            ++$months_map[ $month_key ];
-                        }
-                    }
-                }
-            }
-
-            // Build final chart data with short month names
-            $chart_data = [];
-            foreach ( $months_map as $month_key => $count ) {
-                try {
-                    $month_date   = new \DateTimeImmutable( $month_key . '-01', wp_timezone() );
-                    $chart_data[] = [
-                        'month' => $month_date->format( 'M' ),
-                        'count' => $count,
-                    ];
-                } catch ( \Exception $e ) {
-                    error_log( 'Texty: Invalid date format - ' . $month_key );
-                }
-            }
-
-            return $chart_data;
-        } catch ( \Exception $e ) {
-            error_log( 'Texty: Error getting volume chart - ' . $e->getMessage() );
+        if ( empty( $result['items'] ) || ! is_array( $result['items'] ) ) {
             return [];
         }
+
+        return $result['items'];
+    }
+
+    /**
+     * Build a series of buckets across the resolved range.
+     *
+     * Each bucket has:
+     *  - `key`    machine ID (Y-m-d for day, Y-m for month) — used by the chart's x-axis dataKey
+     *  - `label`  short label shown on the axis (Jan 1, Mar)
+     *  - `date`   long label shown in the tooltip (16 January 2025)
+     *  - `count`  number of SMS dispatched in that bucket
+     *
+     * @param array $items
+     * @param array $range
+     *
+     * @return array
+     */
+    private function build_volume_chart( $items, $range ) {
+        $tz       = wp_timezone();
+        $start    = $range['start'];
+        $end      = $range['end'];
+        $is_month = 'month' === $range['granularity'];
+
+        $buckets = [];
+        $cursor  = $start;
+        while ( $cursor <= $end ) {
+            $key = $is_month ? $cursor->format( 'Y-m' ) : $cursor->format( 'Y-m-d' );
+
+            $buckets[ $key ] = [
+                'key'   => $key,
+                'label' => $is_month ? $cursor->format( 'M' ) : $cursor->format( 'M j' ),
+                'date'  => $is_month ? $cursor->format( 'F Y' ) : $cursor->format( 'j F Y' ),
+                'count' => 0,
+            ];
+
+            $cursor = $cursor->modify( $is_month ? '+1 month' : '+1 day' );
+        }
+
+        foreach ( $items as $row ) {
+            if ( empty( $row->created_at ) ) {
+                continue;
+            }
+
+            try {
+                $created = new DateTimeImmutable( $row->created_at, $tz );
+            } catch ( Exception $e ) {
+                continue;
+            }
+
+            $key = $is_month ? $created->format( 'Y-m' ) : $created->format( 'Y-m-d' );
+
+            if ( isset( $buckets[ $key ] ) && isset( $row->status ) && 'sent' === $row->status ) {
+                ++$buckets[ $key ]['count'];
+            }
+        }
+
+        return array_values( $buckets );
     }
 }

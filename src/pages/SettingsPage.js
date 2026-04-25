@@ -1,17 +1,8 @@
-/**
- * Settings page using @wedevs/plugin-ui Settings component.
- *
- * Fetches schema from the BaseSettingsRESTController endpoint
- * (GET texty/v1/settings/schema). Field values are embedded in the schema
- * as `default` properties — no separate values prop is needed.
- * Saves via POST to the same endpoint.
- */
-import { useState, useEffect, useCallback } from 'react';
-import { __ } from '@wordpress/i18n';
+import { Button, Settings, toast } from '@wedevs/plugin-ui';
 import apiFetch from '@wordpress/api-fetch';
-import { toast } from 'react-toastify';
-import { Settings, Button } from '@wedevs/plugin-ui';
+import { __ } from '@wordpress/i18n';
 import { Save } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 function SettingsPage() {
   const [schema, setSchema] = useState([]);

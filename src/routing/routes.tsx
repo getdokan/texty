@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import Dashboard from '../pages/Dashboard';
+import Dashboard from '../pages/dashboard';
 import Notifications from '../pages/Notifications';
 import SettingsPage from '../pages/SettingsPage';
 import Tools from '../pages/Tools';

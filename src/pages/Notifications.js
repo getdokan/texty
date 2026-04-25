@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react';
-import { __ } from '@wordpress/i18n';
-import { toast } from 'react-toastify';
+import { toast } from '@wedevs/plugin-ui';
 import apiFetch from '@wordpress/api-fetch';
-import classNames from 'classnames';
 import {
   Button,
   Card,
@@ -11,6 +8,9 @@ import {
   Panel,
   Spinner,
 } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
+import classNames from 'classnames';
+import { useEffect, useState } from 'react';
 import NotificationItem from '../components/NotificationItem';
 
 function Notifications() {

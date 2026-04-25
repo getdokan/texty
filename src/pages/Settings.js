@@ -1,20 +1,20 @@
 /**
  * External dependencies
  */
-import { Fragment, useState, useEffect } from 'react';
-import { __ } from '@wordpress/i18n';
+import { toast } from '@wedevs/plugin-ui';
 import apiFetch from '@wordpress/api-fetch';
 import {
-  Button,
-  Spinner,
   BaseControl,
-  TextControl,
+  Button,
   Card,
   CardBody,
   CardHeader,
+  Spinner,
+  TextControl,
 } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 import classNames from 'classnames';
-import { toast } from 'react-toastify';
+import { Fragment, useEffect, useState } from 'react';
 import PhoneInput from 'react-phone-input-2';
 
 /**

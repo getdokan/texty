@@ -1,5 +1,5 @@
-import { createHashRouter, RouterProvider, Navigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
+import { Toaster } from '@wedevs/plugin-ui';
+import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 import AppLayout from './components/AppLayout';
 import getRoutes, { withRouter } from './routing';
@@ -14,7 +14,9 @@ function App() {
       children: [
         { index: true, element: <Navigate to="/dashboard" replace /> },
         ...routes.map((route) => {
-          const WithRouterComponent = withRouter(route.element);
+          const WithRouterComponent = withRouter(
+            route.element
+          ) as React.ComponentType;
 
           return {
             path: route.path,
@@ -29,17 +31,7 @@ function App() {
 
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable
-        pauseOnHover
-      />
+      <Toaster position="top-right" richColors closeButton />
       <RouterProvider router={router} />
     </>
   );
