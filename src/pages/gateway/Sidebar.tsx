@@ -8,10 +8,10 @@ import {
   cn,
   useSettings,
 } from '@wedevs/plugin-ui';
-import { RawHTML } from '@wordpress/element';
+import { RawHTML, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { CircleCheck, Search } from 'lucide-react';
-import { useMemo, useState, type ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 
 type Props = {
   connectedGateways: string[];
