@@ -1,16 +1,16 @@
 import type { FieldComponentProps, SettingsElement } from '@wedevs/plugin-ui';
 import { SettingsProvider, Skeleton, toast } from '@wedevs/plugin-ui';
 import apiFetch from '@wordpress/api-fetch';
-import { addFilter, applyFilters } from '@wordpress/hooks';
-import { __ } from '@wordpress/i18n';
 import {
   cloneElement,
   isValidElement,
   useCallback,
   useEffect,
   useState,
-  type ReactElement,
-} from 'react';
+} from '@wordpress/element';
+import { addFilter, applyFilters } from '@wordpress/hooks';
+import { __ } from '@wordpress/i18n';
+import type { ReactElement } from 'react';
 
 import GatewayStatus from '@/components/GatewayStatus';
 

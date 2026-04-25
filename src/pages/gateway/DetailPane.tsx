@@ -12,9 +12,9 @@ import {
   Button,
   useSettings,
 } from '@wedevs/plugin-ui';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Loader2, X } from 'lucide-react';
-import { useState } from 'react';
 
 import Header from './Header';
 import Section from './Section';
