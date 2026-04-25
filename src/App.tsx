@@ -3,9 +3,9 @@ import type { ComponentType } from 'react';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 import AppLayout from './components/AppLayout';
+import ErrorBoundary from './components/errors/ErrorBoundary';
+import NotFound from './components/errors/NotFound';
 import Layout from './layout';
-import ErrorBoundary from './pages/error/ErrorBoundary';
-import NotFound from './pages/error/NotFound';
 import getRoutes, { withRouter } from './routing';
 
 const App = () => {
