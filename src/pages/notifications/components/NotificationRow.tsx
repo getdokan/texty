@@ -12,15 +12,10 @@ import {
   Textarea,
   cn,
 } from '@wedevs/plugin-ui';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ChevronDown, Info, Plus } from 'lucide-react';
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type MouseEvent,
-} from 'react';
+import type { ChangeEvent, MouseEvent } from 'react';
 
 
 import type {

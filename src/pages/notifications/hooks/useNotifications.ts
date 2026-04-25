@@ -1,7 +1,7 @@
 import { toast } from '@wedevs/plugin-ui';
 import apiFetch from '@wordpress/api-fetch';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type {
   NotificationItem,

@@ -1,13 +1,8 @@
 import { cn } from '@wedevs/plugin-ui';
+import { createElement, isValidElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ChevronRight, Settings } from 'lucide-react';
-import {
-  createElement,
-  isValidElement,
-  type ComponentType,
-  type MouseEvent,
-  type ReactNode,
-} from 'react';
+import type { ComponentType, MouseEvent, ReactNode } from 'react';
 
 export type IntegrationCardProps = {
   title: string;
