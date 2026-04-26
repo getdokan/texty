@@ -1,41 +1,66 @@
-import Settings from '@/pages/Settings';
+import { lazy, Suspense } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import Dashboard from '../pages/dashboard';
-import GatewayConfiguration from '../pages/gateway';
-import Notifications from '../pages/Notifications';
-import Tools from '../pages/Tools';
+import type { ComponentType, ReactElement } from 'react';
 import type { TextyRoute } from './index';
+
+const Dashboard = lazy(
+  () => import(/* webpackChunkName: "dashboard" */ '../pages/dashboard')
+);
+const Notifications = lazy(
+  () => import(/* webpackChunkName: "notifications" */ '../pages/Notifications')
+);
+const Gateway = lazy(
+  () => import(/* webpackChunkName: "gateway" */ '../pages/gateway')
+);
+const Tools = lazy(
+  () => import(/* webpackChunkName: "tools" */ '../pages/Tools')
+);
+const SettingsPage = lazy(
+  () => import(/* webpackChunkName: "settings" */ '../pages/Settings')
+);
+
+const RouteFallback = () => (
+  <div className="flex items-center justify-center p-8 text-sm text-gray-500">
+    {__('Loading…', 'texty')}
+  </div>
+);
+
+const withSuspense = (Component: ComponentType): ReactElement => (
+  <Suspense fallback={<RouteFallback />}>
+    <Component />
+  </Suspense>
+);
 
 const routes: TextyRoute[] = [
   {
     id: 'texty-dashboard',
     title: __('Dashboard', 'texty'),
     path: '/dashboard',
-    element: <Dashboard />,
+    element: withSuspense(Dashboard),
   },
   {
     id: 'texty-notifications',
     title: __('Notifications', 'texty'),
     path: '/notifications',
-    element: <Notifications />,
+    element: withSuspense(Notifications),
   },
   {
     id: 'texty-tools',
     title: __('Tools', 'texty'),
     path: '/tools',
-    element: <Tools />,
+    element: withSuspense(Tools),
   },
   {
     id: 'texty-gateway',
     title: __('Gateway Configuration', 'texty'),
     path: '/gateway',
-    element: <GatewayConfiguration />,
+    element: withSuspense(Gateway),
   },
   {
     id: 'texty-settings',
     title: __('Settings', 'texty'),
     path: '/settings',
-    element: <Settings />,
+    element: withSuspense(SettingsPage),
   },
 ];
 
