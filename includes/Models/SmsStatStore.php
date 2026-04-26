@@ -27,12 +27,16 @@ class SmsStatStore extends BaseDataStore {
      */
     protected function get_fields_with_format(): array {
         return [
-            'receiver'      => '%s',
-            'gateway'       => '%s',
-            'status'        => '%s',
-            'created_at'    => '%s',
-            'updated_at'    => '%s',
-            'reference_id'  => '%s',
+            'receiver'           => '%s',
+            'gateway'            => '%s',
+            'status'             => '%s',
+            'notification_id'    => '%s',
+            'notification_group' => '%s',
+            'message'            => '%s',
+            'response'           => '%s',
+            'created_at'         => '%s',
+            'updated_at'         => '%s',
+            'reference_id'       => '%s',
         ];
     }
 
@@ -46,6 +50,8 @@ class SmsStatStore extends BaseDataStore {
             'receiver',
             'gateway',
             'reference_id',
+            'notification_id',
+            'message',
         ];
     }
 

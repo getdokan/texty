@@ -1,44 +1,33 @@
 <?php
+/**
+ * 2.0.0 — adds notification context + message + response columns to
+ * `wp_texty_sms_stat` and the indexes the SMS Logs UI queries against.
+ *
+ * @package Texty\Migrations
+ */
 
-namespace Texty;
-
-use Texty\Models\SmsStat;
-use Texty\Models\SmsStatStore;
-use WeDevs\WPKit\DataLayer\DataLayerFactory;
+namespace Texty\Migrations;
 
 /**
- * Installer Class
+ * Schema migration for the SMS Logs feature.
+ *
+ * Each public static method below is auto-discovered and executed by
+ * BaseMigration::run() in declaration order. dbDelta is idempotent — adding
+ * columns/indexes that already exist is a no-op, so re-runs are safe.
  */
-class Install {
+class V_2_0_0 extends TextyMigration {
 
     /**
-     * Run the isntaller
-     */
-    public function run() {
-        $this->create_tables();
-        $installed = get_option( 'texty_installed' );
-
-        if ( ! $installed ) {
-            update_option( 'texty_installed', time() );
-        }
-
-        update_option( 'texty_version', TEXTY_VERSION );
-
-        // Seed the schema version so the migration runner skips migrations
-        // whose changes are already baked into create_tables() above. The
-        // upgrade path on existing installs (where this option is missing or
-        // older) is handled by Texty\Migrations on plugins_loaded.
-        if ( ! get_option( 'texty_db_version' ) ) {
-            update_option( 'texty_db_version', TEXTY_VERSION );
-        }
-    }
-
-    /**
-     * Create database tables
+     * Add the four new columns and three indexes to `wp_texty_sms_stat`.
+     *
+     * - notification_id    — which notification class fired the SMS
+     * - notification_group — `wp` / `wc` / `dokan` / custom
+     * - message            — final, token-replaced body (for "View Log")
+     * - response           — JSON-encoded gateway result / WP_Error payload
      *
      * @return void
      */
-    private function create_tables() {
+    public static function add_logs_columns(): void {
         global $wpdb;
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';

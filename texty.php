@@ -47,6 +47,9 @@ final class Texty {
         // run the installer
         register_activation_hook( __FILE__, [ $this, 'activate' ] );
 
+        // wire schema migrations (fires on plugins_loaded@5, before init_plugin)
+        new Texty\Migrations();
+
         // load the plugin
         add_action( 'plugins_loaded', [ $this, 'init_plugin' ] );
     }
