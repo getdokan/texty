@@ -191,8 +191,17 @@ class Base extends Notification {
 
         $gateway = texty()->gateways();
 
-        foreach ( $recipients as $number ) {
-            $gateway->send( $number, $content );
+        // Stash the active notification so the after-send logger can attach
+        // notification_id / notification_group to each SmsStat row without
+        // threading them through the gateway pipeline.
+        texty()->notifications()->set_active( $this );
+
+        try {
+            foreach ( $recipients as $number ) {
+                $gateway->send( $number, $content );
+            }
+        } finally {
+            texty()->notifications()->clear_active();
         }
 
         /**

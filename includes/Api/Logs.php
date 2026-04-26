@@ -77,6 +77,17 @@ class Logs extends Base {
                             'type'        => 'string',
                             'default'     => '',
                         ],
+                        'orderby'  => [
+                            'description' => __( 'Sort field.', 'texty' ),
+                            'type'        => 'string',
+                            'default'     => 'created_at',
+                        ],
+                        'order'    => [
+                            'description' => __( 'Sort direction.', 'texty' ),
+                            'type'        => 'string',
+                            'enum'        => [ 'asc', 'desc' ],
+                            'default'     => 'desc',
+                        ],
                     ],
                 ],
             ]
@@ -128,12 +139,17 @@ class Logs extends Base {
         $status   = sanitize_key( (string) $request->get_param( 'status' ) );
         $type     = sanitize_key( (string) $request->get_param( 'type' ) );
         $search   = sanitize_text_field( (string) $request->get_param( 'search' ) );
+        $orderby  = sanitize_key( (string) $request->get_param( 'orderby' ) );
+        $order    = strtoupper( (string) $request->get_param( 'order' ) ) === 'ASC' ? 'ASC' : 'DESC';
 
+        // BaseDataStore::query falls back to the id column when orderby
+        // isn't a known field, so unknown values silently degrade to the
+        // closest analogue (id DESC ≈ created_at DESC) instead of erroring.
         $args = [
             'per_page' => $per_page,
             'page'     => $page,
-            'orderby'  => 'created_at',
-            'order'    => 'DESC',
+            'orderby'  => '' !== $orderby ? $orderby : 'created_at',
+            'order'    => $order,
         ];
         if ( '' !== $status ) {
             $args['status'] = $status;

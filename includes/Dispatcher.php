@@ -95,6 +95,12 @@ class Dispatcher {
      * @return void
      */
     public function log_sms( $result, $to, $message, $gateway ) {
+        $store = DataLayerFactory::make_store( SmsStat::class );
+
+        if ( null === $store ) {
+            return;
+        }
+
         $gateway_name = texty()->settings()->gateway();
 
         // Determine status based on result
@@ -106,32 +112,73 @@ class Dispatcher {
             $reference_id = '';
         }
 
-        // Get DataLayerFactory store
-        $store = DataLayerFactory::make_store( SmsStat::class );
+        // Pull notification context off the registry — set by
+        // `Notification::send()` around its `$gateway->send()` loop.
+        $notification       = texty()->notifications()->get_active();
+        $notification_id    = $notification ? (string) $notification->get_id() : '';
+        $notification_group = $notification ? (string) $notification->get_group() : '';
 
         // Create and save SMS record using DataLayer.
         // `set_receiver` is typed `string`; coerce defensively so a failed
         // send with a null/missing recipient still logs instead of fatalling.
         $sms = new SmsStat();
-        $sms->set_props( [
-            'receiver'      => is_string( $to ) ? $to : '',
-            'gateway'       => $gateway_name ? $gateway_name : '',
-            'status'        => $status,
-            'reference_id'  => $reference_id,
-            'created_at'    => current_time( 'mysql' ),
-            'updated_at'    => current_time( 'mysql' ),
-        ] );
+        $sms->set_props(
+            [
+                'receiver'           => is_string( $to ) ? $to : '',
+                'gateway'            => $gateway_name ? $gateway_name : '',
+                'status'             => $status,
+                'notification_id'    => $notification_id,
+                'notification_group' => $notification_group,
+                'message'            => is_string( $message ) ? $message : '',
+                'response'           => $this->encode_response( $result ),
+                'reference_id'       => is_scalar( $reference_id ) ? (string) $reference_id : '',
+                'created_at'         => current_time( 'mysql' ),
+                'updated_at'         => current_time( 'mysql' ),
+            ]
+        );
 
         $store->create( $sms );
     }
-    private function extract_reference_id( $result ) {
-        if ( ! is_array( $result ) ) return null;
 
-        $id_keys = ['sid', 'message-id', 'message_uuid', 'apiMsgId', 'reference_id'];
+    /**
+     * Normalize the gateway result into a JSON-friendly payload for the
+     * `response` column. WP_Error gets unpacked into code/message/data so
+     * the failure is human-readable; arrays/objects are passed through;
+     * scalars are JSON-encoded as-is.
+     *
+     * @param mixed $result The send result (bool, array, or WP_Error).
+     *
+     * @return array|string|null
+     */
+    private function encode_response( $result ) {
+        if ( is_wp_error( $result ) ) {
+            return [
+                'code'    => $result->get_error_code(),
+                'message' => $result->get_error_message(),
+                'data'    => $result->get_error_data(),
+            ];
+        }
+
+        return $result;
+    }
+
+    private function extract_reference_id( $result ) {
+        if ( ! is_array( $result ) ) {
+            return null;
+        }
+
+        $id_keys = [ 'sid', 'message-id', 'message_uuid', 'apiMsgId', 'reference_id' ];
 
         foreach ( $id_keys as $key ) {
             if ( ! empty( $result[ $key ] ) ) {
-                return $result[ $key ];
+                $value = $result[ $key ];
+
+                // Plivo wraps message_uuid in an array — flatten to the first id.
+                if ( is_array( $value ) ) {
+                    $value = reset( $value );
+                }
+
+                return $value;
             }
         }
 
