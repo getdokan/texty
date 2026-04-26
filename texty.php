@@ -16,6 +16,8 @@ defined( 'ABSPATH' ) || exit;
 
 require __DIR__ . '/vendor/autoload.php';
 
+use WeDevs\WPKit\DataLayer\DataLayerFactory;
+
 /**
  * Texty Class
  */
@@ -95,16 +97,15 @@ final class Texty {
      * @return void
      */
     private function init_datalayer() {
-    
 
         try {
             // Initialize the factory with plugin prefix
-            \WeDevs\WPKit\DataLayer\DataLayerFactory::init( 'texty' );
+            DataLayerFactory::init( 'texty' );
 
             // Register the SmsStat model and store
-            \WeDevs\WPKit\DataLayer\DataLayerFactory::register_store( 
-                Texty\Models\SmsStat::class, 
-                Texty\Models\SmsStatStore::class 
+            DataLayerFactory::register_store(
+                Texty\Models\SmsStat::class,
+                Texty\Models\SmsStatStore::class
             );
         } catch ( \Exception $e ) {
             error_log( 'Texty DataLayer Init Error: ' . $e->getMessage() );
@@ -190,7 +191,7 @@ final class Texty {
  *
  * @return \Texty
  */
-function texty() {
+function texty() { // phpcs:ignore
     return Texty::instance();
 }
 
