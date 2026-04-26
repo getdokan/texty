@@ -9,10 +9,14 @@ namespace Texty\Migrations;
 
 use WeDevs\WPKit\Migration\BaseMigration;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Base class for all Texty DB migrations.
  *
- * Sets the option key wp-kit reads/writes to track schema version.
+ * Sets the option key wp-kit reads/writes to track schema version. Schema
+ * introspection helpers live on `Texty\Migrations\Schema` so they don't get
+ * picked up by `BaseMigration::run()`'s public-static auto-discovery.
  */
 abstract class TextyMigration extends BaseMigration {
 

@@ -47,9 +47,6 @@ final class Texty {
         // run the installer
         register_activation_hook( __FILE__, [ $this, 'activate' ] );
 
-        // wire schema migrations (fires on plugins_loaded@5, before init_plugin)
-        new Texty\Migrations();
-
         // load the plugin
         add_action( 'plugins_loaded', [ $this, 'init_plugin' ] );
     }
@@ -78,6 +75,12 @@ final class Texty {
     public function init_plugin() {
         // Initialize DataLayerFactory for SmsStat model
         $this->init_datalayer();
+
+        // Instantiate the notices + migrations bootstraps so their
+        // rest_api_init hooks are wired before WP fires them. Notices first,
+        // because Migrations registers its NoticeProvider into Notices.
+        $this->notices();
+        $this->migrations();
 
         if ( is_admin() ) {
             new Texty\Admin();
@@ -174,6 +177,32 @@ final class Texty {
         }
 
         return $this->instances['notification'];
+    }
+
+    /**
+     * Access to the migrations bootstrap.
+     *
+     * @return Texty\Migrations
+     */
+    public function migrations() {
+        if ( ! isset( $this->instances['migrations'] ) ) {
+            $this->instances['migrations'] = new \Texty\Migrations();
+        }
+
+        return $this->instances['migrations'];
+    }
+
+    /**
+     * Access to the admin-notice bootstrap.
+     *
+     * @return Texty\Notices
+     */
+    public function notices() {
+        if ( ! isset( $this->instances['notices'] ) ) {
+            $this->instances['notices'] = new \Texty\Notices();
+        }
+
+        return $this->instances['notices'];
     }
 
     /**
