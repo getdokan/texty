@@ -40,15 +40,25 @@ class Base extends Notification {
         foreach ( $this->replacement_keys() as $search => $method ) {
             $value = method_exists( $this->order, $method ) ? $this->order->$method() : '';
 
+            // WC accessors like `get_date_paid()` return null on unpaid orders
+            // and `WC_DateTime` objects on paid ones — normalize both to a
+            // string before any string handling. PHP 8.1 deprecates passing
+            // null to str_replace's $replace argument.
+            if ( null === $value ) {
+                $value = '';
+            } elseif ( ! is_scalar( $value ) ) {
+                $value = (string) $value;
+            }
+
             if ( 'order_total' === $search ) {
-                $value = wp_strip_all_tags( html_entity_decode( $value ) );
+                $value = wp_strip_all_tags( html_entity_decode( (string) $value ) );
             }
 
             if ( 'items' === $search ) {
                 $value = $this->get_items();
             }
 
-            $message = str_replace( '{' . $search . '}', $value, $message );
+            $message = str_replace( '{' . $search . '}', (string) $value, $message );
         }
 
         $message = $this->replace_global_keys( $message );
@@ -142,6 +152,11 @@ class Base extends Notification {
          * @param Notification $notification The notification instance
          */
         $recipients = apply_filters( 'texty_notification_recipients', $recipients, $this );
+
+        // Drop nulls / empty strings — a stale `texty_phone` meta value or a
+        // third-party filter can leave them in the array and crash the
+        // gateway send (which expects a string).
+        $recipients = is_array( $recipients ) ? array_values( array_filter( $recipients ) ) : [];
 
         if ( ! $recipients ) {
             return;

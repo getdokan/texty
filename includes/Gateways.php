@@ -51,6 +51,17 @@ class Gateways {
             return false;
         }
 
+        // Bail before the pipeline if the caller didn't supply a recipient.
+        // Returning a WP_Error keeps `texty_after_send_sms` consumers (the
+        // SMS-stat logger included) on their is_wp_error(...) failure path
+        // instead of triggering type errors downstream.
+        if ( ! is_string( $to ) || '' === trim( $to ) ) {
+            return new WP_Error(
+                'texty_missing_recipient',
+                __( 'No recipient phone number was provided.', 'texty' )
+            );
+        }
+
         /**
          * Filter the recipient phone number.
          *
