@@ -109,10 +109,12 @@ class Dispatcher {
         // Get DataLayerFactory store
         $store = DataLayerFactory::make_store( SmsStat::class );
 
-        // Create and save SMS record using DataLayer
+        // Create and save SMS record using DataLayer.
+        // `set_receiver` is typed `string`; coerce defensively so a failed
+        // send with a null/missing recipient still logs instead of fatalling.
         $sms = new SmsStat();
         $sms->set_props( [
-            'receiver'      => $to,
+            'receiver'      => is_string( $to ) ? $to : '',
             'gateway'       => $gateway_name ? $gateway_name : '',
             'status'        => $status,
             'reference_id'  => $reference_id,
