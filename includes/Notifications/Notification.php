@@ -275,6 +275,10 @@ abstract class Notification {
          */
         $recipients = apply_filters( 'texty_notification_recipients', $this->get_recipients(), $this );
 
+        // Drop nulls / empty strings before deduping — these can leak in
+        // from an empty `texty_phone` meta or a third-party filter.
+        $recipients = is_array( $recipients ) ? array_values( array_filter( $recipients ) ) : [];
+
         if ( ! $recipients ) {
             return;
         }
