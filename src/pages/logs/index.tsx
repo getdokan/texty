@@ -21,7 +21,7 @@ type LogsView = DataViewState & {
 const DEFAULT_VIEW: LogsView = {
   type: 'table',
   page: 1,
-  perPage: 10,
+  perPage: 30,
   fields: ['created_at', 'type_label', 'status', 'details'],
   search: '',
   status: '',
