@@ -82,6 +82,7 @@ final class Texty {
 
         new Texty\Api();
         new Texty\Dispatcher();
+        new Texty\Compliance();
 
         /**
          * Fires after the Texty plugin is fully initialized.
@@ -171,6 +172,21 @@ final class Texty {
         }
 
         return $this->instances['notification'];
+    }
+
+    /**
+     * Access to global notification settings.
+     *
+     * @since 1.2.0
+     *
+     * @return Texty\NotificationSettings
+     */
+    public function notification_settings() {
+        if ( ! isset( $this->instances['notification_settings'] ) ) {
+            $this->instances['notification_settings'] = new \Texty\NotificationSettings();
+        }
+
+        return $this->instances['notification_settings'];
     }
 
     /**
