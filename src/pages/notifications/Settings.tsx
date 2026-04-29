@@ -17,14 +17,12 @@ import {
   toast,
 } from '@wedevs/plugin-ui';
 import { Info, Settings as SettingsIcon, ShieldCheck } from 'lucide-react';
-import PhoneInput from 'react-phone-input-2';
 import type { ChangeEvent, ReactNode } from 'react';
 
 type SettingsState = {
   admin_phone: string;
   global_sender_id: string;
   pause_all: boolean;
-  append_unsubscribe: boolean;
   append_company_name: boolean;
 };
 
@@ -37,7 +35,6 @@ const defaultState: SettingsState = {
   admin_phone: '',
   global_sender_id: '',
   pause_all: false,
-  append_unsubscribe: false,
   append_company_name: false,
 };
 
@@ -189,17 +186,21 @@ const Settings = () => {
           >
             {__('Admin Phone Number', 'texty')}
           </Label>
-          <PhoneInput
-            country="bd"
+          <Input
+            id="texty-admin-phone"
+            name="admin-phone"
             value={state.admin_phone}
-            onChange={(val: string) => update('admin_phone', val)}
-            enableSearch
-            inputProps={{ id: 'texty-admin-phone', name: 'admin-phone' }}
-            containerClass="texty-phone-input"
-            inputClass="!h-9 !w-full !rounded-md !border !border-input !bg-background !pl-14 !text-sm !text-foreground"
-            buttonClass="!rounded-l-md !border-r !border-input !bg-background"
-            dropdownClass="!text-sm"
+            readOnly
+            disabled
+            placeholder={__('Not configured', 'texty')}
           />
+          <p className="m-0 flex items-center gap-2 text-sm text-gray-500">
+            <Info className="size-4 text-gray-400" />
+            {__(
+              'Pulled from the active gateway’s "From Number". Edit it under Gateway settings.',
+              'texty',
+            )}
+          </p>
         </div>
 
         <div className="flex flex-col gap-2 border-t border-gray-200 px-6 py-5">
@@ -243,16 +244,6 @@ const Settings = () => {
           icon={<ShieldCheck className="size-5 text-gray-700" />}
           title={__('Compliance & Footer', 'texty')}
           description={__('Manage legally required text additions.', 'texty')}
-        />
-
-        <ToggleRow
-          title={__('Append Unsubscribe Info', 'texty')}
-          description={__(
-            'Adds "Reply STOP to unsubscribe" to all marketing messages. Recipients who reply STOP will be removed from future notifications.',
-            'texty',
-          )}
-          checked={state.append_unsubscribe}
-          onChange={(v) => update('append_unsubscribe', v)}
         />
 
         <ToggleRow

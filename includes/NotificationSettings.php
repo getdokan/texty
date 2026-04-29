@@ -34,7 +34,6 @@ class NotificationSettings {
             'admin_phone'          => '',
             'global_sender_id'     => '',
             'pause_all'            => false,
-            'append_unsubscribe'   => false,
             'append_company_name'  => false,
         ];
     }
@@ -42,13 +41,42 @@ class NotificationSettings {
     /**
      * Get all settings (merged with defaults).
      *
+     * The `admin_phone` value is read-only and is always derived from the
+     * active gateway's "From Number" credential — it is never persisted in
+     * this option.
+     *
      * @return array
      */
     public function all() {
         $stored = get_option( self::OPTION_KEY, [] );
         $stored = is_array( $stored ) ? $stored : [];
 
-        return wp_parse_args( $stored, $this->defaults() );
+        $values = wp_parse_args( $stored, $this->defaults() );
+
+        $values['admin_phone'] = $this->gateway_phone();
+
+        return $values;
+    }
+
+    /**
+     * Get the active gateway's "From Number".
+     *
+     * @return string
+     */
+    public function gateway_phone() {
+        $gateway = texty()->settings()->gateway();
+
+        if ( ! $gateway ) {
+            return '';
+        }
+
+        $creds = texty()->settings()->get( $gateway );
+
+        if ( ! is_array( $creds ) || empty( $creds['from'] ) ) {
+            return '';
+        }
+
+        return (string) $creds['from'];
     }
 
     /**
@@ -72,12 +100,19 @@ class NotificationSettings {
      * @return array Final stored values.
      */
     public function update( array $values ) {
-        $existing = $this->all();
-        $merged   = array_merge( $existing, $values );
+        // admin_phone is derived from the active gateway, never stored.
+        unset( $values['admin_phone'] );
+
+        $existing = get_option( self::OPTION_KEY, [] );
+        $existing = is_array( $existing ) ? $existing : [];
+        $existing = wp_parse_args( $existing, $this->defaults() );
+        unset( $existing['admin_phone'] );
+
+        $merged = array_merge( $existing, $values );
 
         update_option( self::OPTION_KEY, $merged, false );
 
-        return $merged;
+        return $this->all();
     }
 
     /**

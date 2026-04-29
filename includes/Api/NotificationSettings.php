@@ -11,8 +11,8 @@ defined( 'ABSPATH' ) || exit;
  * NotificationSettings REST Controller.
  *
  * Exposes global notification compliance settings (admin phone, sender ID,
- * pause-all toggle, unsubscribe + company-name footer toggles) and the
- * opt-out phone list management endpoint.
+ * pause-all toggle, company-name footer toggle) and the opt-out phone list
+ * management endpoint.
  *
  * Routes:
  *   GET  /texty/v1/notification-settings           — read all settings
@@ -110,10 +110,8 @@ class NotificationSettings extends Base {
         $service = texty()->notification_settings();
 
         $values = [
-            'admin_phone'         => sanitize_text_field( (string) $request->get_param( 'admin_phone' ) ),
             'global_sender_id'    => sanitize_text_field( (string) $request->get_param( 'global_sender_id' ) ),
             'pause_all'           => (bool) $request->get_param( 'pause_all' ),
-            'append_unsubscribe'  => (bool) $request->get_param( 'append_unsubscribe' ),
             'append_company_name' => (bool) $request->get_param( 'append_company_name' ),
         ];
 
@@ -163,18 +161,11 @@ class NotificationSettings extends Base {
      */
     private function get_settings_args() {
         return [
-            'admin_phone' => [
-                'type'              => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-            ],
             'global_sender_id' => [
                 'type'              => 'string',
                 'sanitize_callback' => 'sanitize_text_field',
             ],
             'pause_all' => [
-                'type' => 'boolean',
-            ],
-            'append_unsubscribe' => [
                 'type' => 'boolean',
             ],
             'append_company_name' => [

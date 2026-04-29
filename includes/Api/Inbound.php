@@ -145,11 +145,10 @@ class Inbound extends Base {
             );
         }
 
-        $params = $request->get_params();
-
-        // Twilio signature is computed only over POST body params, not headers.
-        // Drop framework-injected REST routing keys so they don't poison the hash.
-        unset( $params['rest_route'] );
+        // Twilio HMAC is computed over the URL + concatenated, sorted POST body
+        // params only. Use get_body_params() to avoid mixing query / route /
+        // header values into the hash.
+        $params = $request->get_body_params();
 
         ksort( $params );
 
@@ -160,6 +159,7 @@ class Inbound extends Base {
             $data .= $key . ( is_scalar( $value ) ? (string) $value : '' );
         }
 
+        // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- base64 is required by Twilio's HMAC signature spec.
         $expected = base64_encode( hash_hmac( 'sha1', $data, $token, true ) );
 
         if ( ! hash_equals( $expected, $signature ) ) {
@@ -174,16 +174,27 @@ class Inbound extends Base {
     }
 
     /**
-     * Best-effort current request URL (used for signature verification).
+     * Canonical webhook URL used for Twilio signature verification.
+     *
+     * Built from `rest_url()` so the host comes from the WP-configured
+     * `home_url` rather than the (spoofable) `Host` request header.
      *
      * @return string
      */
     private function current_url() {
-        $scheme = ( ! empty( $_SERVER['HTTPS'] ) && 'off' !== $_SERVER['HTTPS'] ) ? 'https' : 'http';
-        $host   = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
-        $uri    = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-
-        return $scheme . '://' . $host . $uri;
+        /**
+         * Filter the canonical Twilio inbound webhook URL used for HMAC
+         * verification. Override only when the site is fronted by a proxy
+         * that rewrites the URL Twilio originally signed.
+         *
+         * @since 1.2.0
+         *
+         * @param string $url Default URL derived from rest_url().
+         */
+        return (string) apply_filters(
+            'texty_inbound_twilio_signature_url',
+            rest_url( $this->namespace . '/' . $this->rest_base . '/twilio' )
+        );
     }
 
     /**
