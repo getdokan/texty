@@ -11,13 +11,11 @@ defined( 'ABSPATH' ) || exit;
  * NotificationSettings REST Controller.
  *
  * Exposes global notification compliance settings (admin phone, sender ID,
- * pause-all toggle, company-name footer toggle) and the opt-out phone list
- * management endpoint.
+ * pause-all toggle, company-name footer toggle).
  *
  * Routes:
  *   GET  /texty/v1/notification-settings           — read all settings
  *   POST /texty/v1/notification-settings           — update settings
- *   POST /texty/v1/notification-settings/opt-out   — opt a phone in / out
  *
  * @since 1.2.0
  */
@@ -55,34 +53,10 @@ class NotificationSettings extends Base {
                 ],
             ]
         );
-
-        register_rest_route(
-            $this->namespace,
-            '/' . $this->rest_base . '/opt-out',
-            [
-                [
-                    'methods'             => WP_REST_Server::CREATABLE,
-                    'callback'            => [ $this, 'update_opt_out' ],
-                    'permission_callback' => [ $this, 'admin_permissions_check' ],
-                    'args'                => [
-                        'phone' => [
-                            'required'          => true,
-                            'type'              => 'string',
-                            'sanitize_callback' => 'sanitize_text_field',
-                        ],
-                        'action' => [
-                            'required' => true,
-                            'type'     => 'string',
-                            'enum'     => [ 'opt_out', 'opt_in' ],
-                        ],
-                    ],
-                ],
-            ]
-        );
     }
 
     /**
-     * GET — return current settings + opted-out numbers.
+     * GET — return current settings.
      *
      * @param WP_REST_Request $request Request object.
      *
@@ -94,8 +68,7 @@ class NotificationSettings extends Base {
         $settings = texty()->notification_settings();
 
         return rest_ensure_response( [
-            'settings'    => $settings->all(),
-            'opted_out'   => $settings->opted_out_numbers(),
+            'settings' => $settings->all(),
         ] );
     }
 
@@ -126,31 +99,7 @@ class NotificationSettings extends Base {
         $merged = $service->update( $values );
 
         return rest_ensure_response( [
-            'settings'  => $merged,
-            'opted_out' => $service->opted_out_numbers(),
-        ] );
-    }
-
-    /**
-     * POST /opt-out — toggle opt-out state for a number.
-     *
-     * @param WP_REST_Request $request Request object.
-     *
-     * @return \WP_REST_Response
-     */
-    public function update_opt_out( $request ) {
-        $service = texty()->notification_settings();
-        $phone   = (string) $request->get_param( 'phone' );
-        $action  = (string) $request->get_param( 'action' );
-
-        if ( 'opt_out' === $action ) {
-            $service->opt_out( $phone );
-        } elseif ( 'opt_in' === $action ) {
-            $service->opt_in( $phone );
-        }
-
-        return rest_ensure_response( [
-            'opted_out' => $service->opted_out_numbers(),
+            'settings' => $merged,
         ] );
     }
 

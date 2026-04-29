@@ -22,7 +22,6 @@ class Api {
             Api\Settings::class,
             Api\Notifications::class,
             Api\NotificationSettings::class,
-            Api\Inbound::class,
             Api\Tools::class,
             Api\Status::class,
             Api\Send::class,

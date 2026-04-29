@@ -28,7 +28,6 @@ type SettingsState = {
 
 type SettingsResponse = {
   settings: SettingsState;
-  opted_out: string[];
 };
 
 const defaultState: SettingsState = {

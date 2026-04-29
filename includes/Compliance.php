@@ -11,8 +11,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * Wires global notification settings into the send pipeline:
  *  - Pause all outgoing SMS when `pause_all` is on.
- *  - Block sends to opted-out numbers (customers who replied STOP).
- *  - Append unsubscribe footer / company name to outgoing messages.
+ *  - Append company name to outgoing messages.
  *
  * @since 1.2.0
  */
@@ -27,7 +26,7 @@ class Compliance {
     }
 
     /**
-     * Short-circuit the send pipeline when paused or recipient opted out.
+     * Short-circuit the send pipeline when paused.
      *
      * @param null|mixed $pre_send Existing short-circuit value.
      * @param string     $to       Recipient phone number.
@@ -37,7 +36,7 @@ class Compliance {
      * @return null|WP_Error
      */
     public function maybe_block_send( $pre_send, $to, $message, $gateway ) {
-        unset( $message, $gateway );
+        unset( $to, $message, $gateway );
 
         // Respect a previous short-circuit (don't override an upstream filter).
         if ( null !== $pre_send ) {
@@ -53,18 +52,11 @@ class Compliance {
             );
         }
 
-        if ( $settings->is_opted_out( $to ) ) {
-            return new WP_Error(
-                'texty_opted_out',
-                __( 'Recipient has opted out of notifications.', 'texty' )
-            );
-        }
-
         return null;
     }
 
     /**
-     * Append the unsubscribe footer + company name to outgoing messages.
+     * Append the company name footer to outgoing messages.
      *
      * @param string $message Message body.
      * @param string $to      Recipient phone number.
@@ -81,10 +73,6 @@ class Compliance {
 
         $settings = texty()->notification_settings();
         $footer   = [];
-
-        if ( ! empty( $settings->get( 'append_unsubscribe' ) ) ) {
-            $footer[] = __( 'Reply STOP to unsubscribe', 'texty' );
-        }
 
         if ( ! empty( $settings->get( 'append_company_name' ) ) ) {
             $store_name = (string) get_bloginfo( 'name' );
