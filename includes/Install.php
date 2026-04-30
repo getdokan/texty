@@ -38,7 +38,7 @@ class Install {
      *
      * @return void
      */
-    private function create_tables() {
+    public function create_tables() {
         global $wpdb;
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -51,7 +51,7 @@ class Install {
             receiver VARCHAR(20) NOT NULL,
             gateway VARCHAR(50) NOT NULL,
             status VARCHAR(20) DEFAULT NULL,
-            notification_id VARCHAR(64) DEFAULT NULL,
+            notification_id VARCHAR(64) DEFAULT NULL, 
             notification_group VARCHAR(32) DEFAULT NULL,
             message TEXT NULL,
             response LONGTEXT NULL,
