@@ -1,6 +1,6 @@
-$primary-color: #006eef;
+@use 'sass:color';
 
-@import './styles/toastify.scss';
+$primary-color: #006eef;
 
 .wrap {
   margin-top: 25px;
@@ -9,7 +9,8 @@ $primary-color: #006eef;
 .texty-container {
   margin: 0 auto;
   width: 100%;
-  max-width: 70rem;
+  padding-left: 48px;
+  padding-right: 48px;
 }
 
 .texty-two-col {
@@ -30,7 +31,6 @@ $primary-color: #006eef;
 
 .texty-header-wrap {
   background: #fff;
-  margin: 0 0 0 -20px;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
 
   .texty-header {
@@ -159,8 +159,8 @@ $primary-color: #006eef;
     font-size: 16px;
 
     &:focus {
-      border-color: darken($primary-color, 5%);
-      box-shadow: 0 0 1px darken($primary-color, 5%);
+      border-color: color.adjust($primary-color, $lightness: -5%);
+      box-shadow: 0 0 1px color.adjust($primary-color, $lightness: -5%);
     }
   }
 
@@ -230,9 +230,6 @@ $primary-color: #006eef;
     }
 
     @media screen and (max-width: 425px) {
-      .components-card__header {
-        // border-bottom: 1px solid #ddd;
-      }
 
       .components-card__body {
         padding: 10px 15px;
@@ -314,7 +311,7 @@ $primary-color: #006eef;
       padding: 0 18px;
 
       &:hover {
-        background-color: darken($primary-color, 10%);
+        background-color: color.adjust($primary-color, $lightness: -10%);
       }
     }
 
@@ -363,10 +360,6 @@ $primary-color: #006eef;
 }
 
 .texty-settings {
-  .texty-settings__form {
-    // margin-top: 30px;
-  }
-
   .settings-row {
     padding-bottom: 20px;
   }
@@ -411,7 +404,7 @@ $primary-color: #006eef;
 
     &.active {
       opacity: 1;
-      border: 2px solid darken($primary-color, 5%);
+      border: 2px solid color.adjust($primary-color, $lightness: -5%);
 
       svg.active-icon {
         display: block;

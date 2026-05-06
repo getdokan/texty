@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
-import { toast } from 'react-toastify';
-import { Input, Textarea, Button, Field, FieldLabel, FieldContent } from '@wedevs/plugin-ui';
+import { Input, Textarea, Button, Field, FieldLabel, FieldContent, toast } from '@wedevs/plugin-ui';
 
 function QuickSend() {
   const [isSending, setIsSending] = useState(false);

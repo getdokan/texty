@@ -2,6 +2,14 @@
 
 namespace Texty\Api;
 
+use DateTimeImmutable;
+use Exception;
+use Texty\Models\SmsStat;
+use Texty\Models\SmsStatStore;
+use WeDevs\WPKit\DataLayer\DataLayerFactory;
+use WP_Error;
+use WP_REST_Request;
+use WP_REST_Response;
 use WP_REST_Server;
 
 class Metrics extends Base {
@@ -30,7 +38,14 @@ class Metrics extends Base {
                     'methods'             => WP_REST_Server::READABLE,
                     'callback'            => [ $this, 'get_metrics' ],
                     'permission_callback' => [ $this, 'admin_permissions_check' ],
-                    'args'                => [],
+                    'args'                => [
+                        'period' => [
+                            'description' => __( 'The time range for metrics.', 'texty' ),
+                            'type'        => 'string',
+                            'enum'        => [ 'this_month', 'last_month', 'last_7_days', 'last_30_days', 'this_year' ],
+                            'default'     => 'this_month',
+                        ],
+                    ],
                 ],
             ]
         );
@@ -39,165 +54,191 @@ class Metrics extends Base {
     /**
      * Get metrics data
      *
-     * @param WP_Rest_Request $request
+     * @param WP_REST_Request $request
      *
-     * @return WP_Rest_Response|WP_Error
+     * @return WP_REST_Response|WP_Error
      */
     public function get_metrics( $request ) {
-        global $wpdb;
+        try {
+            $store = DataLayerFactory::make_store( SmsStat::class );
 
-        $table_name     = $wpdb->prefix . 'texty_sms_stat';
-        $gateway_name   = texty()->settings()->gateway();
-        $gateway_status = $gateway_name ? true : false;
-        $current        = new \DateTimeImmutable( 'first day of this month', wp_timezone() );
-        $current_month  = $current->format( 'Y-m' );
-        $last_month     = $current->modify( '-1 month' )->format( 'Y-m' );
-
-        // Today's date number (e.g., 10 if today is the 10th)
-        // Used for fair comparison: this month's 10 days vs last month's same 10 days
-        $current_day = (int) ( new \DateTimeImmutable( 'now', wp_timezone() ) )->format( 'd' );
-
-        // Single query to get both current and last month usage
-        // Uses same date range (DAY <= current_day) for fair comparison
-        $results = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT DATE_FORMAT(created_at, '%%Y-%%m') as month, COUNT(*) as total
-                 FROM {$table_name}
-                 WHERE DATE_FORMAT(created_at, '%%Y-%%m') IN (%s, %s)
-                 AND DAY(created_at) <= %d
-                 AND status = 'sent'
-                 GROUP BY DATE_FORMAT(created_at, '%%Y-%%m')",
-                $current_month,
-                $last_month,
-                $current_day
-            )
-        );
-
-        // Parse results into variables
-        $monthly_usage    = 0;
-        $last_month_usage = 0;
-
-        foreach ( $results as $row ) {
-            if ( $row->month === $current_month ) {
-                $monthly_usage = (int) $row->total;
-            } else {
-                $last_month_usage = (int) $row->total;
+            if ( null === $store ) {
+                return new WP_Error( 'store_error', __( 'SMS data store not available.', 'texty' ), [ 'status' => 503 ] );
             }
+
+            $period = $request->get_param( 'period' );
+            $range  = $this->resolve_range( $period );
+
+            $items = $this->fetch_items( $range['start'], $range['end'] );
+
+            $sent      = 0;
+            $delivered = 0;
+            $failed    = 0;
+            foreach ( $items as $row ) {
+                ++$sent;
+                if ( isset( $row->status ) ) {
+                    if ( 'sent' === $row->status ) {
+                        ++$delivered;
+                    } elseif ( 'failed' === $row->status ) {
+                        ++$failed;
+                    }
+                }
+            }
+
+            $delivery_rate = $sent > 0 ? round( ( $delivered / $sent ) * 100, 1 ) : 0;
+            $volume_chart  = $this->build_volume_chart( $items, $range );
+
+            $gateway_name = texty()->settings()->gateway();
+
+            $response = [
+                'period'         => $period,
+                'gateway_status' => $gateway_name ? true : false,
+                'gateway_name'   => $gateway_name ? $gateway_name : '',
+                'sms_sent'       => $sent,
+                'delivered'      => $delivered,
+                'failed'         => $failed,
+                'delivery_rate'  => $delivery_rate,
+                'volume_chart'   => $volume_chart,
+            ];
+
+            return rest_ensure_response( $response );
+        } catch ( Exception $e ) {
+            error_log( 'Texty Metrics Error: ' . $e->getMessage() . ' | ' . $e->getFile() . ':' . $e->getLine() );
+            return new WP_Error( 'metrics_error', __( 'Failed to load metrics data.', 'texty' ), [ 'status' => 500 ] );
         }
-
-        // Calculate usage change percentage
-        $usage_change = 0;
-        if ( $last_month_usage > 0 ) {
-            $usage_change = round( ( ( $monthly_usage - $last_month_usage ) / $last_month_usage ) * 100, 1 );
-        } elseif ( $monthly_usage > 0 ) {
-            // Last month had 0, this month has data = 100% increase
-            $usage_change = 100;
-        }
-
-        // Calculate delivery rate for last 30 days
-        $delivery_rate = $this->get_delivery_rate( $table_name );
-
-        // Build volume chart data for last 12 months
-        $volume_chart = $this->get_volume_chart( $table_name );
-
-        $response = [
-            'gateway_status' => $gateway_status,
-            'gateway_name'   => $gateway_name,
-            'monthly_usage'  => $monthly_usage,
-            'usage_change'   => $usage_change,
-            'delivery_rate'  => $delivery_rate,
-            'volume_chart'   => $volume_chart,
-        ];
-
-        return rest_ensure_response( $response );
     }
 
     /**
-     * Calculate delivery rate for last 30 days
-     * Single query using SUM+CASE instead of two separate queries
+     * Translate a period key into a date range and bucket granularity.
      *
-     * @param string $table_name The table name
+     * @param string $period
      *
-     * @return float|null Delivery rate as percentage (e.g., 94.5) or null if no data
+     * @return array{start:DateTimeImmutable,end:DateTimeImmutable,granularity:string,label:string}
      */
-    private function get_delivery_rate( $table_name ) {
-        global $wpdb;
+    private function resolve_range( $period ) {
+        $tz  = wp_timezone();
+        $now = new DateTimeImmutable( 'now', $tz );
 
-        $thirty_days_ago = ( new \DateTimeImmutable( 'now', wp_timezone() ) )->modify( '-30 days' )->format( 'Y-m-d H:i:s' );
+        switch ( $period ) {
+            case 'last_month':
+                $start = $now->modify( 'first day of last month' )->setTime( 0, 0, 0 );
+                $end   = $now->modify( 'last day of last month' )->setTime( 23, 59, 59 );
+                $label = __( 'Last Month', 'texty' );
+                $gran  = 'day';
+                break;
 
-        //Get total and delivered in a single query
-        $row = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT
-                    COUNT(*) as total,
-                    SUM(CASE WHEN status = 'sent' THEN 1 ELSE 0 END) as delivered
-                 FROM {$table_name}
-                 WHERE created_at >= %s",
-                $thirty_days_ago
-            )
-        );
+            case 'last_7_days':
+                $start = $now->modify( '-6 days' )->setTime( 0, 0, 0 );
+                $end   = $now->setTime( 23, 59, 59 );
+                $label = __( 'Last 7 Days', 'texty' );
+                $gran  = 'day';
+                break;
 
-        if ( ! $row || (int) $row->total === 0 ) {
-            return null;
+            case 'last_30_days':
+                $start = $now->modify( '-29 days' )->setTime( 0, 0, 0 );
+                $end   = $now->setTime( 23, 59, 59 );
+                $label = __( 'Last 30 Days', 'texty' );
+                $gran  = 'day';
+                break;
+
+            case 'this_year':
+                $start = $now->modify( 'first day of January' )->setTime( 0, 0, 0 );
+                $end   = $now->setTime( 23, 59, 59 );
+                $label = __( 'This Year', 'texty' );
+                $gran  = 'month';
+                break;
+
+            case 'this_month':
+            default:
+                $start = $now->modify( 'first day of this month' )->setTime( 0, 0, 0 );
+                $end   = $now->modify( 'last day of this month' )->setTime( 23, 59, 59 );
+                $label = __( 'This Month', 'texty' );
+                $gran  = 'day';
+                break;
         }
 
-        $rate = ( (int) $row->delivered / (int) $row->total ) * 100;
-
-        return round( $rate, 1 );
+        return [
+            'start'       => $start,
+            'end'         => $end,
+            'granularity' => $gran,
+            'label'       => $label,
+        ];
     }
 
     /**
-     * Get volume chart data for last 12 months (sent messages only)
-     * Single query for all 12 months instead of 12 separate queries
+     * Fetch SMS records in the given range.
      *
-     * @param string $table_name The table name
+     * @param DateTimeImmutable $start
+     * @param DateTimeImmutable $end
      *
      * @return array
      */
-    private function get_volume_chart( $table_name ) {
-        global $wpdb;
-
-        // Generate last 12 months list
-        $current      = new \DateTimeImmutable( 'first day of this month', wp_timezone() );
-        $months       = [];
-        $months_map   = [];
-
-        for ( $i = 11; $i >= 0; $i-- ) {
-            $month_key          = $current->modify( "-{$i} months" )->format( 'Y-m' );
-            $months[]           = $month_key;
-            $months_map[ $month_key ] = 0; // default count = 0
-        }
-
-        // Single query for all 12 months at once
-        $oldest_month = $months[0] . '-01';
-
-        $results = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT DATE_FORMAT(created_at, '%%Y-%%m') as month, COUNT(*) as total
-                 FROM {$table_name}
-                 WHERE created_at >= %s
-                 AND status = 'sent'
-                 GROUP BY DATE_FORMAT(created_at, '%%Y-%%m')",
-                $oldest_month
-            )
+    private function fetch_items( $start, $end ) {
+        $result = SmsStat::get_sent_sms_between_dates(
+            $start->format( 'Y-m-d' ),
+            $end->format( 'Y-m-d' )
         );
 
-        // Fill results into the map
-        foreach ( $results as $row ) {
-            if ( isset( $months_map[ $row->month ] ) ) {
-                $months_map[ $row->month ] = (int) $row->total;
+        if ( empty( $result['items'] ) || ! is_array( $result['items'] ) ) {
+            return [];
+        }
+
+        return $result['items'];
+    }
+
+    /**
+     * Build a series of buckets across the resolved range.
+     *
+     * Each bucket has:
+     *  - `key`    machine ID (Y-m-d for day, Y-m for month) — used by the chart's x-axis dataKey
+     *  - `label`  short label shown on the axis (Jan 1, Mar)
+     *  - `date`   long label shown in the tooltip (16 January 2025)
+     *  - `count`  number of SMS dispatched in that bucket
+     *
+     * @param array $items
+     * @param array $range
+     *
+     * @return array
+     */
+    private function build_volume_chart( $items, $range ) {
+        $tz       = wp_timezone();
+        $start    = $range['start'];
+        $end      = $range['end'];
+        $is_month = 'month' === $range['granularity'];
+
+        $buckets = [];
+        $cursor  = $start;
+        while ( $cursor <= $end ) {
+            $key = $is_month ? $cursor->format( 'Y-m' ) : $cursor->format( 'Y-m-d' );
+
+            $buckets[ $key ] = [
+                'key'   => $key,
+                'label' => $is_month ? $cursor->format( 'M' ) : $cursor->format( 'M j' ),
+                'date'  => $is_month ? $cursor->format( 'F Y' ) : $cursor->format( 'j F Y' ),
+                'count' => 0,
+            ];
+
+            $cursor = $cursor->modify( $is_month ? '+1 month' : '+1 day' );
+        }
+
+        foreach ( $items as $row ) {
+            if ( empty( $row->created_at ) ) {
+                continue;
+            }
+
+            try {
+                $created = new DateTimeImmutable( $row->created_at, $tz );
+            } catch ( Exception $e ) {
+                continue;
+            }
+
+            $key = $is_month ? $created->format( 'Y-m' ) : $created->format( 'Y-m-d' );
+
+            if ( isset( $buckets[ $key ] ) && isset( $row->status ) && 'sent' === $row->status ) {
+                ++$buckets[ $key ]['count'];
             }
         }
 
-        // Build final chart data with short month names
-        $chart_data = [];
-        foreach ( $months_map as $month_key => $count ) {
-            $chart_data[] = [
-                'month' => ( new \DateTimeImmutable( $month_key . '-01', wp_timezone() ) )->format( 'M' ),
-                'count' => $count,
-            ];
-        }
-
-        return $chart_data;
+        return array_values( $buckets );
     }
 }

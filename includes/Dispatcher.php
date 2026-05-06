@@ -4,6 +4,8 @@ namespace Texty;
 
 use Texty\Integrations\Dokan;
 use Texty\Integrations\WooCommerce;
+use Texty\Models\SmsStat;
+use WeDevs\WPKit\DataLayer\DataLayerFactory;
 
 /**
  * Dispatcher Class
@@ -83,6 +85,8 @@ class Dispatcher {
     /**
      * Log SMS message to database via gateway hook
      *
+     * Uses DataLayer for type-safe, cached, and hookable SMS logging.
+     *
      * @param mixed                  $result  The send result (bool, array, or WP_Error)
      * @param string                 $to      Recipient phone number
      * @param string                 $message The message body
@@ -91,34 +95,39 @@ class Dispatcher {
      * @return void
      */
     public function log_sms( $result, $to, $message, $gateway ) {
-        global $wpdb;
-
-        $table_name = $wpdb->prefix . 'texty_sms_stat';
         $gateway_name = texty()->settings()->gateway();
 
-        // Determine status
+        // Determine status based on result
         $status = is_wp_error( $result ) ? 'failed' : 'sent';
 
-        // Extract reference_id from result
+        // Extract reference_id from gateway response
         $reference_id = $this->extract_reference_id( $result );
+        if ( null === $reference_id ) {
+            $reference_id = '';
+        }
 
-        $current_time = current_time( 'mysql' );
+        // Get DataLayerFactory store
+        $store = DataLayerFactory::make_store( SmsStat::class );
 
-        $data = [
-            'receiver'     => $to,
-            'gateway'      => $gateway_name ? $gateway_name : '',
-            'status'       => $status,
-            'created_at'   => $current_time,
-            'updated_at'   => $current_time,
-            'reference_id' => $reference_id,
-        ];
+        // Create and save SMS record using DataLayer.
+        // `set_receiver` is typed `string`; coerce defensively so a failed
+        // send with a null/missing recipient still logs instead of fatalling.
+        $sms = new SmsStat();
+        $sms->set_props( [
+            'receiver'      => is_string( $to ) ? $to : '',
+            'gateway'       => $gateway_name ? $gateway_name : '',
+            'status'        => $status,
+            'reference_id'  => $reference_id,
+            'created_at'    => current_time( 'mysql' ),
+            'updated_at'    => current_time( 'mysql' ),
+        ] );
 
-        $wpdb->insert( $table_name, $data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $store->create( $sms );
     }
     private function extract_reference_id( $result ) {
         if ( ! is_array( $result ) ) return null;
 
-        $id_keys = ['sid', 'message-id', 'message_uuid', 'apiMsgId'];
+        $id_keys = ['sid', 'message-id', 'message_uuid', 'apiMsgId', 'reference_id'];
 
         foreach ( $id_keys as $key ) {
             if ( ! empty( $result[ $key ] ) ) {
