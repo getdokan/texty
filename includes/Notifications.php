@@ -27,6 +27,47 @@ class Notifications {
     private $registered = false;
 
     /**
+     * The notification currently driving a send-pipeline call.
+     *
+     * `Notification::send()` sets this around its `$gateway->send()` loop so
+     * that `Dispatcher::log_sms` (hooked on `texty_after_send_sms`) can write
+     * the originating notification's id + group into the SmsStat row without
+     * having to pass them through the gateway pipeline.
+     *
+     * @var \Texty\Notifications\Notification|null
+     */
+    private $active = null;
+
+    /**
+     * Set the active notification for the duration of a send.
+     *
+     * @param \Texty\Notifications\Notification|null $notification
+     *
+     * @return void
+     */
+    public function set_active( $notification ) {
+        $this->active = $notification;
+    }
+
+    /**
+     * Get the active notification, if any.
+     *
+     * @return \Texty\Notifications\Notification|null
+     */
+    public function get_active() {
+        return $this->active;
+    }
+
+    /**
+     * Clear the active notification.
+     *
+     * @return void
+     */
+    public function clear_active() {
+        $this->active = null;
+    }
+
+    /**
      * Register a notification
      *
      * @param string $key   Notification identifier

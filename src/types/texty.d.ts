@@ -1,7 +1,7 @@
 export interface TextyGlobal {
   version?: {
     lite?: string;
-    business?: string;
+    pro?: string;
   };
   docs_url?: string;
   support_url?: string;

@@ -18,6 +18,7 @@ const IntegrationDetail = lazy(
 const Gateway = lazy(
   () => import(/* webpackChunkName: "gateway" */ '../pages/gateway')
 );
+const Logs = lazy(() => import(/* webpackChunkName: "logs" */ '../pages/logs'));
 const Tools = lazy(
   () => import(/* webpackChunkName: "tools" */ '../pages/Tools')
 );
@@ -61,6 +62,12 @@ const routes: TextyRoute[] = [
     title: __('Integration', 'texty'),
     path: '/notifications/integrations/:integrationId',
     element: withSuspense(IntegrationDetail),
+  },
+  {
+    id: 'texty-logs',
+    title: __('Logs', 'texty'),
+    path: '/logs',
+    element: withSuspense(Logs),
   },
   {
     id: 'texty-tools',

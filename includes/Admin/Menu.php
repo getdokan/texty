@@ -59,6 +59,10 @@ class Menu {
                     'title' => __( 'Notifications', 'texty' ),
                 ],
                 [
+                    'path'  => 'logs',
+                    'title' => __( 'Logs', 'texty' ),
+                ],
+                [
                     'path'  => 'tools',
                     'title' => __( 'Tools', 'texty' ),
                 ],

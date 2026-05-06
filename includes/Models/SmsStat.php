@@ -39,12 +39,16 @@ class SmsStat extends BaseModel {
      * @var array
      */
     protected array $data = [
-        'receiver'      => '',
-        'gateway'       => '',
-        'status'        => 'pending',
-        'created_at'    => null,
-        'updated_at'    => null,
-        'reference_id'  => '',
+        'receiver'           => '',
+        'gateway'            => '',
+        'status'             => 'pending',
+        'notification_id'    => '',
+        'notification_group' => '',
+        'message'            => '',
+        'response'           => '',
+        'created_at'         => null,
+        'updated_at'         => null,
+        'reference_id'       => '',
     ];
 
     /**
@@ -53,12 +57,16 @@ class SmsStat extends BaseModel {
      * @var array
      */
     protected array $casts = [
-        'receiver'      => 'string',
-        'gateway'       => 'string',
-        'status'        => 'string',
-        'created_at'    => 'date',
-        'updated_at'    => 'date',
-        'reference_id'  => 'string',
+        'receiver'           => 'string',
+        'gateway'            => 'string',
+        'status'             => 'string',
+        'notification_id'    => 'string',
+        'notification_group' => 'string',
+        'message'            => 'string',
+        'response'           => 'string',
+        'created_at'         => 'date',
+        'updated_at'         => 'date',
+        'reference_id'       => 'string',
     ];
 
     // --- Getters ---
@@ -94,6 +102,52 @@ class SmsStat extends BaseModel {
      */
     public function get_status( string $context = 'view' ): string {
         return $this->get_prop( 'status', $context );
+    }
+
+    /**
+     * Get notification ID (e.g. 'registration', 'order_admin_processing')
+     *
+     * @param string $context 'view' or 'edit'
+     *
+     * @return string
+     */
+    public function get_notification_id( string $context = 'view' ): string {
+        return $this->get_prop( 'notification_id', $context );
+    }
+
+    /**
+     * Get notification group ('wp', 'wc', 'dokan', or custom)
+     *
+     * @param string $context 'view' or 'edit'
+     *
+     * @return string
+     */
+    public function get_notification_group( string $context = 'view' ): string {
+        return $this->get_prop( 'notification_group', $context );
+    }
+
+    /**
+     * Get the final, token-replaced message body that was sent
+     *
+     * @param string $context 'view' or 'edit'
+     *
+     * @return string
+     */
+    public function get_message( string $context = 'view' ): string {
+        return $this->get_prop( 'message', $context );
+    }
+
+    /**
+     * Get the gateway response payload (JSON-encoded). For failed sends this
+     * holds the WP_Error message + data; for successful sends it holds the
+     * raw gateway response array.
+     *
+     * @param string $context 'view' or 'edit'
+     *
+     * @return string
+     */
+    public function get_response( string $context = 'view' ): string {
+        return $this->get_prop( 'response', $context );
     }
 
     /**
@@ -165,6 +219,59 @@ class SmsStat extends BaseModel {
     }
 
     /**
+     * Set notification ID
+     *
+     * @param string|null $notification_id
+     *
+     * @return void
+     */
+    public function set_notification_id( ?string $notification_id ): void {
+        $this->set_prop( 'notification_id', null === $notification_id ? '' : $notification_id );
+    }
+
+    /**
+     * Set notification group
+     *
+     * @param string|null $notification_group
+     *
+     * @return void
+     */
+    public function set_notification_group( ?string $notification_group ): void {
+        $this->set_prop( 'notification_group', null === $notification_group ? '' : $notification_group );
+    }
+
+    /**
+     * Set the final, token-replaced message body
+     *
+     * @param string|null $message
+     *
+     * @return void
+     */
+    public function set_message( ?string $message ): void {
+        $this->set_prop( 'message', null === $message ? '' : $message );
+    }
+
+    /**
+     * Set the gateway response payload. Arrays/objects are JSON-encoded;
+     * strings are stored as-is.
+     *
+     * @param mixed $response
+     *
+     * @return void
+     */
+    public function set_response( $response ): void {
+        if ( null === $response ) {
+            $this->set_prop( 'response', '' );
+            return;
+        }
+        if ( is_string( $response ) ) {
+            $this->set_prop( 'response', $response );
+            return;
+        }
+        $this->set_prop( 'response', wp_json_encode( $response ) ?? '' );
+    }
+
+    /**
      * Set creation timestamp
      *
      * @param string|int|\DateTimeInterface|null $date
@@ -228,9 +335,9 @@ class SmsStat extends BaseModel {
      * @return array Array with 'total' and 'items' keys
      */
     public static function get_sent_sms_between_dates( string $start_date, string $end_date ): array {
-        $store = DataLayerFactory::make_store( SmsStat::class );
+        $store = DataLayerFactory::make_store( self::class );
         if ( ! $store ) {
-            error_log( sprintf( 'Texty SmsStat error: Failed to create data store for %s.', SmsStat::class ) );
+            error_log( sprintf( 'Texty SmsStat error: Failed to create data store for %s.', self::class ) );
 
             return [
                 'total' => 0,
@@ -239,16 +346,18 @@ class SmsStat extends BaseModel {
         }
 
         $start_datetime = $start_date . ' 00:00:00';
-        $end_datetime   = $end_date   . ' 23:59:59'; 
+        $end_datetime   = $end_date . ' 23:59:59';
 
-        $result = $store->query( [
-            'per_page'   => -1,
-            'date_query' => [
-                'column' => 'created_at',
-                'after'  => $start_datetime,
-                'before' => $end_datetime,
-            ],
-        ] );
+        $result = $store->query(
+            [
+				'per_page'   => -1,
+				'date_query' => [
+					'column' => 'created_at',
+					'after'  => $start_datetime,
+					'before' => $end_datetime,
+				],
+			]
+        );
 
         // Ensure result is an array with proper structure
         if ( ! is_array( $result ) ) {
@@ -269,9 +378,9 @@ class SmsStat extends BaseModel {
      * @return array Array with 'total' and 'items' keys
      */
     public static function get_successful_sent_sms_between_dates( string $start_date, string $end_date ): array {
-        $store = DataLayerFactory::make_store( SmsStat::class );
+        $store = DataLayerFactory::make_store( self::class );
         if ( ! $store ) {
-            error_log( sprintf( 'Texty SmsStat error: Failed to create data store for %s.', SmsStat::class ) );
+            error_log( sprintf( 'Texty SmsStat error: Failed to create data store for %s.', self::class ) );
 
             return [
                 'total' => 0,
@@ -280,17 +389,19 @@ class SmsStat extends BaseModel {
         }
 
         $start_datetime = $start_date . ' 00:00:00';
-        $end_datetime   = $end_date   . ' 23:59:59'; 
+        $end_datetime   = $end_date . ' 23:59:59';
 
-        $result = $store->query( [
-            'per_page'   => -1,
-            'date_query' => [
-                'column' => 'created_at',
-                'status' => 'sent',
-                'after'  => $start_datetime,
-                'before' => $end_datetime,
-            ],
-        ] );
+        $result = $store->query(
+            [
+				'per_page'   => -1,
+				'date_query' => [
+					'column' => 'created_at',
+					'status' => 'sent',
+					'after'  => $start_datetime,
+					'before' => $end_datetime,
+				],
+			]
+        );
 
         // Ensure result is an array with proper structure
         if ( ! is_array( $result ) ) {
