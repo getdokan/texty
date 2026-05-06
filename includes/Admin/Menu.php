@@ -130,7 +130,15 @@ class Menu {
      * @return array
      */
     public function localize_script() {
-        $i18n = [];
+        $i18n = [
+            'asset_url' => trailingslashit( TEXTY_URL ) . 'assets/',
+            'rest_url'  => esc_url_raw( rest_url() ),
+            'ajax_url'  => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+            'nonce'     => wp_create_nonce( 'wp_rest' ),
+            'version'   => [
+                'lite' => TEXTY_VERSION,
+            ],
+        ];
 
         return apply_filters( 'texty_localize_script', $i18n );
     }
