@@ -68,10 +68,14 @@ class Menu {
         );
 
         foreach ( $submenus as $item ) {
+            $path = 'admin.php?page=' . $slug . '#/' . $item['path'];
+            if ( filter_var( $item['path'], FILTER_VALIDATE_URL ) ) {
+				$path = $item['path'];
+			}
             $submenu[ $slug ][] = [ // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
                 $item['title'],
                 $capability,
-                'admin.php?page=' . $slug . '#/' . $item['path'],
+                $path,
             ];
         }
 
