@@ -1,0 +1,51 @@
+on: pull_request
+
+name: Inspections
+jobs:
+  runPHPCSInspection:
+    name: Run PHPCS inspection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use desired version of NodeJS
+        uses: actions/setup-node@v4
+        with:
+            node-version: 20
+            cache: npm
+
+      - name: Npm install and build
+        run: |
+            npm i
+            npm run build
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: cs2pr, composer:v2
+
+      - name: Get composer cache directory
+        id: composercache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}"
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress || composer update --prefer-dist --no-progress
+
+      - name: Detect coding standard violations
+        run: |
+          URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
+          readarray -t FILES < <(curl --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' -s -X GET -G "$URL" | jq -r '.[] | .filename // empty')
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "No changed files found."
+            exit 0
+          fi
+          vendor/bin/phpcs "${FILES[@]}" -q --report=checkstyle | cs2pr --graceful-warnings
