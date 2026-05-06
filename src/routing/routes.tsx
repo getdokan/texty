@@ -23,7 +23,7 @@ const Tools = lazy(
   () => import(/* webpackChunkName: "tools" */ '../pages/Tools')
 );
 const SettingsPage = lazy(
-  () => import(/* webpackChunkName: "settings" */ '../pages/Settings')
+  () => import(/* webpackChunkName: "settings" */ '../pages/SettingsPage')
 );
 const OldNotifications = lazy(
   () =>
@@ -83,7 +83,7 @@ const routes: TextyRoute[] = [
   },
   {
     id: 'texty-settings',
-    title: __('Settings', 'texty'),
+    title: __('Gateway Settings', 'texty'),
     path: '/settings',
     element: withSuspense(SettingsPage),
   },

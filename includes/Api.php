@@ -21,6 +21,7 @@ class Api {
         $this->classes = [
             Api\Settings::class,
             Api\Notifications::class,
+            Api\NotificationSettings::class,
             Api\Tools::class,
             Api\Status::class,
             Api\Send::class,

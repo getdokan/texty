@@ -260,11 +260,11 @@ abstract class Notification {
     /**
      * Send message to recipients
      *
-     * @return void
+     * @return bool
      */
-    public function send() {
+    public function send(): bool {
         if ( ! $this->enabled() ) {
-            return;
+            return false;
         }
 
         /**
@@ -280,7 +280,7 @@ abstract class Notification {
         $recipients = is_array( $recipients ) ? array_values( array_filter( $recipients ) ) : [];
 
         if ( ! $recipients ) {
-            return;
+            return false;
         }
 
         // Check unique recipients numbers
@@ -340,5 +340,7 @@ abstract class Notification {
          * @param string       $content      The message content
          */
         do_action( 'texty_after_notification', $this, $recipients, $content );
+
+        return true;
     }
 }
