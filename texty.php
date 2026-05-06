@@ -180,6 +180,7 @@ final class Texty {
         return $this->instances['notification'];
     }
 
+    /**
      * Access to the migrations bootstrap.
      *
      * @return Texty\Migrations
