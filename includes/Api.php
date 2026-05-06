@@ -37,8 +37,14 @@ class Api {
      * @return void
      */
     public function init_api() {
-        foreach ( $this->classes as $class ) {
+        $classes = apply_filters( 'texty_rest_api_class_map', $this->classes );
+
+        foreach ( $classes as $class ) {
             $object = new $class();
+            // check if object is instance of WP_REST_Controller
+            if ( ! is_a( $object, 'WP_REST_Controller' ) ) {
+                continue;
+            }
             $object->register_routes();
         }
     }

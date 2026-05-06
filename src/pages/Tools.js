@@ -1,11 +1,11 @@
-import { __ } from '@wordpress/i18n';
 import { Card, CardBody, CardHeader } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Status from '../components/Status';
 import QuickSend from '../components/QuickSend';
+import Status from '../components/Status';
 import TestMessage from '../components/TestMessage';
 
 function Tools() {
