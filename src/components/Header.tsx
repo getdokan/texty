@@ -39,27 +39,22 @@ type HelpItem = {
 };
 
 function Header() {
-  const {
-    version: { lite: liteVersion = '1.1.5', business: businessVersion } = {},
-    docs_url: docsUrl = 'https://wedevs.com/docs/texty/',
-    support_url: supportUrl = 'https://wedevs.com/contact/',
-    feature_request_url: featureRequestUrl = 'https://wedevs.com/contact/',
-  } = window.texty ?? {};
+  const { version } = window.texty ?? {};
 
   const versions = [
-    ...(liteVersion
+    ...(version?.lite
       ? [
           {
-            version: `${__('Lite:', 'texty')} ${liteVersion}`,
+            version: `${__('Lite:', 'texty')} ${version.lite}`,
             isPro: false,
             className: 'border-gray-200!',
           },
         ]
       : []),
-    ...(businessVersion
+    ...(version?.pro
       ? [
           {
-            version: `${__('Business:', 'texty')} ${businessVersion}`,
+            version: `${__('Pro:', 'texty')} ${version.pro}`,
             isPro: true,
             className: 'border-gray-200!',
           },
@@ -75,7 +70,7 @@ function Header() {
         'Learn how to set up gateways and create notification workflows.',
         'texty'
       ),
-      href: docsUrl,
+      href: 'https://wedevs.com/docs/texty/',
     },
     {
       icon: <Headphones className="size-5 text-gray-700!" />,
@@ -84,7 +79,7 @@ function Header() {
         'Need help with Twilio, Vonage, or message delivery? We have got you.',
         'texty'
       ),
-      href: supportUrl,
+      href: 'https://wedevs.com/contact/',
     },
     {
       icon: <Lightbulb className="size-5 text-gray-700!" />,
@@ -93,7 +88,7 @@ function Header() {
         'Want new notification triggers or gateway integrations? Tell us.',
         'texty'
       ),
-      href: featureRequestUrl,
+      href: 'https://wedevs.com/contact/',
     },
   ];
 

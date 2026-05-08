@@ -59,6 +59,10 @@ class Menu {
                     'title' => __( 'Notifications', 'texty' ),
                 ],
                 [
+                    'path'  => 'logs',
+                    'title' => __( 'Logs', 'texty' ),
+                ],
+                [
                     'path'  => 'tools',
                     'title' => __( 'Tools', 'texty' ),
                 ],
@@ -136,6 +140,7 @@ class Menu {
     public function localize_script() {
         $i18n = [
             'asset_url' => trailingslashit( TEXTY_URL ) . 'assets/',
+            'site_name' => get_bloginfo( 'name' ),
             'rest_url'  => esc_url_raw( rest_url() ),
             'ajax_url'  => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
             'nonce'     => wp_create_nonce( 'wp_rest' ),
