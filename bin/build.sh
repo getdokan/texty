@@ -36,14 +36,12 @@ rm -rf "$DIR/build"
 mkdir -p "$BUILD_DIR"
 
 # Run the build.
-# status "Installing dependencies... 📦"
-# npm install
+status "Installing dependencies... 📦"
+npm install
 
 status "Generating build... 👷‍♀️"
-yarn build
-yarn makepot
-yarn pot2json
-yarn readme
+npm run build
+npm run makepot
 
 # Copy all files
 status "Copying files... ✌️"
