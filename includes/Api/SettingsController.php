@@ -2,21 +2,22 @@
 /**
  * Settings REST Controller.
  *
- * Extends BaseSettingsRESTController to serve the Texty gateway settings
- * via a schema-driven REST API compatible with the plugin-ui <Settings> component.
+ * Serves the Texty gateway settings via a schema-driven REST API compatible
+ * with the plugin-ui <Settings> component. Every registered gateway becomes
+ * its own page in the schema; saving a page activates that gateway and writes
+ * its credentials into the existing `texty_settings` option (BC-preserved).
  *
- * Option key: texty_settings (option_prefix = 'texty', page_id = 'settings').
+ * Storage shape (unchanged):
+ *   texty_settings = [
+ *     'gateway' => 'twilio',          // active gateway key (root)
+ *     'twilio'  => [ 'sid' => ..., 'token' => ..., 'from' => ... ],
+ *     'vonage'  => [ 'key' => ..., 'secret' => ..., 'from' => ... ],
+ *     ...
+ *   ]
  *
- * Backward Compatibility:
- * The existing texty_settings option stores data as:
- *   [ 'gateway' => 'twilio', 'twilio' => [...], 'vonage' => [...], ... ]
- *
- * The BaseSettingsRESTController would normally nest the gateway field under
- * its section_id (gateway_selection.gateway), but existing data has 'gateway'
- * at the root level. We override get_field_path() to handle this mapping.
- *
- * For gateway credential fields (twilio.sid, vonage.key, etc.), section_id
- * already matches the existing storage key, so they map correctly by default.
+ * Routes:
+ *   GET  /texty/v1/settings/schema  — schema + values + active_gateway
+ *   POST /texty/v1/settings/schema  — save one gateway scope (also activates it)
  *
  * @package Texty\Api
  */
@@ -24,6 +25,9 @@
 namespace Texty\Api;
 
 use WeDevs\WPKit\Settings\BaseSettingsRESTController;
+use WP_Error;
+use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * SettingsController Class
@@ -31,12 +35,9 @@ use WeDevs\WPKit\Settings\BaseSettingsRESTController;
 class SettingsController extends BaseSettingsRESTController {
 
 	/**
-	 * Fields that should be stored at the root level of the option,
-	 * bypassing the section_id nesting.
-	 *
-	 * @var string[]
+	 * Single backing option that stores all gateway credentials + the active key.
 	 */
-	private $root_level_fields = [ 'gateway' ];
+	const OPTION_KEY = 'texty_settings';
 
 	/**
 	 * Constructor.
@@ -46,94 +47,243 @@ class SettingsController extends BaseSettingsRESTController {
 	}
 
 	/**
-	 * Build the nested path array for a field element.
+	 * Build the page-per-gateway schema.
 	 *
-	 * Overrides the parent to handle backward compatibility with the existing
-	 * texty_settings option structure. Fields listed in $root_level_fields
-	 * are stored at the option root level (no section nesting).
+	 * Each gateway's page, section, and fields are declared explicitly here —
+	 * not generated from `texty()->gateways()->all()`. Easier to read, modify,
+	 * and override per-gateway than a generic `foreach`. Third-party gateways
+	 * register their own pages via the `texty_settings_schema` filter.
+	 *
+	 * Defaults for each field are pulled from the saved `texty_settings` option
+	 * so the frontend's SettingsProvider can extract initial values.
+	 *
+	 * @return array[]
+	 */
+	protected function get_settings_schema(): array {
+		$stored = $this->load_stored_settings();
+
+		$schema = array_merge(
+			$this->build_twilio_schema( $this->credentials_for( $stored, 'twilio' ) ),
+			$this->build_vonage_schema( $this->credentials_for( $stored, 'vonage' ) ),
+			$this->build_plivo_schema( $this->credentials_for( $stored, 'plivo' ) ),
+			$this->build_clickatell_schema( $this->credentials_for( $stored, 'clickatell' ) )
+		);
+
+		// Fake gateway is dev-only — only registered when WP_DEBUG is true,
+		// matching the gating in Texty\Gateways::all().
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$schema = array_merge( $schema, $this->build_fake_schema() );
+		}
+
+		/**
+		 * Filter the gateway settings schema. Third-party gateways added via
+		 * `texty_register_gateways` should append their own page + section + field
+		 * elements through this filter (the static declarations above only cover
+		 * the gateways that ship with Texty).
+		 *
+		 * @param array[] $schema Flat array of settings elements.
+		 */
+		return apply_filters( 'texty_settings_schema', $schema );
+	}
+
+	/**
+	 * Storage path override.
+	 *
+	 * Each credential field stores at texty_settings[<gateway_key>][<field_id>].
+	 * Page id is the gateway key, so [page_id, field_id] is the right path.
 	 *
 	 * @param array $element Field element.
 	 *
 	 * @return string[]
 	 */
 	protected function get_field_path( array $element ): array {
-		// Root-level fields bypass section nesting.
-		if ( in_array( $element['id'], $this->root_level_fields, true ) ) {
-			return [ $element['id'] ];
+		if ( ! empty( $element['page_id'] ) ) {
+			return [ $element['page_id'], $element['id'] ];
 		}
-
 		return parent::get_field_path( $element );
 	}
 
 	/**
-	 * POST handler — converts flat dot-keyed values from the frontend
-	 * into the nested structure expected by the parent controller.
+	 * Load values for the schema from a single backing option (`texty_settings`).
 	 *
-	 * The plugin-ui <Settings> component sends values keyed by dependency_key
-	 * (e.g. "gateway_selection.gateway", "twilio.sid"), but BaseSettingsRESTController
-	 * expects nested arrays (e.g. { gateway: "twilio", twilio: { sid: "..." } }).
+	 * BaseSettingsRESTController defaults to one option per page; we override to
+	 * keep all gateway credentials in one option (BC).
 	 *
-	 * @param \WP_REST_Request $request Request object.
+	 * @param array $schema Settings schema elements.
 	 *
-	 * @return \WP_REST_Response
+	 * @return array<string, array>
 	 */
-	public function create_item( $request ) {
-		$values   = $request->get_param( 'values' );
-		$scope_id = sanitize_key( $request->get_param( 'scopeId' ) ?? '' );
+	protected function load_values( array $schema ): array {
+		$stored = $this->load_stored_settings();
+		$values = [];
 
-		if ( is_array( $values ) && ! empty( $scope_id ) ) {
-			$schema = $this->get_settings_schema();
-			$fields = $this->get_fields_for_page( $schema, $scope_id );
-			$nested = [];
-
-			foreach ( $fields as $field ) {
-				$dep_key = $this->get_dependency_key( $field );
-
-				if ( array_key_exists( $dep_key, $values ) ) {
-					$path = $this->get_field_path( $field );
-					$this->set_nested_value( $nested, $path, $values[ $dep_key ] );
-				}
+		foreach ( $schema as $element ) {
+			if ( 'page' !== $element['type'] ) {
+				continue;
 			}
-
-			$request->set_param( 'values', $nested );
-
-			// Validate gateway credentials using the gateway's own validate() method.
-			$gateway_error = $this->validate_gateway_credentials( $nested );
-
-			if ( is_wp_error( $gateway_error ) ) {
-				return new \WP_REST_Response(
-					[
-						'errors' => [
-							'gateway' => $gateway_error->get_error_message(),
-						],
-					],
-					400
-				);
-			}
+			$values[ $element['id'] ] = isset( $stored[ $element['id'] ] ) && is_array( $stored[ $element['id'] ] )
+				? $stored[ $element['id'] ]
+				: [];
 		}
 
-		return parent::create_item( $request );
+		return $values;
 	}
 
 	/**
-	 * Validate gateway credentials using the gateway's own validate() method.
+	 * GET handler — wraps the parent response with two extra fields:
+	 *   - active_gateway     : the gateway currently set as active for sending
+	 *   - connected_gateways : keys of all gateways with saved (non-empty) credentials
 	 *
-	 * Replicates the old Api\Settings behavior where each gateway class
-	 * validates its own credentials before they are saved.
+	 * The two are independent — a gateway can be "connected" (has credentials)
+	 * without being "active" (chosen for sending).
 	 *
-	 * @param array $nested Nested values converted from flat dot-key format.
+	 * @param WP_REST_Request $request Request object.
 	 *
-	 * @return \WP_Error|true WP_Error on validation failure, true on success.
+	 * @return WP_REST_Response
 	 */
-	private function validate_gateway_credentials( array $nested ) {
-		$gateway_key = $nested['gateway'] ?? '';
+	public function get_items( $request ) {
+		$response = parent::get_items( $request );
+		$data     = $response->get_data();
+		$stored   = $this->load_stored_settings();
 
-		if ( empty( $gateway_key ) ) {
-			return true;
+		$active                 = texty()->settings()->gateway();
+		$data['active_gateway'] = $active ? (string) $active : '';
+
+		$schema     = isset( $data['schema'] ) && is_array( $data['schema'] ) ? $data['schema'] : [];
+		$connected  = [];
+		$page_ids   = [];
+		foreach ( $schema as $element ) {
+			if ( 'page' === $element['type'] ) {
+				$page_ids[] = $element['id'];
+			}
 		}
 
-		$registered = texty()->gateways()->all();
+		foreach ( $page_ids as $page_id ) {
+			$creds = isset( $stored[ $page_id ] ) && is_array( $stored[ $page_id ] ) ? $stored[ $page_id ] : [];
+			foreach ( $creds as $value ) {
+				if ( '' !== (string) $value ) {
+					$connected[] = $page_id;
+					break;
+				}
+			}
+		}
 
+		$data['connected_gateways'] = $connected;
+
+		$response->set_data( $data );
+		return $response;
+	}
+
+	/**
+	 * POST handler — saves credentials for one gateway page.
+	 *
+	 * Saving does NOT activate the gateway. Activation is a separate action
+	 * (POST /texty/v1/gateway/activate) so the UI can offer a Connect → Activate
+	 * two-step flow. The active gateway field is left untouched.
+	 *
+	 * Steps:
+	 * 1. Convert flat dot-keyed values from the frontend (keyed by dependency_key)
+	 *    into a nested structure keyed by storage path.
+	 * 2. Validate the credentials via the gateway's own validate() method.
+	 * 3. Merge into the existing `texty_settings` option (preserving root gateway).
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function create_item( $request ) {
+		$scope_id = sanitize_key( (string) ( $request->get_param( 'scopeId' ) ?? '' ) );
+		$values   = $request->get_param( 'values' );
+
+		if ( ! is_array( $values ) || empty( $scope_id ) ) {
+			return new WP_REST_Response(
+				[ 'errors' => [ 'values' => __( 'Invalid values format.', 'texty' ) ] ],
+				400
+			);
+		}
+
+		$schema   = $this->get_settings_schema();
+		$page_ids = $this->get_page_ids( $schema );
+
+		if ( ! in_array( $scope_id, $page_ids, true ) ) {
+			return new WP_REST_Response(
+				[ 'errors' => [ 'scopeId' => __( 'Invalid scope ID.', 'texty' ) ] ],
+				400
+			);
+		}
+
+		// Convert dot-keyed values (texty.<gw>.<field>) → nested ([gw][field]).
+		$fields = $this->get_fields_for_page( $schema, $scope_id );
+		$nested = [];
+		foreach ( $fields as $field ) {
+			$dep_key = $this->build_dependency_key( $field );
+			if ( array_key_exists( $dep_key, $values ) ) {
+				$path = $this->get_field_path( $field );
+				$this->set_nested_value( $nested, $path, $values[ $dep_key ] );
+			}
+		}
+
+		$creds = isset( $nested[ $scope_id ] ) && is_array( $nested[ $scope_id ] ) ? $nested[ $scope_id ] : [];
+
+		// Validate credentials via the gateway's own validate() method.
+		$validation = $this->validate_gateway_credentials( $scope_id, $creds );
+		if ( is_wp_error( $validation ) ) {
+			return new WP_REST_Response(
+				[
+					'errors' => [
+						'gateway' => $validation->get_error_message(),
+					],
+				],
+				400
+			);
+		}
+
+		// Merge credentials into existing settings — preserve the active gateway.
+		$existing = $this->load_stored_settings();
+		$merged   = $this->array_merge_deep( $existing, $nested );
+
+		update_option( self::OPTION_KEY, $merged );
+
+		/**
+		 * Fires after Texty gateway credentials have been saved.
+		 *
+		 * @param array  $merged   Final merged settings persisted to the option.
+		 * @param array  $nested   Nested values for this scope only.
+		 * @param string $scope_id The gateway key that was saved.
+		 */
+		do_action( 'texty_settings_after_save', $merged, $nested, $scope_id );
+
+		// Build the per-page values response.
+		$values_response = [];
+		foreach ( $schema as $element ) {
+			if ( 'page' !== $element['type'] ) {
+				continue;
+			}
+			$values_response[ $element['id'] ] = isset( $merged[ $element['id'] ] ) && is_array( $merged[ $element['id'] ] )
+				? $merged[ $element['id'] ]
+				: [];
+		}
+
+		return new WP_REST_Response(
+			[
+				'success'        => true,
+				'values'         => $values_response,
+				'active_gateway' => isset( $merged['gateway'] ) ? (string) $merged['gateway'] : '',
+				'connected'      => $scope_id,
+			]
+		);
+	}
+
+	/**
+	 * Validate gateway credentials by delegating to the gateway's validate().
+	 *
+	 * @param string $gateway_key Gateway registry key.
+	 * @param array  $creds       Submitted credentials for that gateway.
+	 *
+	 * @return WP_Error|true
+	 */
+	private function validate_gateway_credentials( string $gateway_key, array $creds ) {
+		$registered = texty()->gateways()->all();
 		if ( ! isset( $registered[ $gateway_key ] ) ) {
 			return true;
 		}
@@ -141,31 +291,23 @@ class SettingsController extends BaseSettingsRESTController {
 		$gateway_class = $registered[ $gateway_key ];
 		$gateway       = new $gateway_class();
 
-		// Build a mock request with the gateway credentials as the gateway expects.
-		// Each gateway's validate() reads $request->get_param('gateway_name').
-		$mock_request = new \WP_REST_Request( 'POST' );
-		$mock_request->set_param( $gateway_key, $nested[ $gateway_key ] ?? [] );
+		$mock_request = new WP_REST_Request( 'POST' );
+		$mock_request->set_param( $gateway_key, $creds );
 
 		$result = $gateway->validate( $mock_request );
-
-		if ( is_wp_error( $result ) ) {
-			return $result;
-		}
-
-		return true;
+		return is_wp_error( $result ) ? $result : true;
 	}
 
 	/**
-	 * Build the dependency_key for a field as the frontend would compute it.
+	 * Mirror plugin-ui's frontend dependency_key construction:
+	 * join section_id (and any further parents) with the field id by dots.
+	 * The gateway page_id is intentionally omitted to match the frontend.
 	 *
-	 * The plugin-ui <Settings> component builds dependency_key by joining
-	 * parent IDs with dots: "section_id.field_id" (e.g. "twilio.sid").
-	 *
-	 * @param array $field Field element from schema.
+	 * @param array $field Field element.
 	 *
 	 * @return string
 	 */
-	private function get_dependency_key( array $field ): string {
+	private function build_dependency_key( array $field ): string {
 		$parts       = [];
 		$parent_keys = [ 'subpage_id', 'tab_id', 'section_id', 'subsection_id', 'field_group_id' ];
 
@@ -176,339 +318,351 @@ class SettingsController extends BaseSettingsRESTController {
 		}
 
 		$parts[] = $field['id'];
-
 		return implode( '.', $parts );
 	}
 
 	/**
-	 * Return the flat settings schema array.
-	 *
-	 * The schema defines a single page 'settings' which maps to wp_options key 'texty_settings'.
-	 * Gateway credentials are stored as nested arrays under section IDs that match
-	 * the gateway key (twilio, vonage, clickatell, plivo).
-	 *
-	 * @return array[] Flat array of settings elements.
-	 */
-	protected function get_settings_schema(): array {
-		$gateway_options = $this->get_gateway_options();
-
-		$schema = [
-			// Page -- maps to option key 'texty_settings'.
-			[
-				'type'  => 'page',
-				'id'    => 'settings',
-				'title' => __( 'Settings', 'texty' ),
-				'icon'  => 'settings',
-			],
-
-			// Section: Gateway selection.
-			[
-				'type'        => 'section',
-				'id'          => 'gateway_selection',
-				'page_id'     => 'settings',
-				'title'       => __( 'SMS Gateway', 'texty' ),
-				'description' => __( 'Select and configure your SMS gateway provider.', 'texty' ),
-				'priority'     => 9,
-			],
-
-			// Field: Gateway selector (stored at root: texty_settings['gateway']).
-			[
-				'type'       => 'field',
-				'id'         => 'gateway',
-				'variant'    => 'select',
-				'page_id'    => 'settings',
-				'section_id' => 'gateway_selection',
-				'title'      => __( 'Gateway', 'texty' ),
-				'label'      => __( 'Gateway', 'texty' ),
-				'default'    => '',
-				'options'    => $gateway_options,
-			],
-
-			// =====================
-			// Twilio section
-			// =====================
-			[
-				'type'         => 'section',
-				'id'           => 'twilio',
-				'page_id'      => 'settings',
-				'title'        => __( 'Twilio Settings', 'texty' ),
-				'description'  => __( 'Configure your Twilio SMS gateway credentials.', 'texty' ),
-				'priority'     => 10,
-				'dependencies' => [
-					[
-						'key'        => 'gateway_selection.gateway',
-						'value'      => 'twilio',
-						'comparison' => '===',
-					],
-				],
-			],
-			[
-				'type'       => 'field',
-				'id'         => 'sid',
-				'variant'    => 'text',
-				'page_id'    => 'settings',
-				'section_id' => 'twilio',
-				'title'      => __( 'Account SID', 'texty' ),
-				'label'      => __( 'Account SID', 'texty' ),
-				'default'    => '',
-			],
-			[
-				'type'       => 'field',
-				'id'         => 'token',
-				'variant'    => 'text',
-				'page_id'    => 'settings',
-				'section_id' => 'twilio',
-				'title'      => __( 'Auth Token', 'texty' ),
-				'label'      => __( 'Auth Token', 'texty' ),
-				'default'    => '',
-			],
-			[
-				'type'        => 'field',
-				'id'          => 'from',
-				'variant'     => 'text',
-				'page_id'     => 'settings',
-				'section_id'  => 'twilio',
-				'title'       => __( 'From Number', 'texty' ),
-				'label'       => __( 'From Number', 'texty' ),
-				'default'     => '',
-				'helper_text' => __( 'Must be a valid number associated with your Twilio account', 'texty' ),
-			],
-
-			// =====================
-			// Vonage section
-			// =====================
-			[
-				'type'         => 'section',
-				'id'           => 'vonage',
-				'page_id'      => 'settings',
-				'title'        => __( 'Vonage Settings', 'texty' ),
-				'description'  => __( 'Configure your Vonage (Nexmo) SMS gateway credentials.', 'texty' ),
-				'priority'     => 10,
-				'dependencies' => [
-					[
-						'key'        => 'gateway_selection.gateway',
-						'value'      => 'vonage',
-						'comparison' => '===',
-					],
-				],
-			],
-			[
-				'type'       => 'field',
-				'id'         => 'key',
-				'variant'    => 'text',
-				'page_id'    => 'settings',
-				'section_id' => 'vonage',
-				'title'      => __( 'API Key', 'texty' ),
-				'label'      => __( 'API Key', 'texty' ),
-				'default'    => '',
-			],
-			[
-				'type'       => 'field',
-				'id'         => 'secret',
-				'variant'    => 'text',
-				'page_id'    => 'settings',
-				'section_id' => 'vonage',
-				'title'      => __( 'API Secret', 'texty' ),
-				'label'      => __( 'API Secret', 'texty' ),
-				'default'    => '',
-			],
-			[
-				'type'       => 'field',
-				'id'         => 'from',
-				'variant'    => 'text',
-				'page_id'    => 'settings',
-				'section_id' => 'vonage',
-				'title'      => __( 'From Number', 'texty' ),
-				'label'      => __( 'From Number', 'texty' ),
-				'default'    => '',
-			],
-
-			// =====================
-			// Clickatell section
-			// =====================
-			[
-				'type'         => 'section',
-				'id'           => 'clickatell',
-				'page_id'      => 'settings',
-				'title'        => __( 'Clickatell Settings', 'texty' ),
-				'description'  => __( 'Configure your Clickatell SMS gateway credentials.', 'texty' ),
-				'priority'     => 10,
-				'dependencies' => [
-					[
-						'key'        => 'gateway_selection.gateway',
-						'value'      => 'clickatell',
-						'comparison' => '===',
-					],
-				],
-			],
-			[
-				'type'       => 'field',
-				'id'         => 'key',
-				'variant'    => 'text',
-				'page_id'    => 'settings',
-				'section_id' => 'clickatell',
-				'title'      => __( 'API Key', 'texty' ),
-				'label'      => __( 'API Key', 'texty' ),
-				'default'    => '',
-			],
-
-			// =====================
-			// Plivo section
-			// =====================
-			[
-				'type'         => 'section',
-				'id'           => 'plivo',
-				'page_id'      => 'settings',
-				'title'        => __( 'Plivo Settings', 'texty' ),
-				'description'  => __( 'Configure your Plivo SMS gateway credentials.', 'texty' ),
-				'priority'     => 10,
-				'dependencies' => [
-					[
-						'key'        => 'gateway_selection.gateway',
-						'value'      => 'plivo',
-						'comparison' => '===',
-					],
-				],
-			],
-			[
-				'type'       => 'field',
-				'id'         => 'auth_id',
-				'variant'    => 'text',
-				'page_id'    => 'settings',
-				'section_id' => 'plivo',
-				'title'      => __( 'Auth ID', 'texty' ),
-				'label'      => __( 'Auth ID', 'texty' ),
-				'default'    => '',
-			],
-			[
-				'type'       => 'field',
-				'id'         => 'token',
-				'variant'    => 'text',
-				'page_id'    => 'settings',
-				'section_id' => 'plivo',
-				'title'      => __( 'Auth Token', 'texty' ),
-				'label'      => __( 'Auth Token', 'texty' ),
-				'default'    => '',
-			],
-			[
-				'type'        => 'field',
-				'id'          => 'from',
-				'variant'     => 'text',
-				'page_id'     => 'settings',
-				'section_id'  => 'plivo',
-				'title'       => __( 'From Number', 'texty' ),
-				'label'       => __( 'From Number', 'texty' ),
-				'default'     => '',
-				'helper_text' => __( 'Must be a valid number associated with your Plivo account', 'texty' ),
-			],
-		];
-
-		// Add Fake gateway section if in debug mode.
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$schema[] = [
-				'type'         => 'section',
-				'id'           => 'fake',
-				'page_id'      => 'settings',
-				'title'        => __( 'Fake Gateway', 'texty' ),
-				'description'  => __( 'This is a fake gateway that logs messages to debug.log without sending actual SMS.', 'texty' ),
-				'priority'     => 99,
-				'dependencies' => [
-					[
-						'key'        => 'gateway_selection.gateway',
-						'value'      => 'fake',
-						'comparison' => '===',
-					],
-				],
-			];
-		}
-
-		/**
-		 * Filter the settings schema to allow third-party gateways to register
-		 * their own sections and fields.
-		 *
-		 * Third-party plugins can add gateway sections and fields by appending
-		 * to the schema array. Each gateway section should include:
-		 * - 'type' => 'section' with a unique 'id' matching the gateway key
-		 * - 'priority' => int (default 10, higher values appear later)
-		 * - 'dependencies' pointing to 'gateway_selection.gateway'
-		 * - Corresponding 'type' => 'field' entries with 'section_id' matching the gateway key
-		 *
-		 * Example:
-		 * add_filter( 'texty_settings_schema', function( $schema ) {
-		 *     $schema[] = [
-		 *         'type'         => 'section',
-		 *         'id'           => 'my_gateway',
-		 *         'page_id'      => 'settings',
-		 *         'title'        => 'My Gateway Settings',
-		 *         'priority'     => 15,
-		 *         'dependencies' => [
-		 *             [ 'key' => 'gateway_selection.gateway', 'value' => 'my_gateway', 'comparison' => '===' ],
-		 *         ],
-		 *     ];
-		 *     $schema[] = [
-		 *         'type'       => 'field',
-		 *         'id'         => 'api_key',
-		 *         'variant'    => 'text',
-		 *         'page_id'    => 'settings',
-		 *         'section_id' => 'my_gateway',
-		 *         'title'      => 'API Key',
-		 *         'default'    => '',
-		 *     ];
-		 *     return $schema;
-		 * } );
-		 *
-		 * @param array[] $schema Flat array of settings elements.
-		 */
-		$schema = apply_filters( 'texty_settings_schema', $schema );
-
-		return $schema;
-	}
-
-	/**
-	 * Get gateway options for the select field.
+	 * Read the backing option safely.
 	 *
 	 * @return array
 	 */
-	private function get_gateway_options(): array {
-		$gateways = texty()->gateways()->all();
-		$items    = [];
-
-		foreach ( $gateways as $key => $class ) {
-			$obj     = new $class();
-			$items[] = [
-				'label' => $obj->name(),
-				'value' => $key,
-				'order' => method_exists( $obj, 'order' ) ? $obj->order() : 10,
-			];
-		}
-
-		// Sort by order, then alphabetically by label.
-		usort( $items, function ( $a, $b ) {
-			$order_diff = $a['order'] - $b['order'];
-
-			return 0 !== $order_diff ? $order_diff : strcmp( $a['label'], $b['label'] );
-		} );
-
-		// Build final options with placeholder first.
-		$options = [
-			[
-				'label' => __( 'Select a Gateway', 'texty' ),
-				'value' => '',
-			],
-		];
-
-		foreach ( $items as $item ) {
-			$options[] = [
-				'label' => $item['label'],
-				'value' => $item['value'],
-			];
-		}
-
-		return $options;
+	private function load_stored_settings(): array {
+		$stored = get_option( self::OPTION_KEY, [] );
+		return is_array( $stored ) ? $stored : [];
 	}
 
 	/**
-	 * Get translated validation messages.
+	 * Pluck a specific gateway's saved credentials from the option.
+	 *
+	 * @param array  $stored      Full texty_settings option.
+	 * @param string $gateway_key Gateway registry key.
+	 *
+	 * @return array
+	 */
+	private function credentials_for( array $stored, string $gateway_key ): array {
+		return isset( $stored[ $gateway_key ] ) && is_array( $stored[ $gateway_key ] )
+			? $stored[ $gateway_key ]
+			: [];
+	}
+
+	/**
+	 * Build a `validations` array marking a field as required.
+	 *
+	 * @param string $label Human-readable field label, used in the message.
+	 *
+	 * @return array
+	 */
+	private function required_validation( string $label ): array {
+		return [
+			[
+				'rules'   => 'required',
+				/* translators: %s: field label, e.g. "Account SID" */
+				'message' => sprintf( __( '%s is required.', 'texty' ), $label ),
+			],
+		];
+	}
+
+	/**
+	 * Twilio gateway page + credentials section + fields.
+	 *
+	 * @param array $creds Saved credentials for this gateway.
+	 *
+	 * @return array[]
+	 */
+	private function build_twilio_schema( array $creds ): array {
+		return [
+			[
+				'type'          => 'page',
+				'id'            => 'twilio',
+				'label'         => __( 'Twilio', 'texty' ),
+				'description'   => sprintf(
+					/* translators: 1: URL to Twilio account settings, 2: URL to Texty wiki for Twilio setup */
+					__(
+						'Send SMS with Twilio. Follow <a href="%1$s" target="_blank" rel="noopener noreferrer">this link</a> to get the Account SID and Token from Twilio. Follow <a href="%2$s" target="_blank" rel="noopener noreferrer">these instructions</a> to configure the gateway.',
+						'texty'
+					),
+					'https://www.twilio.com/console/project/settings',
+					'https://github.com/weDevsOfficial/texty/wiki/Twilio'
+				),
+				'image_url'     => TEXTY_URL . '/assets/images/twilio.svg',
+				'doc_link'      => 'https://www.twilio.com/try-twilio',
+				'doc_link_text' => __( 'Get your account', 'texty' ),
+				'priority'      => 10,
+			],
+			[
+				'type'     => 'section',
+				'id'       => 'twilio_credentials',
+				'page_id'  => 'twilio',
+				'priority' => 10,
+			],
+			[
+				'type'        => 'field',
+				'id'          => 'sid',
+				'page_id'     => 'twilio',
+				'section_id'  => 'twilio_credentials',
+				'variant'     => 'text',
+				'label'       => __( 'Account SID', 'texty' ),
+				'placeholder' => __( 'Enter Account SID', 'texty' ),
+				'layout'      => 'full-width',
+				'priority'    => 10,
+				'default'     => isset( $creds['sid'] ) ? $creds['sid'] : '',
+				'validations' => $this->required_validation( __( 'Account SID', 'texty' ) ),
+			],
+			[
+				'type'        => 'field',
+				'id'          => 'token',
+				'page_id'     => 'twilio',
+				'section_id'  => 'twilio_credentials',
+				'variant'     => 'show_hide',
+				'label'       => __( 'Auth Token', 'texty' ),
+				'placeholder' => __( 'Enter Auth Token', 'texty' ),
+				'layout'      => 'full-width',
+				'priority'    => 20,
+				'default'     => isset( $creds['token'] ) ? $creds['token'] : '',
+				'validations' => $this->required_validation( __( 'Auth Token', 'texty' ) ),
+			],
+			[
+				'type'        => 'field',
+				'id'          => 'from',
+				'page_id'     => 'twilio',
+				'section_id'  => 'twilio_credentials',
+				'variant'     => 'phone',
+				'label'       => __( 'From Number', 'texty' ),
+				'description' => __( 'Must be a valid number associated with your Twilio account', 'texty' ),
+				'layout'      => 'full-width',
+				'priority'    => 30,
+				'default'     => isset( $creds['from'] ) ? $creds['from'] : '',
+				'validations' => $this->required_validation( __( 'From Number', 'texty' ) ),
+			],
+		];
+	}
+
+	/**
+	 * Vonage (formerly Nexmo) gateway page + credentials section + fields.
+	 *
+	 * @param array $creds Saved credentials for this gateway.
+	 *
+	 * @return array[]
+	 */
+	private function build_vonage_schema( array $creds ): array {
+		return [
+			[
+				'type'          => 'page',
+				'id'            => 'vonage',
+				'label'         => __( 'Vonage', 'texty' ),
+				'description'   => sprintf(
+					/* translators: 1: URL to Vonage dashboard settings, 2: URL to Texty wiki for Vonage setup */
+					__(
+						'Send SMS with Vonage (formerly Nexmo). Follow <a href="%1$s" target="_blank" rel="noopener noreferrer">this link</a> to get the API Key and Secret from Vonage. Follow <a href="%2$s" target="_blank" rel="noopener noreferrer">these instructions</a> to configure the gateway.',
+						'texty'
+					),
+					'https://dashboard.nexmo.com/settings',
+					'https://github.com/weDevsOfficial/texty/wiki/Vonage'
+				),
+				'image_url'     => TEXTY_URL . '/assets/images/vonage.svg',
+				'doc_link'      => 'https://dashboard.nexmo.com/sign-up',
+				'doc_link_text' => __( 'Get your account', 'texty' ),
+				'priority'      => 20,
+			],
+			[
+				'type'     => 'section',
+				'id'       => 'vonage_credentials',
+				'page_id'  => 'vonage',
+				'priority' => 10,
+			],
+			[
+				'type'        => 'field',
+				'id'          => 'key',
+				'page_id'     => 'vonage',
+				'section_id'  => 'vonage_credentials',
+				'variant'     => 'text',
+				'label'       => __( 'API Key', 'texty' ),
+				'placeholder' => __( 'Enter API Key', 'texty' ),
+				'layout'      => 'full-width',
+				'priority'    => 10,
+				'default'     => isset( $creds['key'] ) ? $creds['key'] : '',
+				'validations' => $this->required_validation( __( 'API Key', 'texty' ) ),
+			],
+			[
+				'type'        => 'field',
+				'id'          => 'secret',
+				'page_id'     => 'vonage',
+				'section_id'  => 'vonage_credentials',
+				'variant'     => 'show_hide',
+				'label'       => __( 'API Secret', 'texty' ),
+				'placeholder' => __( 'Enter API Secret', 'texty' ),
+				'layout'      => 'full-width',
+				'priority'    => 20,
+				'default'     => isset( $creds['secret'] ) ? $creds['secret'] : '',
+				'validations' => $this->required_validation( __( 'API Secret', 'texty' ) ),
+			],
+			[
+				'type'        => 'field',
+				'id'          => 'from',
+				'page_id'     => 'vonage',
+				'section_id'  => 'vonage_credentials',
+				'variant'     => 'phone',
+				'label'       => __( 'From Number', 'texty' ),
+				'description' => __( 'Must be a valid number associated with your Vonage account', 'texty' ),
+				'layout'      => 'full-width',
+				'priority'    => 30,
+				'default'     => isset( $creds['from'] ) ? $creds['from'] : '',
+				'validations' => $this->required_validation( __( 'From Number', 'texty' ) ),
+			],
+		];
+	}
+
+	/**
+	 * Plivo gateway page + credentials section + fields.
+	 *
+	 * @param array $creds Saved credentials for this gateway.
+	 *
+	 * @return array[]
+	 */
+	private function build_plivo_schema( array $creds ): array {
+		return [
+			[
+				'type'          => 'page',
+				'id'            => 'plivo',
+				'label'         => __( 'Plivo', 'texty' ),
+				'description'   => sprintf(
+					/* translators: 1: URL to Plivo console reporting, 2: URL to Texty wiki for Plivo setup */
+					__(
+						'Send SMS with Plivo. Follow <a href="%1$s" target="_blank" rel="noopener noreferrer">this link</a> to get the Auth ID and Token from Plivo. Follow <a href="%2$s" target="_blank" rel="noopener noreferrer">these instructions</a> to configure the gateway.',
+						'texty'
+					),
+					'https://console.plivo.com/sms/reporting/',
+					'https://github.com/weDevsOfficial/texty/wiki/Plivo'
+				),
+				'image_url'     => TEXTY_URL . '/assets/images/plivo.svg',
+				'doc_link'      => 'https://console.plivo.com/accounts/register/',
+				'doc_link_text' => __( 'Get your account', 'texty' ),
+				'priority'      => 30,
+			],
+			[
+				'type'     => 'section',
+				'id'       => 'plivo_credentials',
+				'page_id'  => 'plivo',
+				'priority' => 10,
+			],
+			[
+				'type'        => 'field',
+				'id'          => 'auth_id',
+				'page_id'     => 'plivo',
+				'section_id'  => 'plivo_credentials',
+				'variant'     => 'text',
+				'label'       => __( 'Auth ID', 'texty' ),
+				'placeholder' => __( 'Enter Auth ID', 'texty' ),
+				'layout'      => 'full-width',
+				'priority'    => 10,
+				'default'     => isset( $creds['auth_id'] ) ? $creds['auth_id'] : '',
+				'validations' => $this->required_validation( __( 'Auth ID', 'texty' ) ),
+			],
+			[
+				'type'        => 'field',
+				'id'          => 'token',
+				'page_id'     => 'plivo',
+				'section_id'  => 'plivo_credentials',
+				'variant'     => 'show_hide',
+				'label'       => __( 'Auth Token', 'texty' ),
+				'placeholder' => __( 'Enter Auth Token', 'texty' ),
+				'layout'      => 'full-width',
+				'priority'    => 20,
+				'default'     => isset( $creds['token'] ) ? $creds['token'] : '',
+				'validations' => $this->required_validation( __( 'Auth Token', 'texty' ) ),
+			],
+			[
+				'type'        => 'field',
+				'id'          => 'from',
+				'page_id'     => 'plivo',
+				'section_id'  => 'plivo_credentials',
+				'variant'     => 'phone',
+				'label'       => __( 'From Number', 'texty' ),
+				'description' => __( 'Must be a valid number associated with your Plivo account', 'texty' ),
+				'layout'      => 'full-width',
+				'priority'    => 30,
+				'default'     => isset( $creds['from'] ) ? $creds['from'] : '',
+				'validations' => $this->required_validation( __( 'From Number', 'texty' ) ),
+			],
+		];
+	}
+
+	/**
+	 * Clickatell gateway page + credentials section + fields.
+	 *
+	 * @param array $creds Saved credentials for this gateway.
+	 *
+	 * @return array[]
+	 */
+	private function build_clickatell_schema( array $creds ): array {
+		return [
+			[
+				'type'          => 'page',
+				'id'            => 'clickatell',
+				'label'         => __( 'Clickatell', 'texty' ),
+				'description'   => sprintf(
+					/* translators: 1: URL to Clickatell workspace, 2: URL to Texty wiki for Clickatell setup */
+					__(
+						'Send SMS with Clickatell. Follow <a href="%1$s" target="_blank" rel="noopener noreferrer">this link</a> to get the API. Follow <a href="%2$s" target="_blank" rel="noopener noreferrer">these instructions</a> to configure the gateway.',
+						'texty'
+					),
+					'https://app.clickatell.com/my-workspace',
+					'https://github.com/weDevsOfficial/texty/wiki/Clickatell'
+				),
+				'image_url'     => TEXTY_URL . '/assets/images/clickatell.svg',
+				'doc_link'      => 'https://www.clickatell.com/sign-up/',
+				'doc_link_text' => __( 'Get your account', 'texty' ),
+				'priority'      => 40,
+			],
+			[
+				'type'     => 'section',
+				'id'       => 'clickatell_credentials',
+				'page_id'  => 'clickatell',
+				'priority' => 10,
+			],
+			[
+				'type'        => 'field',
+				'id'          => 'key',
+				'page_id'     => 'clickatell',
+				'section_id'  => 'clickatell_credentials',
+				'variant'     => 'show_hide',
+				'label'       => __( 'API Key', 'texty' ),
+				'placeholder' => __( 'Enter API Key', 'texty' ),
+				'layout'      => 'full-width',
+				'priority'    => 10,
+				'default'     => isset( $creds['key'] ) ? $creds['key'] : '',
+				'validations' => $this->required_validation( __( 'API Key', 'texty' ) ),
+			],
+		];
+	}
+
+	/**
+	 * Fake gateway page (no fields). Only included when WP_DEBUG is enabled,
+	 * matching the gating in Texty\Gateways::all().
+	 *
+	 * @return array[]
+	 */
+	private function build_fake_schema(): array {
+		return [
+			[
+				'type'        => 'page',
+				'id'          => 'fake',
+				'label'       => __( 'Fake Gateway', 'texty' ),
+				'description' => __( 'This is a fake gateway that logs the messages to debug.log file without sending the actual SMS.', 'texty' ),
+				'image_url'   => TEXTY_URL . '/assets/images/logo.svg',
+				'priority'    => 99,
+			],
+			[
+				'type'     => 'section',
+				'id'       => 'fake_credentials',
+				'page_id'  => 'fake',
+				'priority' => 10,
+			],
+		];
+	}
+
+	/**
+	 * Translatable validation messages for built-in field types.
 	 *
 	 * @return array<string, string>
 	 */
@@ -525,17 +679,15 @@ class SettingsController extends BaseSettingsRESTController {
 	}
 
 	/**
-	 * Get permission error message.
+	 * Permission-error message for read/write contexts.
 	 *
 	 * @param string $context 'read' or 'write'.
 	 *
 	 * @return string
 	 */
 	protected function get_permission_error_message( string $context ): string {
-		if ( 'write' === $context ) {
-			return __( 'You do not have permission to update settings.', 'texty' );
-		}
-
-		return __( 'You do not have permission to view settings.', 'texty' );
+		return 'write' === $context
+			? __( 'You do not have permission to update settings.', 'texty' )
+			: __( 'You do not have permission to view settings.', 'texty' );
 	}
 }

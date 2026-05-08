@@ -47,21 +47,25 @@ class Menu {
             'texty_admin_menu',
             [
                 [
-					'path' => 'dashboard',
-					'title' => __( 'Dashboard', 'texty' ),
-				],
+                    'path'  => 'dashboard',
+                    'title' => __( 'Dashboard', 'texty' ),
+                ],
                 [
-                    'path' => 'settings',
+                    'path'  => 'gateway',
                     'title' => __( 'Gateway', 'texty' ),
                 ],
                 [
-					'path' => 'notifications',
-					'title' => __( 'Notifications', 'texty' ),
-				],
+                    'path'  => 'notifications',
+                    'title' => __( 'Notifications', 'texty' ),
+                ],
                 [
-					'path' => 'tools',
-					'title' => __( 'Tools', 'texty' ),
-				],
+                    'path'  => 'logs',
+                    'title' => __( 'Logs', 'texty' ),
+                ],
+                [
+                    'path'  => 'tools',
+                    'title' => __( 'Tools', 'texty' ),
+                ],
             ],
             $capability,
             $slug
@@ -70,8 +74,8 @@ class Menu {
         foreach ( $submenus as $item ) {
             $path = 'admin.php?page=' . $slug . '#/' . $item['path'];
             if ( filter_var( $item['path'], FILTER_VALIDATE_URL ) ) {
-				$path = $item['path'];
-			}
+                $path = $item['path'];
+            }
             $submenu[ $slug ][] = [ // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
                 $item['title'],
                 $capability,
@@ -136,6 +140,7 @@ class Menu {
     public function localize_script() {
         $i18n = [
             'asset_url' => trailingslashit( TEXTY_URL ) . 'assets/',
+            'site_name' => get_bloginfo( 'name' ),
             'rest_url'  => esc_url_raw( rest_url() ),
             'ajax_url'  => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
             'nonce'     => wp_create_nonce( 'wp_rest' ),

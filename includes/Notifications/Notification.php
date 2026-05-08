@@ -315,12 +315,21 @@ abstract class Notification {
 
         $gateway = texty()->gateways();
 
-        foreach ( $recipients as $number ) {
-            if ( empty( $number ) ) {
-                continue;
-            }
+        // Stash the active notification so the after-send logger can attach
+        // notification_id / notification_group to each SmsStat row without
+        // threading them through the gateway pipeline.
+        texty()->notifications()->set_active( $this );
 
-            $gateway->send( $number, $content );
+        try {
+            foreach ( $recipients as $number ) {
+                if ( empty( $number ) ) {
+                    continue;
+                }
+
+                $gateway->send( $number, $content );
+            }
+        } finally {
+            texty()->notifications()->clear_active();
         }
 
         /**

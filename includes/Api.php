@@ -21,11 +21,14 @@ class Api {
         $this->classes = [
             Api\Settings::class,
             Api\Notifications::class,
+            Api\NotificationSettings::class,
             Api\Tools::class,
             Api\Status::class,
             Api\Send::class,
             Api\Metrics::class,
             Api\SettingsController::class,
+            Api\Gateway::class,
+            Api\Logs::class,
         ];
 
         add_action( 'rest_api_init', [ $this, 'init_api' ] );

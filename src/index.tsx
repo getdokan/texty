@@ -24,8 +24,6 @@ const textyTheme: ThemeTokens = {
   secondaryForeground: 'oklch(0.5200 0.1300 248.0000)',
   muted: 'oklch(0.9700 0 0)',
   mutedForeground: 'oklch(0.5560 0 0)',
-  accent: 'oklch(0.5200 0.1300 248.0000)',
-  accentForeground: 'oklch(1 0 0)',
   destructive: 'oklch(0.5770 0.2450 27.3250)',
   destructiveForeground: 'oklch(1 0 0)',
   success: 'oklch(0.5200 0.1300 248.0000)',

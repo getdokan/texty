@@ -120,9 +120,9 @@ class Base extends Notification {
         ];
     }
 
-    public function send() {
+    public function send(): bool {
         if ( ! $this->enabled() ) {
-            return;
+            return false;
         }
 
         $meta_key = '_texty_' . $this->get_id();
@@ -130,7 +130,7 @@ class Base extends Notification {
 
         // if we've already sent the message, don't send again
         if ( $has_sent ) {
-            return;
+            return false;
         }
 
         // mark as sent
@@ -159,7 +159,7 @@ class Base extends Notification {
         $recipients = is_array( $recipients ) ? array_values( array_filter( $recipients ) ) : [];
 
         if ( ! $recipients ) {
-            return;
+            return false;
         }
 
         $content = $this->get_message();
@@ -191,8 +191,17 @@ class Base extends Notification {
 
         $gateway = texty()->gateways();
 
-        foreach ( $recipients as $number ) {
-            $gateway->send( $number, $content );
+        // Stash the active notification so the after-send logger can attach
+        // notification_id / notification_group to each SmsStat row without
+        // threading them through the gateway pipeline.
+        texty()->notifications()->set_active( $this );
+
+        try {
+            foreach ( $recipients as $number ) {
+                $gateway->send( $number, $content );
+            }
+        } finally {
+            texty()->notifications()->clear_active();
         }
 
         /**
@@ -203,5 +212,7 @@ class Base extends Notification {
          * @param string       $content      The message content
          */
         do_action( 'texty_after_notification', $this, $recipients, $content );
+
+        return true;
     }
 }
