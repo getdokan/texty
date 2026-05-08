@@ -67,9 +67,11 @@ class NotificationSettings extends Base {
 
         $settings = texty()->notification_settings();
 
-        return rest_ensure_response( [
-            'settings' => $settings->all(),
-        ] );
+        return rest_ensure_response(
+            [
+				'settings' => $settings->all(),
+			]
+        );
     }
 
     /**
@@ -98,9 +100,11 @@ class NotificationSettings extends Base {
 
         $merged = $service->update( $values );
 
-        return rest_ensure_response( [
-            'settings' => $merged,
-        ] );
+        return rest_ensure_response(
+            [
+				'settings' => $merged,
+			]
+        );
     }
 
     /**

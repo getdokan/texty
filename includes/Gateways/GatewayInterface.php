@@ -50,5 +50,4 @@ interface GatewayInterface {
      * @return WP_Error|true
      */
     public function validate( $request );
-
 }

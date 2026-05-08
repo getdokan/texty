@@ -27,13 +27,13 @@ class Gateways {
     /**
      * Register a gateway
      *
-     * @param string $key   Gateway identifier
-     * @param string $class Fully qualified class name
+     * @param string $key       Gateway identifier
+     * @param string $classname Fully qualified class name
      *
      * @return void
      */
-    public function register( $key, $class ) {
-        $this->gateways[ $key ] = $class;
+    public function register( $key, $classname ) {
+        $this->gateways[ $key ] = $classname;
     }
 
     /**

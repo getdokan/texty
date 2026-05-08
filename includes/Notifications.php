@@ -70,13 +70,13 @@ class Notifications {
     /**
      * Register a notification
      *
-     * @param string $key   Notification identifier
-     * @param string $class Fully qualified class name
+     * @param string $key       Notification identifier
+     * @param string $classname Fully qualified class name
      *
      * @return void
      */
-    public function register( $key, $class ) {
-        $this->notifications[ $key ] = $class;
+    public function register( $key, $classname ) {
+        $this->notifications[ $key ] = $classname;
     }
 
     /**

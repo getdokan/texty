@@ -63,11 +63,10 @@ class Tools extends Base {
 
         // Log the SMS if it was sent successfully
         if ( ! is_wp_error( $status ) && is_array( $status ) && isset( $status['success'] ) && $status['success'] ) {
-            $reference_id = isset( $status['reference_id'] ) ? $status['reference_id'] : null;
-            Dispatcher::log_sms( $to, $reference_id );
+            $dispatcher = new Dispatcher();
+            $dispatcher->log_sms( $status, $to, $message, false );
         }
 
         return rest_ensure_response( $response );
     }
 }
-

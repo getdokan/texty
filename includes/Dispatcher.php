@@ -6,6 +6,7 @@ use Texty\Integrations\Dokan;
 use Texty\Integrations\WooCommerce;
 use Texty\Models\SmsStat;
 use WeDevs\WPKit\DataLayer\DataLayerFactory;
+use Texty\Gateways\GatewayInterface;
 
 /**
  * Dispatcher Class
@@ -101,7 +102,7 @@ class Dispatcher {
             return;
         }
 
-        $gateway_name = texty()->settings()->gateway();
+        $gateway_name = $gateway ? $gateway->name() : texty()->settings()->gateway();
 
         // Determine status based on result
         $status = is_wp_error( $result ) ? 'failed' : 'sent';
