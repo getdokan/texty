@@ -62,10 +62,6 @@ class Menu {
                     'path'  => 'logs',
                     'title' => __( 'Logs', 'texty' ),
                 ],
-                [
-                    'path'  => 'tools',
-                    'title' => __( 'Tools', 'texty' ),
-                ],
             ],
             $capability,
             $slug
