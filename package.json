@@ -13,7 +13,11 @@
     "typecheck": "tsc --noEmit",
     "makepot": "wp i18n make-pot --exclude='dist,node_modules,vendors' . --headers='{\"Last-Translator\":\"support@wedevs.com\",\"Report-Msgid-Bugs-To\":\"https://github.com/weDevsOfficial/texty/issues\"}' --file-comment=\"Copyright (c) $(date +'%Y') weDevs Pte. Ltd. All Rights Reserved.\" languages/texty.pot",
     "readme": "wp-readme-to-md",
-    "release:dev": "bash bin/build.sh"
+    "release:dev": "bash bin/build.sh",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report tests/e2e/playwright-report"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -26,12 +30,14 @@
     "recharts": "^3.8.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/postcss": "^4.2.4",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/wordpress__element": "^2.4.1",
     "@wordpress/components": "^28.0.0",
     "@wordpress/scripts": "^30.12.0",
+    "dotenv": "^17.4.2",
     "prettier": "^2.2.1",
     "sass": "^1.83.4",
     "tailwindcss": "^4.2.4",
