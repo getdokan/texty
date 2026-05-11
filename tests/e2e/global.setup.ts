@@ -1,9 +1,15 @@
 import { test as setup, expect } from '@playwright/test';
+import * as fs from 'fs';
 import * as path from 'path';
 
 const authFile = path.resolve(__dirname, 'auth/admin.json');
 
 setup('authenticate as admin', async ({ page }) => {
+    if (fs.existsSync(authFile) && !process.env.FORCE_AUTH) {
+        setup.skip(true, `Auth state cached at ${authFile}. Delete file or set FORCE_AUTH=1 to re-login.`);
+        return;
+    }
+
     const username = process.env.WP_ADMIN_USER;
     const password = process.env.WP_ADMIN_PASSWORD;
 
@@ -19,5 +25,6 @@ setup('authenticate as admin', async ({ page }) => {
     await page.waitForURL('**/wp-admin/**');
     await expect(page.locator('#wpadminbar')).toBeVisible();
 
+    fs.mkdirSync(path.dirname(authFile), { recursive: true });
     await page.context().storageState({ path: authFile });
 });
