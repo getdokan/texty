@@ -127,6 +127,31 @@ class Base extends Notification {
         ];
     }
 
+    /**
+     * The user account the customer-recipient SMS is destined for.
+     *
+     * Returns the order's linked customer ID, or `0` for guest
+     * orders. Used by gating filters on `texty_notification_recipients`
+     * (e.g. texty-pro's consent module) to look up the recipient's
+     * preferences without having to reach into the order themselves.
+     *
+     * Override in subclasses that resolve "the customer" from a
+     * different source (a Dokan customer notification keyed on a
+     * vendor's customer record, an account-event notification keyed
+     * directly on `$user_id`, etc.).
+     *
+     * @since 1.6.0
+     *
+     * @return int Customer user ID, or 0 if none / unknown.
+     */
+    public function get_customer_user_id(): int {
+        if ( ! is_object( $this->order ) || ! method_exists( $this->order, 'get_customer_id' ) ) {
+            return 0;
+        }
+
+        return (int) $this->order->get_customer_id();
+    }
+
     public function send(): bool {
         if ( ! $this->enabled() ) {
             return false;
