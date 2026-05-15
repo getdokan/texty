@@ -79,7 +79,14 @@ class Base extends Notification {
                 continue;
             }
 
-            $product    = $item->get_product();
+            $product = $item->get_product();
+
+            // `get_product()` returns false when the underlying product has
+            // been deleted/trashed — skip rather than fatal on get_name().
+            if ( ! $product ) {
+                continue;
+            }
+
             $products[] = sprintf( '%s x %d', $product->get_name(), $item->get_quantity() );
         }
 
