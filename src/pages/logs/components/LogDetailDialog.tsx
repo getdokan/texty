@@ -24,10 +24,12 @@ const Field = ({
   children: React.ReactNode;
 }) => (
   <div>
-    <p className="m-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+    <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
       {label}
     </p>
-    <div className="mt-1 text-sm break-words text-foreground">{children}</div>
+    <div className="mt-1 text-sm wrap-break-word text-foreground">
+      {children}
+    </div>
   </div>
 );
 
@@ -48,9 +50,7 @@ const LogDetailDialog = ({ log, open, onOpenChange }: Props) => {
               <StatusBadge status={log.status} />
             </Field>
             <Field label={__('Date & Time', 'texty')}>{log.created_at}</Field>
-            <Field label={__('Receiver', 'texty')}>
-              {log.receiver || '—'}
-            </Field>
+            <Field label={__('Receiver', 'texty')}>{log.receiver || '—'}</Field>
             <Field label={__('Gateway', 'texty')}>{log.gateway || '—'}</Field>
             <Field label={__('Reference ID', 'texty')}>
               {log.reference_id || '—'}

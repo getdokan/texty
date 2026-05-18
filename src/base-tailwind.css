@@ -49,29 +49,35 @@
   }
 }
 
+/* Un-layered reset: beats WP admin (specificity) and preflight (un-layered > layered normal),
+   but loses to utility classes like `mb-5` because layered !important beats un-layered normal. */
+:is(#texty-app, .pui-root)
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    ul,
+    ol,
+    li,
+    dl,
+    dd,
+    figure,
+    blockquote,
+    pre,
+    fieldset
+  ) {
+  margin: 0;
+  padding: 0;
+}
+
 #texty-app .wrap {
   margin: 10px 0 0 0;
 }
 
 #wpcontent:has(#texty-app) {
   padding-left: 0 !important;
-}
-
-.texty-container h1,
-.texty-container h2,
-.texty-container h3,
-.texty-container h4,
-.texty-container h5,
-.texty-container h6,
-.texty-container p,
-.texty-container ul,
-.texty-container ol,
-.texty-container dl,
-.texty-container dd,
-.texty-container figure,
-.texty-container blockquote,
-.texty-container pre,
-.texty-container fieldset {
-  margin: 0 !important;
-  padding: 0 !important;
 }

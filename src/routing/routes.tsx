@@ -19,18 +19,6 @@ const Gateway = lazy(
   () => import(/* webpackChunkName: "gateway" */ '../pages/gateway')
 );
 const Logs = lazy(() => import(/* webpackChunkName: "logs" */ '../pages/logs'));
-const Tools = lazy(
-  () => import(/* webpackChunkName: "tools" */ '../pages/Tools')
-);
-const SettingsPage = lazy(
-  () => import(/* webpackChunkName: "settings" */ '../pages/SettingsPage')
-);
-const OldNotifications = lazy(
-  () =>
-    import(
-      /* webpackChunkName: "old-notifications" */ '../pages/NotificationsOld'
-    )
-);
 
 const RouteFallback = () => (
   <div className="flex items-center justify-center p-8 text-sm text-gray-500">
@@ -70,28 +58,10 @@ const routes: TextyRoute[] = [
     element: withSuspense(Logs),
   },
   {
-    id: 'texty-tools',
-    title: __('Tools', 'texty'),
-    path: '/tools',
-    element: withSuspense(Tools),
-  },
-  {
     id: 'texty-gateway',
     title: __('Gateway Configuration', 'texty'),
     path: '/gateway',
     element: withSuspense(Gateway),
-  },
-  {
-    id: 'texty-settings',
-    title: __('Gateway Settings', 'texty'),
-    path: '/settings',
-    element: withSuspense(SettingsPage),
-  },
-  {
-    id: 'texty-old-notifications',
-    title: __('Old Notifications', 'texty'),
-    path: '/old-notifications',
-    element: withSuspense(OldNotifications),
   },
 ];
 
