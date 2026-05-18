@@ -86,7 +86,7 @@ const QuickSendCard = ({ onSent }: Props) => {
           </FieldLabel>
           <FieldContent>
             <PhoneInput
-              country="bd"
+              country="us"
               value={phone}
               onChange={(val: string) => setPhone(val)}
               disabled={sending}
