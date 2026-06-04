@@ -5,9 +5,9 @@ import { createRoot } from '@wordpress/element';
 import '@wedevs/plugin-ui/styles.css';
 import 'react-phone-input-2/lib/style.css';
 import App from './App';
-import './base-tailwind.css';
 import './styles/app.css';
 import './styles/style.scss';
+import './tailwind.css';
 import menuFix from './utils/admin-menu-fix';
 
 // WordPress default blue theme for Texty (#2271b1)
@@ -42,7 +42,7 @@ domReady(() => {
 
   const root = createRoot(mountNode);
   root.render(
-    <ThemeProvider pluginId="texty" tokens={textyTheme}>
+    <ThemeProvider pluginId="texty" className="texty-app" tokens={textyTheme}>
       <App />
     </ThemeProvider>
   );

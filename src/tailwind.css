@@ -36,8 +36,7 @@
 /* Scoped Layout — Preflight + Utilities + Components
    Utilities only apply inside the Texty app root and plugin-ui containers,
    so WordPress admin styles outside remain untouched. */
-#texty-app,
-.pui-root {
+.texty-app {
   @import 'tailwindcss/preflight.css' layer(base) important;
   @import 'tailwindcss/utilities.css' layer(utilities) important;
 
@@ -51,7 +50,7 @@
 
 /* Un-layered reset: beats WP admin (specificity) and preflight (un-layered > layered normal),
    but loses to utility classes like `mb-5` because layered !important beats un-layered normal. */
-:is(#texty-app, .pui-root)
+:is(.texty-app, .pui-root)
   :is(
     h1,
     h2,

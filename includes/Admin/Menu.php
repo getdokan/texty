@@ -90,7 +90,7 @@ class Menu {
      * @return void
      */
     public function render_page() {
-        echo '<div id="texty-app"></div>';
+        echo '<div id="texty-app" class="texty-app"></div>';
     }
 
     /**
