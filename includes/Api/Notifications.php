@@ -147,25 +147,25 @@ class Notifications extends Base {
                 $recipients = $obj->get_recipients_raw();
 
                 $schema[] = [
-                    'id'             => $id . '::recipients',
+                    'id'             => $id . '_recipients',
                     'type'           => 'field',
                     'variant'        => 'multicheck',
                     'field_group_id' => $id,
                     'title'          => __( 'Recipients', 'texty' ),
                     'options'        => $roles,
                 ];
-                $values[ $id . '::recipients' ] = is_array( $recipients ) ? array_values( $recipients ) : [];
+                $values[ $id . '_recipients' ] = is_array( $recipients ) ? array_values( $recipients ) : [];
             }
 
             $schema[] = [
-                'id'             => $id . '::message',
+                'id'             => $id . '_message',
                 'type'           => 'field',
                 'variant'        => 'textarea',
                 'field_group_id' => $id,
                 'title'          => __( 'Message Content', 'texty' ),
                 'rows'           => 4,
             ];
-            $values[ $id . '::message' ] = $message;
+            $values[ $id . '_message' ] = $message;
 
             $replacements = array_merge(
                 array_keys( $obj->replacement_keys() ),
@@ -181,7 +181,7 @@ class Notifications extends Base {
                 );
 
                 $schema[] = [
-                    'id'             => $id . '::vars',
+                    'id'             => $id . '_vars',
                     'type'           => 'field',
                     'variant'        => 'info',
                     'field_group_id' => $id,

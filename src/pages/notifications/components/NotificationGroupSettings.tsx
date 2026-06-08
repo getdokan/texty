@@ -13,8 +13,8 @@ import type { ComponentType } from 'react';
 
 import NotificationGroupSkeleton from './NotificationGroupSkeleton';
 
-// Separator for child field ids — `<id>::message`, `<id>::recipients`.
-const SEP = '::';
+// Separator for child field ids — `<id>_message`, `<id>_recipients`.
+const SEP = '_';
 
 // Maps the backend `icon` string on the page element to a lucide component.
 const ICON_MAP: Record<string, ComponentType<{ className?: string }>> = {
