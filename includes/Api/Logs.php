@@ -9,6 +9,7 @@
  * Storage: reads from `wp_texty_sms_stat` via the SmsStatStore data layer.
  *
  * @package Texty\Api
+ * @since   TEXTY_VERSION
  */
 
 namespace Texty\Api;
@@ -30,6 +31,8 @@ class Logs extends Base {
 
     /**
      * Constructor.
+     *
+     * @since TEXTY_VERSION
      */
     public function __construct() {
         $this->namespace = 'texty/v1';
@@ -40,6 +43,7 @@ class Logs extends Base {
      * Register routes.
      *
      * @return void
+     * @since TEXTY_VERSION
      */
     public function register_routes() {
         register_rest_route(
@@ -119,6 +123,7 @@ class Logs extends Base {
      * @param WP_REST_Request $request Request.
      *
      * @return WP_REST_Response
+     * @since TEXTY_VERSION
      */
     public function get_items( $request ) {
         $store = DataLayerFactory::make_store( SmsStat::class );
@@ -181,6 +186,7 @@ class Logs extends Base {
      * @param WP_REST_Request $request Request.
      *
      * @return WP_REST_Response|WP_Error
+     * @since TEXTY_VERSION
      */
     public function get_item( $request ) {
         $id    = (int) $request->get_param( 'id' );
@@ -204,6 +210,7 @@ class Logs extends Base {
      * @param mixed $row Raw row (object or array).
      *
      * @return array
+     * @since TEXTY_VERSION
      */
     private function present_row( $row ): array {
         $row = is_object( $row ) ? (array) $row : (array) $row;
@@ -237,6 +244,7 @@ class Logs extends Base {
      * @param string $notification_group Stored group key.
      *
      * @return string
+     * @since TEXTY_VERSION
      */
     private function build_type_label( string $notification_id, string $notification_group ): string {
         if ( '' === $notification_id ) {

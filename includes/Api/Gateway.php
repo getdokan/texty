@@ -14,6 +14,7 @@
  * Storage: all three mutate the existing `texty_settings` option in place.
  *
  * @package Texty\Api
+ * @since   TEXTY_VERSION
  */
 
 namespace Texty\Api;
@@ -35,6 +36,8 @@ class Gateway extends Base {
 
 	/**
 	 * Constructor.
+	 *
+	 * @since TEXTY_VERSION
 	 */
 	public function __construct() {
 		$this->namespace = 'texty/v1';
@@ -45,6 +48,7 @@ class Gateway extends Base {
 	 * Register routes.
 	 *
 	 * @return void
+	 * @since TEXTY_VERSION
 	 */
 	public function register_routes() {
 		register_rest_route(
@@ -104,6 +108,7 @@ class Gateway extends Base {
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response|WP_Error
+	 * @since TEXTY_VERSION
 	 */
 	public function activate( $request ) {
 		$gateway_key = sanitize_key( (string) $request->get_param( 'gateway' ) );
@@ -166,6 +171,7 @@ class Gateway extends Base {
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response
+	 * @since TEXTY_VERSION
 	 */
 	public function deactivate( $request ) {
 		$stored                 = $this->load_stored();
@@ -196,6 +202,7 @@ class Gateway extends Base {
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response|WP_Error
+	 * @since TEXTY_VERSION
 	 */
 	public function disconnect( $request ) {
 		$gateway_key = sanitize_key( (string) $request->get_param( 'gateway' ) );
@@ -238,6 +245,7 @@ class Gateway extends Base {
 	 * Read the backing option safely.
 	 *
 	 * @return array
+	 * @since TEXTY_VERSION
 	 */
 	private function load_stored(): array {
 		$stored = get_option( self::OPTION_KEY, [] );

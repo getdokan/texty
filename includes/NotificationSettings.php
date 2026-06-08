@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * Stores compliance + global SMS toggles in a single option (`texty_notification_settings`).
  *
- * @since 1.2.0
+ * @since TEXTY_VERSION
  */
 class NotificationSettings {
 

@@ -4,6 +4,7 @@
  * and runs the upgrade when AdminNotice fires its admin-ajax action.
  *
  * @package Texty\Migrations
+ * @since   TEXTY_VERSION
  */
 
 namespace Texty\Migrations;
@@ -27,6 +28,8 @@ class NoticeProvider implements NoticeProviderInterface {
     /**
      * Constructor — registers the admin-ajax handler that AdminNotice's
      * `ajax_data` body posts to.
+     *
+     * @since TEXTY_VERSION
      */
     public function __construct() {
         add_action( 'wp_ajax_' . self::AJAX_ACTION, [ $this, 'handle_upgrade' ] );
@@ -36,6 +39,7 @@ class NoticeProvider implements NoticeProviderInterface {
      * Return notices to surface in the admin.
      *
      * @return array
+     * @since TEXTY_VERSION
      */
     public function get_notices(): array {
         $migrations = texty()->migrations();
@@ -85,6 +89,7 @@ class NoticeProvider implements NoticeProviderInterface {
      * upgrade, required check) so both entry points stay consistent.
      *
      * @return void
+     * @since TEXTY_VERSION
      */
     public function handle_upgrade(): void {
         if ( ! current_user_can( 'manage_options' ) ) {

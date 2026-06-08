@@ -20,6 +20,7 @@
  *   POST /texty/v1/settings/schema  — save one gateway scope (also activates it)
  *
  * @package Texty\Api
+ * @since   TEXTY_VERSION
  */
 
 namespace Texty\Api;
@@ -41,6 +42,8 @@ class SettingsController extends BaseSettingsRESTController {
 
 	/**
 	 * Constructor.
+	 *
+	 * @since TEXTY_VERSION
 	 */
 	public function __construct() {
 		parent::__construct( 'texty/v1', 'settings/schema', 'texty' );
@@ -58,6 +61,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * so the frontend's SettingsProvider can extract initial values.
 	 *
 	 * @return array[]
+	 * @since TEXTY_VERSION
 	 */
 	protected function get_settings_schema(): array {
 		$stored = $this->load_stored_settings();
@@ -95,6 +99,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $element Field element.
 	 *
 	 * @return string[]
+	 * @since TEXTY_VERSION
 	 */
 	protected function get_field_path( array $element ): array {
 		if ( ! empty( $element['page_id'] ) ) {
@@ -112,6 +117,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $schema Settings schema elements.
 	 *
 	 * @return array<string, array>
+	 * @since TEXTY_VERSION
 	 */
 	protected function load_values( array $schema ): array {
 		$stored = $this->load_stored_settings();
@@ -140,6 +146,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response
+	 * @since TEXTY_VERSION
 	 */
 	public function get_items( $request ) {
 		$response = parent::get_items( $request );
@@ -190,6 +197,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response
+	 * @since TEXTY_VERSION
 	 */
 	public function create_item( $request ) {
 		$scope_id = sanitize_key( (string) ( $request->get_param( 'scopeId' ) ?? '' ) );
@@ -281,6 +289,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array  $creds       Submitted credentials for that gateway.
 	 *
 	 * @return WP_Error|true
+	 * @since TEXTY_VERSION
 	 */
 	private function validate_gateway_credentials( string $gateway_key, array $creds ) {
 		$registered = texty()->gateways()->all();
@@ -306,6 +315,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $field Field element.
 	 *
 	 * @return string
+	 * @since TEXTY_VERSION
 	 */
 	private function build_dependency_key( array $field ): string {
 		$parts       = [];
@@ -325,6 +335,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * Read the backing option safely.
 	 *
 	 * @return array
+	 * @since TEXTY_VERSION
 	 */
 	private function load_stored_settings(): array {
 		$stored = get_option( self::OPTION_KEY, [] );
@@ -338,6 +349,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param string $gateway_key Gateway registry key.
 	 *
 	 * @return array
+	 * @since TEXTY_VERSION
 	 */
 	private function credentials_for( array $stored, string $gateway_key ): array {
 		return isset( $stored[ $gateway_key ] ) && is_array( $stored[ $gateway_key ] )
@@ -351,6 +363,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param string $label Human-readable field label, used in the message.
 	 *
 	 * @return array
+	 * @since TEXTY_VERSION
 	 */
 	private function required_validation( string $label ): array {
 		return [
@@ -368,6 +381,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $creds Saved credentials for this gateway.
 	 *
 	 * @return array[]
+	 * @since TEXTY_VERSION
 	 */
 	private function build_twilio_schema( array $creds ): array {
 		return [
@@ -443,6 +457,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $creds Saved credentials for this gateway.
 	 *
 	 * @return array[]
+	 * @since TEXTY_VERSION
 	 */
 	private function build_vonage_schema( array $creds ): array {
 		return [
@@ -518,6 +533,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $creds Saved credentials for this gateway.
 	 *
 	 * @return array[]
+	 * @since TEXTY_VERSION
 	 */
 	private function build_plivo_schema( array $creds ): array {
 		return [
@@ -593,6 +609,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $creds Saved credentials for this gateway.
 	 *
 	 * @return array[]
+	 * @since TEXTY_VERSION
 	 */
 	private function build_clickatell_schema( array $creds ): array {
 		return [
@@ -641,6 +658,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * matching the gating in Texty\Gateways::all().
 	 *
 	 * @return array[]
+	 * @since TEXTY_VERSION
 	 */
 	private function build_fake_schema(): array {
 		return [
@@ -665,6 +683,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * Translatable validation messages for built-in field types.
 	 *
 	 * @return array<string, string>
+	 * @since TEXTY_VERSION
 	 */
 	protected function get_validation_messages(): array {
 		return [
@@ -684,6 +703,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param string $context 'read' or 'write'.
 	 *
 	 * @return string
+	 * @since TEXTY_VERSION
 	 */
 	protected function get_permission_error_message( string $context ): string {
 		return 'write' === $context

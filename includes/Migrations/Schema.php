@@ -9,6 +9,7 @@
  * `Schema::column_exists(...)` from any migration.
  *
  * @package Texty\Migrations
+ * @since   TEXTY_VERSION
  */
 
 namespace Texty\Migrations;
@@ -26,6 +27,7 @@ final class Schema {
      * @param string $table Fully-prefixed table name.
      *
      * @return bool
+     * @since TEXTY_VERSION
      */
     public static function table_exists( string $table ): bool {
         global $wpdb;
@@ -44,6 +46,7 @@ final class Schema {
      * @param string $column Column name.
      *
      * @return bool
+     * @since TEXTY_VERSION
      */
     public static function column_exists( string $table, string $column ): bool {
         global $wpdb;
@@ -67,6 +70,7 @@ final class Schema {
      * @param string $index Index name.
      *
      * @return bool
+     * @since TEXTY_VERSION
      */
     public static function index_exists( string $table, string $index ): bool {
         global $wpdb;

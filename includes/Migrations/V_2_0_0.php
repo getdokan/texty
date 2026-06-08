@@ -4,6 +4,7 @@
  * `wp_texty_sms_stat` plus the indexes the SMS Logs UI queries against.
  *
  * @package Texty\Migrations
+ * @since   TEXTY_VERSION
  */
 
 namespace Texty\Migrations;
@@ -30,6 +31,7 @@ class V_2_0_0 extends TextyMigration {
      * `notification_id_idx`, `status_idx`) if missing.
      *
      * @return void
+     * @since TEXTY_VERSION
      */
     public static function sync_logs_schema(): void {
         ( new Install() )->create_tables();
