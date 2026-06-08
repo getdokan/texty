@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "makepot": "wp i18n make-pot --exclude='dist,node_modules,vendors' . --headers='{\"Last-Translator\":\"support@wedevs.com\",\"Report-Msgid-Bugs-To\":\"https://github.com/weDevsOfficial/texty/issues\"}' --file-comment=\"Copyright (c) $(date +'%Y') weDevs Pte. Ltd. All Rights Reserved.\" languages/texty.pot",
     "readme": "wp-readme-to-md",
+    "version": "bash bin/version-replace.sh",
     "release:dev": "bash bin/build.sh",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",

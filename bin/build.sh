@@ -43,6 +43,10 @@ status "Generating build... 👷‍♀️"
 npm run build
 npm run makepot
 
+# Stamp @since TEXTY_VERSION placeholders with the real version before packaging.
+status "Replacing version placeholders... 🏷️"
+npm run version
+
 # Copy all files
 status "Copying files... ✌️"
 FILES=(texty.php readme.txt dist dependencies includes assets languages composer.json composer.lock)
