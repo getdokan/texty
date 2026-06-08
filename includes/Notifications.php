@@ -130,17 +130,17 @@ class Notifications {
         return apply_filters( 'texty_notification_groups', [ // phpcs:ignore
             'wp' => [
                 'title'       => __( 'WordPress', 'texty' ),
-                'description' => '',
+                'description' => __( 'Default WordPress system alerts', 'texty' ),
                 'available'   => true,
             ],
             'wc' => [
                 'title'       => __( 'WooCommerce', 'texty' ),
-                'description' => '',
+                'description' => __( 'WooCommerce order and customer alerts', 'texty' ),
                 'available'   => class_exists( 'WooCommerce' ) ? true : false,
             ],
             'dokan' => [
                 'title'       => __( 'Dokan', 'texty' ),
-                'description' => '',
+                'description' => __( 'Vendor and marketplace alerts', 'texty' ),
                 'available'   => class_exists( 'WeDevs_Dokan' ) ? true : false,
             ],
         ] ); // phpcs:ignore

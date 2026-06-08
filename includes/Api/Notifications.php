@@ -5,6 +5,8 @@ namespace Texty\Api;
 use Texty\Notifications as TextyNotifications;
 use WP_Error;
 use WP_REST_Server;
+use WP_Rest_Response;
+use WP_REST_Request;
 
 class Notifications extends Base {
 
@@ -96,19 +98,25 @@ class Notifications extends Base {
 
         $schema = [
             [
-                'id'       => $group_id,
-                'type'     => 'page',
-                'label'    => $group['title'],
-                'icon'     => $this->group_icon( $group_id ),
-                'priority' => 10,
+                // Heading (icon + title + description) is rendered by the frontend,
+                // since plugin-ui's built-in heading has no icon slot. Suppress its
+                // heading; label/description/icon are still sent for the frontend.
+                'id'           => $group_id,
+                'type'         => 'page',
+                'label'        => $group['title'],
+                'description'  => isset( $group['description'] ) ? $group['description'] : '',
+                'icon'         => $this->group_icon( $group_id ),
+                'hide_heading' => true,
+                'priority'     => 10,
             ],
             [
-                'id'          => $section_id,
-                'type'        => 'section',
-                'label'       => $group['title'],
-                'description' => isset( $group['description'] ) ? $group['description'] : '',
-                'page_id'     => $group_id,
-                'priority'    => 10,
+                // No header — the section is just the card wrapper for the rows;
+                // title + description live on the page heading above.
+                'id'       => $section_id,
+                'type'     => 'section',
+                'label'    => '',
+                'page_id'  => $group_id,
+                'priority' => 10,
             ],
         ];
 
