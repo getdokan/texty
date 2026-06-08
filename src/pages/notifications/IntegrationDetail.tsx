@@ -1,20 +1,21 @@
 import { __ } from '@wordpress/i18n';
 import { ChevronLeft } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import NotificationGroup from './components/NotificationGroup';
+import NotificationGroupSettings from './components/NotificationGroupSettings';
 import NotificationGroupSkeleton from './components/NotificationGroupSkeleton';
-import type { NotificationItem } from './types';
 import { useNotifications } from './hooks/useNotifications';
+import type { NotificationItem } from './types';
 
 const IntegrationDetail = () => {
   const params = useParams();
   const navigate = useNavigate();
   const integrationId: string = params.integrationId ?? '';
 
-  const { data, loading, handlePatch } = useNotifications();
+  const { data, loading } = useNotifications();
 
-  const renderHeader = (title: string) => (
+  const renderHeader = (title: string): ReactNode => (
     <div className="flex items-center gap-3">
       <button
         type="button"
@@ -51,7 +52,7 @@ const IntegrationDetail = () => {
   }
 
   const items: NotificationItem[] = Object.values(data.notifications).filter(
-    (n: NotificationItem) => n.group === integrationId
+    (n: NotificationItem) => n.group === integrationId,
   );
 
   return (
@@ -63,13 +64,7 @@ const IntegrationDetail = () => {
           {__('No events for this integration.', 'texty')}
         </p>
       ) : (
-        <NotificationGroup
-          groupId={integrationId}
-          group={group}
-          notifications={items}
-          roles={data.roles}
-          onPatch={handlePatch}
-        />
+        <NotificationGroupSettings groupId={integrationId} />
       )}
     </div>
   );

@@ -16,7 +16,7 @@ const NotificationGroupSkeleton = ({ rows = 3 }: Props) => {
         </div>
       </div>
 
-      {/* Rows — matches NotificationRow collapsed header */}
+      {/* Rows — match the collapsed notification header */}
       {Array.from({ length: rows }).map(
         (_value: unknown, index: number) => (
           <div

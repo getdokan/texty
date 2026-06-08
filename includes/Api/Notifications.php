@@ -3,6 +3,7 @@
 namespace Texty\Api;
 
 use Texty\Notifications as TextyNotifications;
+use WP_Error;
 use WP_REST_Server;
 
 class Notifications extends Base {
@@ -42,6 +43,171 @@ class Notifications extends Base {
                 'schema' => [ $this, 'get_item_schema' ],
             ]
         );
+
+        register_rest_route(
+            $this->namespace,
+            '/' . $this->rest_base . '/schema',
+            [
+                [
+                    'methods'             => WP_REST_Server::READABLE,
+                    'callback'            => [ $this, 'get_schema' ],
+                    'permission_callback' => [ $this, 'admin_permissions_check' ],
+                    'args'                => [
+                        'group' => [
+                            'description' => __( 'Notification group key.', 'texty' ),
+                            'type'        => 'string',
+                            'required'    => true,
+                        ],
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * Build a plugin-ui Settings schema (and values) for one notification group.
+     *
+     * One `page` → one `section` → a `collapsible_switch` field per notification,
+     * with its recipients / message / variables attached as children via
+     * `field_group_id`. The frontend renders this verbatim — no schema building
+     * lives on the client.
+     *
+     * @since TEXTY_VERSION
+     *
+     * @param WP_REST_Request $request Request object.
+     *
+     * @return WP_REST_Response|WP_Error
+     */
+    public function get_schema( $request ) {
+        $group_id = sanitize_key( (string) $request->get_param( 'group' ) );
+        $groups   = texty()->notifications()->get_groups();
+
+        if ( '' === $group_id || ! isset( $groups[ $group_id ] ) ) {
+            return new WP_Error(
+                'texty_invalid_group',
+                __( 'Invalid notification group.', 'texty' ),
+                [ 'status' => 400 ]
+            );
+        }
+
+        $group      = $groups[ $group_id ];
+        $roles      = $this->get_roles();
+        $section_id = $group_id . '_section';
+
+        $schema = [
+            [
+                'id'       => $group_id,
+                'type'     => 'page',
+                'label'    => $group['title'],
+                'icon'     => $this->group_icon( $group_id ),
+                'priority' => 10,
+            ],
+            [
+                'id'          => $section_id,
+                'type'        => 'section',
+                'label'       => $group['title'],
+                'description' => isset( $group['description'] ) ? $group['description'] : '',
+                'page_id'     => $group_id,
+                'priority'    => 10,
+            ],
+        ];
+
+        $values = [];
+
+        foreach ( texty()->notifications()->all() as $class ) {
+            $obj = new $class();
+
+            if ( $obj->get_group() !== $group_id ) {
+                continue;
+            }
+
+            $id      = $obj->get_id();
+            $message = (string) $obj->get_message_raw();
+
+            $schema[] = [
+                'id'          => $id,
+                'type'        => 'field',
+                'variant'     => 'collapsible_switch',
+                'section_id'  => $section_id,
+                'title'       => $obj->get_title(),
+                'description' => $message,
+                'collapsed'   => true,
+            ];
+            $values[ $id ] = (bool) $obj->enabled();
+
+            if ( $obj->get_type() === 'role' ) {
+                $recipients = $obj->get_recipients_raw();
+
+                $schema[] = [
+                    'id'             => $id . '::recipients',
+                    'type'           => 'field',
+                    'variant'        => 'multicheck',
+                    'field_group_id' => $id,
+                    'title'          => __( 'Recipients', 'texty' ),
+                    'options'        => $roles,
+                ];
+                $values[ $id . '::recipients' ] = is_array( $recipients ) ? array_values( $recipients ) : [];
+            }
+
+            $schema[] = [
+                'id'             => $id . '::message',
+                'type'           => 'field',
+                'variant'        => 'textarea',
+                'field_group_id' => $id,
+                'title'          => __( 'Message Content', 'texty' ),
+                'rows'           => 4,
+            ];
+            $values[ $id . '::message' ] = $message;
+
+            $replacements = array_merge(
+                array_keys( $obj->replacement_keys() ),
+                array_keys( $obj->global_replacement_keys() )
+            );
+
+            if ( ! empty( $replacements ) ) {
+                $tokens = array_map(
+                    function ( $token ) {
+                        return '{' . $token . '}';
+                    },
+                    $replacements
+                );
+
+                $schema[] = [
+                    'id'             => $id . '::vars',
+                    'type'           => 'field',
+                    'variant'        => 'info',
+                    'field_group_id' => $id,
+                    'title'          => __( 'Available variables', 'texty' ),
+                    'description'    => implode( ', ', $tokens ),
+                ];
+            }
+        }
+
+        return rest_ensure_response(
+            [
+                'schema' => $schema,
+                'values' => $values,
+            ]
+        );
+    }
+
+    /**
+     * Map a notification group to a plugin-ui (lucide) icon name.
+     *
+     * @since TEXTY_VERSION
+     *
+     * @param string $group_id Group key.
+     *
+     * @return string
+     */
+    private function group_icon( $group_id ) {
+        $icons = [
+            'wp'    => 'Globe',
+            'wc'    => 'ShoppingCart',
+            'dokan' => 'Store',
+        ];
+
+        return isset( $icons[ $group_id ] ) ? $icons[ $group_id ] : 'Bell';
     }
 
     /**
@@ -92,7 +258,13 @@ class Notifications extends Base {
      * @return WP_Error|WP_REST_Response
      */
     public function update_items( $request ) {
-        $settings      = [];
+        // Merge over the stored option so a partial (single-group) save does not
+        // wipe the notifications that weren't included in this request.
+        $settings = get_option( TextyNotifications::OPTION_KEY, [] );
+        if ( ! is_array( $settings ) ) {
+            $settings = [];
+        }
+
         $notifications = texty()->notifications()->all();
 
         foreach ( $notifications as $class ) {
