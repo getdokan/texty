@@ -1,6 +1,6 @@
 {
   "name": "texty",
-  "version": "1.1.5",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "keywords": [],
@@ -14,7 +14,8 @@
     "makepot": "wp i18n make-pot --exclude='dist,node_modules,vendors' . --headers='{\"Last-Translator\":\"support@wedevs.com\",\"Report-Msgid-Bugs-To\":\"https://github.com/weDevsOfficial/texty/issues\"}' --file-comment=\"Copyright (c) $(date +'%Y') weDevs Pte. Ltd. All Rights Reserved.\" languages/texty.pot",
     "readme": "wp-readme-to-md",
     "version": "bash bin/version-replace.sh",
-    "release:dev": "bash bin/build.sh",
+    "release": "bash bin/build.sh",
+    "release:dev": "bash bin/build.sh --dev",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",

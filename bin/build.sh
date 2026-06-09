@@ -9,6 +9,15 @@ cd ..
 DIR=$(pwd)
 BUILD_DIR="$DIR/build/texty"
 
+# Parse args. --dev skips stamping @since TEXTY_VERSION placeholders;
+# a plain run (no args) replaces them with the real version.
+DEV=0
+for arg in "$@"; do
+    case "$arg" in
+        --dev) DEV=1 ;;
+    esac
+done
+
 # Enable nicer messaging for build status.
 BLUE_BOLD='\033[1;34m'
 GREEN_BOLD='\033[1;32m'
@@ -43,9 +52,14 @@ status "Generating build... 👷‍♀️"
 npm run build
 npm run makepot
 
-# Stamp @since TEXTY_VERSION placeholders with the real version before packaging.
-status "Replacing version placeholders... 🏷️"
-npm run version
+# Stamp @since TEXTY_VERSION placeholders with the real version before
+# packaging. Skipped on --dev builds.
+if [ "$DEV" -eq 0 ]; then
+    status "Replacing version placeholders... 🏷️"
+    npm run version
+else
+    warning "Dev build — skipping version placeholder replacement."
+fi
 
 # Copy all files
 status "Copying files... ✌️"
