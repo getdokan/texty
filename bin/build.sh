@@ -18,6 +18,9 @@ for arg in "$@"; do
     esac
 done
 
+# Read the plugin version from package.json for the archive filename.
+VERSION="$(grep -m1 '"version"' "$DIR/package.json" | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')"
+
 # Enable nicer messaging for build status.
 BLUE_BOLD='\033[1;34m'
 GREEN_BOLD='\033[1;32m'
@@ -80,7 +83,7 @@ rm composer.json composer.lock
 # go one up, to the build dir
 status "Creating archive... 🎁"
 cd ..
-zip -r -q texty.zip texty
+zip -r -q "texty-v${VERSION}.zip" texty
 
 # remove the source directory
 rm -rf texty
