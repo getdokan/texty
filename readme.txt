@@ -162,8 +162,6 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 - **New:** Database migration framework with an admin "database update required" notice; the 2.0.0 migration adds the SMS Logs columns and indexes.
 - **New:** REST API expanded under `texty/v1` — `metrics`, `logs`, `gateway`, `settings/schema`, `notification-settings`, and `notifications/schema` endpoints.
 - **New:** Error boundary and 404 screens for the admin app.
-- **Update:** Toasts now use sonner (via plugin-ui); `react-toastify` removed.
-- **Update:** Notification settings schema is generated server-side and rendered verbatim by the frontend.
 
 = v1.1.5 (3 Feb, 2026) =
 
