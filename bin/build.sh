@@ -38,7 +38,7 @@ warning() {
     echo -e "\n${YELLOW_BOLD}$1${COLOR_RESET}\n"
 }
 
-status "💃 Time to build the Texty Pro ZIP file 🕺"
+status "💃 Time to build the Texty ZIP file 🕺"
 
 # remove the build directory if exists and create one
 rm -rf "$DIR/build"
