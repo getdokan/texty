@@ -3,6 +3,7 @@
 namespace Texty\Gateways;
 
 use WP_Error;
+use WP_REST_Request;
 
 /**
  * Twilio Class

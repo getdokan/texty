@@ -230,8 +230,33 @@ class Logs extends Base {
             'response'           => (string) ( $row['response'] ?? '' ),
             'reference_id'       => (string) ( $row['reference_id'] ?? '' ),
             'created_at'         => (string) ( $row['created_at'] ?? '' ),
+            'created_at_formatted' => $this->format_datetime( (string) ( $row['created_at'] ?? '' ) ),
             'updated_at'         => (string) ( $row['updated_at'] ?? '' ),
         ];
+    }
+
+    /**
+     * Format a stored MySQL datetime using the site's date & time settings
+     * (Settings → General).
+     *
+     * Rows are written with current_time( 'mysql' ) — already site-local —
+     * so mysql2date is the right tool: it localizes month/day names without
+     * applying a second timezone shift.
+     *
+     * @param string $datetime MySQL datetime string (site-local).
+     *
+     * @return string
+     * @since TEXTY_VERSION
+     */
+    private function format_datetime( string $datetime ): string {
+        if ( '' === $datetime ) {
+            return '';
+        }
+
+        $format    = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+        $formatted = mysql2date( $format, $datetime );
+
+        return $formatted ? $formatted : $datetime;
     }
 
     /**

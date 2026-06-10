@@ -3,6 +3,7 @@
 namespace Texty\Gateways;
 
 use WP_Error;
+use WP_REST_Request;
 
 /**
  * Plivo Class
@@ -48,7 +49,7 @@ class Plivo implements GatewayInterface {
      * @return string
      */
     public function logo() {
-        return TEXTY_URL . '/assets/images/plivo.svg';
+        return TEXTY_URL . '/assets/images/plivo-logo.png';
     }
 
     /**

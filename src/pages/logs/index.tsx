@@ -86,7 +86,9 @@ const Logs = () => {
         id: 'created_at',
         label: __('Date & Time', 'texty'),
         render: ({ item }: { item: LogItem }) => (
-          <span className="text-sm text-foreground">{item.created_at}</span>
+          <span className="text-sm text-foreground">
+            {item.created_at_formatted || item.created_at}
+          </span>
         ),
         getValue: ({ item }: { item: LogItem }) => item.created_at,
       },

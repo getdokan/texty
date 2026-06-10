@@ -14,7 +14,7 @@ const Header = ({ source }: Props) => {
   return (
     <div className="flex items-start gap-3 px-6 pt-6 pb-5">
       {logoUrl && (
-        <div className="flex shrink-0 items-center justify-center overflow-hidden rounded-md">
+        <div className="flex shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-white p-1.5 border-gray-300">
           <img
             src={logoUrl}
             alt={label}

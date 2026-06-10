@@ -12,6 +12,7 @@ export type LogItem = {
   response: string;
   reference_id: string;
   created_at: string;
+  created_at_formatted: string;
   updated_at: string;
 };
 

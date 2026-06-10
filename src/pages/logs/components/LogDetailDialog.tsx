@@ -49,7 +49,9 @@ const LogDetailDialog = ({ log, open, onOpenChange }: Props) => {
             <Field label={__('Status', 'texty')}>
               <StatusBadge status={log.status} />
             </Field>
-            <Field label={__('Date & Time', 'texty')}>{log.created_at}</Field>
+            <Field label={__('Date & Time', 'texty')}>
+              {log.created_at_formatted || log.created_at}
+            </Field>
             <Field label={__('Receiver', 'texty')}>{log.receiver || '—'}</Field>
             <Field label={__('Gateway', 'texty')}>{log.gateway || '—'}</Field>
             <Field label={__('Reference ID', 'texty')}>
