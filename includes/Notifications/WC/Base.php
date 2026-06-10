@@ -15,7 +15,7 @@ class Base extends Notification {
     /**
      * Set the user ID
      *
-     * @param int $order_id
+     * @param mixed $order
      *
      * @return self
      */
