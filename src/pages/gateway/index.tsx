@@ -324,7 +324,7 @@ const GatewayConfiguration = () => {
             <GatewayStatus status={activeGateway ? 'active' : 'inactive'} />
           </div>
         </div>
-        <div className="flex min-h-200 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-background md:flex-row">
+        <div className="flex min-h-200 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-background md:flex-row p-2">
           <Sidebar connectedGateways={connectedGateways} />
           <DetailPane
             activeGateway={activeGateway}
