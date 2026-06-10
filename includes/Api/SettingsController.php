@@ -93,8 +93,10 @@ class SettingsController extends BaseSettingsRESTController {
 	/**
 	 * Storage path override.
 	 *
-	 * Each credential field stores at texty_settings[<gateway_key>][<field_id>].
-	 * Page id is the gateway key, so [page_id, field_id] is the right path.
+	 * Each credential field stores at texty_settings[<gateway_key>][<cred_key>].
+	 * Schema field ids carry a `<gateway>_` prefix to stay globally unique for
+	 * the frontend; strip it here so the stored option keeps the legacy shape
+	 * (e.g. field `twilio_sid` → texty_settings['twilio']['sid']).
 	 *
 	 * @param array $element Field element.
 	 *
@@ -103,7 +105,15 @@ class SettingsController extends BaseSettingsRESTController {
 	 */
 	protected function get_field_path( array $element ): array {
 		if ( ! empty( $element['page_id'] ) ) {
-			return [ $element['page_id'], $element['id'] ];
+			$page_id  = $element['page_id'];
+			$field_id = $element['id'];
+			$prefix   = $page_id . '_';
+
+			if ( 0 === strpos( $field_id, $prefix ) ) {
+				$field_id = substr( $field_id, strlen( $prefix ) );
+			}
+
+			return [ $page_id, $field_id ];
 		}
 		return parent::get_field_path( $element );
 	}
@@ -220,7 +230,7 @@ class SettingsController extends BaseSettingsRESTController {
 			);
 		}
 
-		// Convert dot-keyed values (texty.<gw>.<field>) → nested ([gw][field]).
+		// Convert flat values (keyed by field id, e.g. twilio_sid) → nested ([gw][cred]).
 		$fields = $this->get_fields_for_page( $schema, $scope_id );
 		$nested = [];
 		foreach ( $fields as $field ) {
@@ -308,9 +318,11 @@ class SettingsController extends BaseSettingsRESTController {
 	}
 
 	/**
-	 * Mirror plugin-ui's frontend dependency_key construction:
-	 * join section_id (and any further parents) with the field id by dots.
-	 * The gateway page_id is intentionally omitted to match the frontend.
+	 * The key the frontend uses for a field's value.
+	 *
+	 * plugin-ui's SettingsProvider keys its flat values map by the raw field
+	 * element `id` (see `collectKeys` in settings-context), so field ids must
+	 * be globally unique — hence the `<gateway>_<field>` naming in the schema.
 	 *
 	 * @param array $field Field element.
 	 *
@@ -318,17 +330,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @since TEXTY_VERSION
 	 */
 	private function build_dependency_key( array $field ): string {
-		$parts       = [];
-		$parent_keys = [ 'subpage_id', 'tab_id', 'section_id', 'subsection_id', 'field_group_id' ];
-
-		foreach ( $parent_keys as $pk ) {
-			if ( ! empty( $field[ $pk ] ) ) {
-				$parts[] = $field[ $pk ];
-			}
-		}
-
-		$parts[] = $field['id'];
-		return implode( '.', $parts );
+		return $field['id'];
 	}
 
 	/**
@@ -398,7 +400,7 @@ class SettingsController extends BaseSettingsRESTController {
 					'https://www.twilio.com/console/project/settings',
 					'https://github.com/weDevsOfficial/texty/wiki/Twilio'
 				),
-				'image_url'     => TEXTY_URL . '/assets/images/twilio.svg',
+				'image_url'     => TEXTY_URL . '/assets/images/twilio-logo.png',
 				'doc_link'      => 'https://www.twilio.com/try-twilio',
 				'doc_link_text' => __( 'Get your account', 'texty' ),
 				'priority'      => 10,
@@ -411,7 +413,7 @@ class SettingsController extends BaseSettingsRESTController {
 			],
 			[
 				'type'        => 'field',
-				'id'          => 'sid',
+				'id'          => 'twilio_sid',
 				'page_id'     => 'twilio',
 				'section_id'  => 'twilio_credentials',
 				'variant'     => 'text',
@@ -424,7 +426,7 @@ class SettingsController extends BaseSettingsRESTController {
 			],
 			[
 				'type'        => 'field',
-				'id'          => 'token',
+				'id'          => 'twilio_token',
 				'page_id'     => 'twilio',
 				'section_id'  => 'twilio_credentials',
 				'variant'     => 'show_hide',
@@ -437,7 +439,7 @@ class SettingsController extends BaseSettingsRESTController {
 			],
 			[
 				'type'        => 'field',
-				'id'          => 'from',
+				'id'          => 'twilio_from',
 				'page_id'     => 'twilio',
 				'section_id'  => 'twilio_credentials',
 				'variant'     => 'phone',
@@ -487,7 +489,7 @@ class SettingsController extends BaseSettingsRESTController {
 			],
 			[
 				'type'        => 'field',
-				'id'          => 'key',
+				'id'          => 'vonage_key',
 				'page_id'     => 'vonage',
 				'section_id'  => 'vonage_credentials',
 				'variant'     => 'text',
@@ -500,7 +502,7 @@ class SettingsController extends BaseSettingsRESTController {
 			],
 			[
 				'type'        => 'field',
-				'id'          => 'secret',
+				'id'          => 'vonage_secret',
 				'page_id'     => 'vonage',
 				'section_id'  => 'vonage_credentials',
 				'variant'     => 'show_hide',
@@ -513,7 +515,7 @@ class SettingsController extends BaseSettingsRESTController {
 			],
 			[
 				'type'        => 'field',
-				'id'          => 'from',
+				'id'          => 'vonage_from',
 				'page_id'     => 'vonage',
 				'section_id'  => 'vonage_credentials',
 				'variant'     => 'phone',
@@ -563,7 +565,7 @@ class SettingsController extends BaseSettingsRESTController {
 			],
 			[
 				'type'        => 'field',
-				'id'          => 'auth_id',
+				'id'          => 'plivo_auth_id',
 				'page_id'     => 'plivo',
 				'section_id'  => 'plivo_credentials',
 				'variant'     => 'text',
@@ -576,7 +578,7 @@ class SettingsController extends BaseSettingsRESTController {
 			],
 			[
 				'type'        => 'field',
-				'id'          => 'token',
+				'id'          => 'plivo_token',
 				'page_id'     => 'plivo',
 				'section_id'  => 'plivo_credentials',
 				'variant'     => 'show_hide',
@@ -589,7 +591,7 @@ class SettingsController extends BaseSettingsRESTController {
 			],
 			[
 				'type'        => 'field',
-				'id'          => 'from',
+				'id'          => 'plivo_from',
 				'page_id'     => 'plivo',
 				'section_id'  => 'plivo_credentials',
 				'variant'     => 'phone',
@@ -639,7 +641,7 @@ class SettingsController extends BaseSettingsRESTController {
 			],
 			[
 				'type'        => 'field',
-				'id'          => 'key',
+				'id'          => 'clickatell_key',
 				'page_id'     => 'clickatell',
 				'section_id'  => 'clickatell_credentials',
 				'variant'     => 'show_hide',

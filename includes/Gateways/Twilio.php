@@ -48,7 +48,7 @@ class Twilio implements GatewayInterface {
      * @return string
      */
     public function logo() {
-        return TEXTY_URL . '/assets/images/twilio.svg';
+        return TEXTY_URL . '/assets/images/twilio-logo.png';
     }
 
     /**
@@ -127,10 +127,17 @@ class Twilio implements GatewayInterface {
      *
      * @param WP_REST_Request $request
      *
-     * @return WP_Error|true
+     * @return WP_Error|mixed
      */
     public function validate( $request ) {
         $creds = $request->get_param( 'twilio' );
+
+        if ( ! is_array( $creds ) || empty( $creds['sid'] ) || empty( $creds['token'] ) ) {
+            return new WP_Error(
+                'texty_missing_credentials',
+                __( 'Twilio Account SID and Auth Token are required.', 'texty' )
+            );
+        }
 
         $args = [
             'headers' => [
@@ -140,21 +147,32 @@ class Twilio implements GatewayInterface {
 
         $endpoint      = 'https://api.twilio.com/2010-04-01/Accounts.json';
         $response      = wp_remote_get( $endpoint, $args );
+
+        if ( is_wp_error( $response ) ) {
+            return $response;
+        }
+
         $body          = json_decode( wp_remote_retrieve_body( $response ) );
         $response_code = wp_remote_retrieve_response_code( $response );
 
         if ( 401 === $response_code ) {
-            return new WP_Error(
-                $body->code,
-                $body->detail ? $body->detail : $body->message,
-                $body
-            );
+            $code = isset( $body->code ) ? $body->code : 'twilio_auth_failed';
+
+            if ( ! empty( $body->detail ) ) {
+                $message = $body->detail;
+            } elseif ( ! empty( $body->message ) ) {
+                $message = $body->message;
+            } else {
+                $message = __( 'Twilio rejected the credentials.', 'texty' );
+            }
+
+            return new WP_Error( $code, $message, $body );
         }
 
         return [
             'sid'   => $creds['sid'],
             'token' => $creds['token'],
-            'from'  => $creds['from'],
+            'from'  => isset( $creds['from'] ) ? $creds['from'] : '',
         ];
     }
 }

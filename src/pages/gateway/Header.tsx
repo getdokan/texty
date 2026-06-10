@@ -14,11 +14,11 @@ const Header = ({ source }: Props) => {
   return (
     <div className="flex items-start gap-3 px-6 pt-6 pb-5">
       {logoUrl && (
-        <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-primary/10">
+        <div className="flex shrink-0 items-center justify-center overflow-hidden rounded-md">
           <img
             src={logoUrl}
             alt={label}
-            className="max-h-6 max-w-6 object-contain"
+            className="object-contain max-h-10 max-w-10"
           />
         </div>
       )}

@@ -51,7 +51,17 @@ class Gateways {
             return false;
         }
 
-        // Bail before the pipeline if the caller didn't supply a recipient.
+        /**
+         * Filter the recipient phone number.
+         *
+         * @param string           $to      The recipient phone number
+         * @param string           $message The message body
+         * @param GatewayInterface $gateway The active gateway instance
+         */
+        $to = apply_filters( 'texty_sms_to', $to, $message, $gateway );
+
+        // Bail if there's still no recipient after the filter — the filter
+        // runs first so extensions keep their chance to supply the number.
         // Returning a WP_Error keeps `texty_after_send_sms` consumers (the
         // SMS-stat logger included) on their is_wp_error(...) failure path
         // instead of triggering type errors downstream.
@@ -61,15 +71,6 @@ class Gateways {
                 __( 'No recipient phone number was provided.', 'texty' )
             );
         }
-
-        /**
-         * Filter the recipient phone number.
-         *
-         * @param string           $to      The recipient phone number
-         * @param string           $message The message body
-         * @param GatewayInterface $gateway The active gateway instance
-         */
-        $to = apply_filters( 'texty_sms_to', $to, $message, $gateway );
 
         /**
          * Filter the SMS message body.

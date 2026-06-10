@@ -8,11 +8,14 @@ import PhoneInput from 'react-phone-input-2';
 
 const PhoneField = ({ element, onChange }: FieldComponentProps) => {
   const value: string = String(element.value ?? element.default ?? '');
-  const depKey: string = element.dependency_key ?? '';
   const label: string = element.label ?? element.title ?? '';
 
+  // SettingsProvider keys its values map by the element id (see plugin-ui
+  // FieldRenderer → updateValue), so changes must be reported under that key.
+  // react-phone-input-2 emits digits without the leading "+"; re-add it so the
+  // stored number stays E.164 (Twilio & co. require it for the From number).
   const handleChange = (val: string): void => {
-    if (depKey) onChange(depKey, val);
+    if (element.id) onChange(element.id, val ? `+${val.replace(/^\+/, '')}` : '');
   };
 
   return (
@@ -37,7 +40,7 @@ const PhoneField = ({ element, onChange }: FieldComponentProps) => {
           onChange={handleChange}
           enableSearch
           disabled={element.disabled}
-          inputProps={{ id: element.id, name: depKey }}
+          inputProps={{ id: element.id, name: element.id }}
           containerClass="texty-phone-input"
           inputClass="!h-9 !w-full !rounded-md !border !border-input !bg-background !pl-14 !text-sm !text-foreground"
           buttonClass="!rounded-l-md !border-r !border-input !bg-background"

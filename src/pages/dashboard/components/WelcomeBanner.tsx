@@ -46,7 +46,7 @@ const WelcomeBanner = () => {
             {__('Offering', 'texty')}
           </span>
           <h3 className="mt-3 text-2xl leading-snug font-bold text-foreground">
-            {__('30+ SMS Gateway Integrations.', 'texty')}
+            {__('4 SMS Gateway Integrations.', 'texty')}
           </h3>
           <p className="mt-1 mb-4 text-sm text-muted-foreground">
             {__('Please connect your preferred one.', 'texty')}

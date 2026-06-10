@@ -236,7 +236,19 @@ const DetailPane = ({
                 )}
 
                 {connected && isActive && (
-                  <Button disabled>{__('Activated', 'texty')}</Button>
+                  dirty ? (
+                    <Button
+                      onClick={handleConnect}
+                      disabled={hasErrors || busy}
+                    >
+                      {pending === 'connect' && (
+                        <Loader2 className="size-4 animate-spin" />
+                      )}
+                      {__('Save Changes', 'texty')}
+                    </Button>
+                  ) : (
+                    <Button disabled>{__('Activated', 'texty')}</Button>
+                  )
                 )}
               </>
             ) : (
