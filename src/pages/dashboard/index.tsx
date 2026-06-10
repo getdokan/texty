@@ -58,7 +58,7 @@ const Dashboard = () => {
         loading={loading}
       />
 
-      <QuickSendCard onSent={refresh} />
+      {metrics.gateway_status && <QuickSendCard onSent={refresh} />}
     </div>
   );
 };
