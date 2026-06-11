@@ -3,14 +3,14 @@ name: E2E Tests
 # Real-time PR validation: every pull request (and every push to develop)
 # spins up a throwaway WordPress, activates Texty, and runs the Playwright suite.
 on:
+    # Run on every PR regardless of base branch (feature branches are often
+    # stacked, e.g. this suite's PR targets feature/dashboard, not develop).
     pull_request:
+    push:
         branches:
             - develop
             - main
             - master
-    push:
-        branches:
-            - develop
     workflow_dispatch:
 
 # A newer commit on the same PR/branch cancels the in-flight run so feedback
