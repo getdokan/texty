@@ -74,9 +74,17 @@ const Logs = () => {
     if (filters.search) {
       params.set('search', filters.search);
     }
-    const url: string = `${
-      window.location.origin
-    }/wp-json/texty/v1/logs/export?${params.toString()}`;
+
+    // The export opens in a new tab (not through apiFetch), so REST cookie
+    // auth needs the nonce on the query string.
+    const nonce: string = window.texty?.nonce ?? '';
+    if (nonce) {
+      params.set('_wpnonce', nonce);
+    }
+
+    const restUrl: string =
+      window.texty?.rest_url ?? `${window.location.origin}/wp-json/`;
+    const url: string = `${restUrl}texty/v1/logs/export?${params.toString()}`;
     window.open(url, '_blank');
   };
 

@@ -4,6 +4,7 @@
  *
  * Routes:
  *   GET /texty/v1/logs           — paged listing for the SMS Logs UI.
+ *   GET /texty/v1/logs/export    — CSV download of the (filtered) log set.
  *   GET /texty/v1/logs/{id}      — single row drill-in for the "View Log" panel.
  *
  * Storage: reads from `wp_texty_sms_stat` via the SmsStatStore data layer.
@@ -91,6 +92,36 @@ class Logs extends Base {
                             'type'        => 'string',
                             'enum'        => [ 'asc', 'desc' ],
                             'default'     => 'desc',
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        register_rest_route(
+            $this->namespace,
+            '/' . $this->rest_base . '/export',
+            [
+                [
+                    'methods'             => WP_REST_Server::READABLE,
+                    'callback'            => [ $this, 'export' ],
+                    'permission_callback' => [ $this, 'admin_permissions_check' ],
+                    'args'                => [
+                        'status' => [
+                            'description' => __( 'Filter by status.', 'texty' ),
+                            'type'        => 'string',
+                            'enum'        => [ '', 'sent', 'failed', 'pending' ],
+                            'default'     => '',
+                        ],
+                        'type'   => [
+                            'description' => __( 'Filter by notification id.', 'texty' ),
+                            'type'        => 'string',
+                            'default'     => '',
+                        ],
+                        'search' => [
+                            'description' => __( 'Free-text search.', 'texty' ),
+                            'type'        => 'string',
+                            'default'     => '',
                         ],
                     ],
                 ],
@@ -201,6 +232,95 @@ class Logs extends Base {
         }
 
         return rest_ensure_response( $this->present_row( $row ) );
+    }
+
+    /**
+     * GET /logs/export — stream the (optionally filtered) log set as a CSV
+     * download. Honours the same `status` / `type` / `search` filters as the
+     * listing so the export matches what the user sees.
+     *
+     * Opened directly in a browser tab (not via apiFetch), so the frontend must
+     * pass `_wpnonce` on the query string for REST cookie auth to succeed.
+     *
+     * @param WP_REST_Request $request Request.
+     *
+     * @return WP_Error|void Streams CSV and exits on success.
+     * @since TEXTY_VERSION
+     */
+    public function export( $request ) {
+        $store = DataLayerFactory::make_store( SmsStat::class );
+        if ( ! $store ) {
+            return new WP_Error( 'texty_no_store', __( 'Logs store unavailable.', 'texty' ), [ 'status' => 500 ] );
+        }
+
+        $status = sanitize_key( (string) $request->get_param( 'status' ) );
+        $type   = sanitize_key( (string) $request->get_param( 'type' ) );
+        $search = sanitize_text_field( (string) $request->get_param( 'search' ) );
+
+        $args = [
+            'per_page' => -1,
+            'orderby'  => 'created_at',
+            'order'    => 'DESC',
+        ];
+        if ( '' !== $status ) {
+            $args['status'] = $status;
+        }
+        if ( '' !== $type ) {
+            $args['notification_id'] = $type;
+        }
+        if ( '' !== $search ) {
+            $args['search'] = $search;
+        }
+
+        $result = $store->query( $args );
+        $items  = is_array( $result['items'] ?? null ) ? $result['items'] : [];
+
+        $filename = 'texty-sms-logs-' . gmdate( 'Y-m-d-His' ) . '.csv';
+
+        nocache_headers();
+        header( 'Content-Type: text/csv; charset=utf-8' );
+        header( 'Content-Disposition: attachment; filename=' . $filename );
+
+        $output = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+
+        // UTF-8 BOM so Excel renders multibyte (e.g. Arabic) message bodies.
+        fwrite( $output, "\xEF\xBB\xBF" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+
+        fputcsv(
+            $output,
+            [
+                __( 'ID', 'texty' ),
+                __( 'Date', 'texty' ),
+                __( 'Type', 'texty' ),
+                __( 'Gateway', 'texty' ),
+                __( 'Recipient', 'texty' ),
+                __( 'Message', 'texty' ),
+                __( 'Status', 'texty' ),
+                __( 'Reference ID', 'texty' ),
+                __( 'Response', 'texty' ),
+            ]
+        );
+
+        foreach ( $items as $row ) {
+            $data = $this->present_row( $row );
+            fputcsv(
+                $output,
+                [
+                    $data['id'],
+                    $data['created_at'],
+                    $data['type_label'],
+                    $data['gateway'],
+                    $data['receiver'],
+                    $data['message'],
+                    $data['status'],
+                    $data['reference_id'],
+                    $data['response'],
+                ]
+            );
+        }
+
+        fclose( $output ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+        exit;
     }
 
     /**
