@@ -18,7 +18,7 @@ export default defineConfig({
     expect: { timeout: 10_000 },
     use: {
         // Playwright no longer supports top-level `headless`; set it inside `use`.
-        headless: false,
+        headless: true,
         baseURL,
         ignoreHTTPSErrors: true,
         trace: 'on-first-retry',
