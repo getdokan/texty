@@ -252,15 +252,18 @@ test.describe('Notifications UI', () => {
         await page.waitForLoadState('networkidle');
         await page.getByRole('tab', { name: /Integrations/i }).click();
 
-        // Integration cards render async; wait for one (or treat as no-integrations).
-        const card = page.getByText(/WooCommerce|Dokan/i).first();
-        const hasIntegrations = await card
+        // "Configure" only appears for an ACTIVE integration (WC/Dokan present).
+        // On a bare WP those plugins aren't installed, so the tab shows no
+        // configurable integration — gate on the button itself, not the card text
+        // (which can render for non-active/installable entries too).
+        const configure = page.getByRole('button', { name: /Configure/i }).first();
+        const hasConfigurable = await configure
             .waitFor({ state: 'visible', timeout: 8_000 })
             .then(() => true)
             .catch(() => false);
-        test.skip(!hasIntegrations, 'no integrations active on this site');
+        test.skip(!hasConfigurable, 'no active (configurable) integrations on this site');
 
-        await page.getByRole('button', { name: /Configure/i }).first().click();
+        await configure.click();
         // Navigates to the integration detail route and renders that group's
         // notification settings (the same group-settings UI as User Events).
         await expect(page).toHaveURL(/#\/notifications\/integrations\//, { timeout: 10_000 });
