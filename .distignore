@@ -17,3 +17,8 @@ composer.lock
 tsconfig.json
 CLAUDE.md
 playwright.config.ts
+.claude/
+.distignore
+.svnignore
+.env.example
+.wp-env.json
