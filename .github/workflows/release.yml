@@ -46,11 +46,11 @@ jobs:
               uses: 10up/action-wordpress-plugin-deploy@stable
               with:
                 generate-zip: true
-                build-dir: svn-build
               env:
                 SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
                 SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
                 SLUG: texty
+                BUILD_DIR: ${{ github.workspace }}/svn-build
             - name: Create GitHub release
               uses: softprops/action-gh-release@v2
               with:
