@@ -14,3 +14,6 @@ src
 build
 composer.json
 composer.lock
+tsconfig.json
+CLAUDE.md
+playwright.config.ts
