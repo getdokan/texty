@@ -1,6 +1,6 @@
 {
   "name": "texty",
-  "version": "1.1.5",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "keywords": [],
@@ -8,25 +8,47 @@
   "license": "ISC",
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "wp-scripts build",
-    "start": "wp-scripts start",
+    "build": "wp-scripts build --progress",
+    "start": "wp-scripts start --progress",
+    "typecheck": "tsc --noEmit",
     "makepot": "wp i18n make-pot --exclude='dist,node_modules,vendors' . --headers='{\"Last-Translator\":\"support@wedevs.com\",\"Report-Msgid-Bugs-To\":\"https://github.com/weDevsOfficial/texty/issues\"}' --file-comment=\"Copyright (c) $(date +'%Y') weDevs Pte. Ltd. All Rights Reserved.\" languages/texty.pot",
-    "pot2json": "po2json languages/texty.pot languages/texty.json --format jed --pretty",
-    "readme": "wp-readme-to-md"
+    "readme": "wp-readme-to-md",
+    "version": "bash bin/version-replace.sh",
+    "release": "bash bin/build.sh",
+    "release:dev": "bash bin/build.sh --dev",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report tests/e2e/playwright-report"
   },
   "dependencies": {
+    "@base-ui/react": "^1.4.1",
+    "@wedevs/plugin-ui": "github:getdokan/plugin-ui",
     "classnames": "^2.2.6",
+    "lucide-react": "^0.468.0",
     "react-phone-input-2": "^2.13.9",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^7.14.2",
     "react-select": "^5.8.0",
-    "react-toastify": "^6.2.0"
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@types/node": "^20.19.40",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/wordpress__element": "^2.4.1",
     "@wordpress/components": "^28.0.0",
     "@wordpress/scripts": "^30.12.0",
-    "po2json": "^0.4.5",
+    "dotenv": "^17.4.2",
     "prettier": "^2.2.1",
     "sass": "^1.83.4",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^6.0.3",
     "wp-readme-to-markdown": "^1.0.1"
+  },
+  "overrides": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1"
   }
 }

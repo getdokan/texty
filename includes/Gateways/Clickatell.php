@@ -3,6 +3,7 @@
 namespace Texty\Gateways;
 
 use WP_Error;
+use WP_REST_Request;
 
 /**
  * Clickatell Class
@@ -48,7 +49,7 @@ class Clickatell implements GatewayInterface {
      * @return string
      */
     public function logo() {
-        return TEXTY_URL . '/assets/images/clickatell.svg';
+        return TEXTY_URL . '/assets/images/clickatell-logo.png';
     }
 
     /**
@@ -75,7 +76,7 @@ class Clickatell implements GatewayInterface {
      * @param string $to
      * @param string $message
      *
-     * @return WP_Error|true
+     * @return WP_Error|array
      */
     public function send( $to, $message ) {
         $creds = texty()->settings()->get( 'clickatell' );
@@ -128,8 +129,15 @@ class Clickatell implements GatewayInterface {
             }
         }
         // phpcs:enable
-
-        return true;
+        $body = json_decode( $body );
+        $api_message_id = null;
+        if ( isset( $body->messages[0]->apiMessageId ) ) {
+            $api_message_id = $body->messages[0]->apiMessageId;
+        }
+        return [
+            'success'      => true,
+            'reference_id' => $api_message_id,
+        ];
     }
 
     /**
@@ -137,7 +145,7 @@ class Clickatell implements GatewayInterface {
      *
      * @param WP_REST_Request $request
      *
-     * @return WP_Error|true
+     * @return WP_Error|mixed
      */
     public function validate( $request ) {
         $creds = $request->get_param( 'clickatell' );

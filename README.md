@@ -775,6 +775,21 @@ Yes. Use the `texty_sms_message` filter to modify the SMS body, or `texty_notifi
 
 ## Changelog
 
+### v2.0.0 (9 Jun, 2026)
+
+- **New:** Full design revamp — every admin screen redesigned and rebuilt from scratch with a new layout, navigation, theming, and component system.
+- **New:** Dashboard page — SMS metrics, delivery-rate stats, volume analytics chart, and a Quick Send card.
+- **New:** SMS Logs page — searchable, filterable, paginated log of every message with a detail view and delivery-status badges.
+- **New:** SMS logging — every send is recorded in a dedicated `{prefix}texty_sms_stat` table (notification id/group, message body, gateway response, reference id).
+- **New:** Gateway configuration page — schema-driven settings UI with a Connect → Activate flow and per-gateway Activate / Deactivate / Disconnect actions.
+- **New:** Notifications revamp — User Events, Integrations, and global Settings tabs with collapsible per-event rows (toggle, recipients, message template, available variables) and per-group branding (WordPress / WooCommerce / Dokan).
+- **New:** Compliance controls — Pause All notifications, append company name to messages, and a global fallback Sender ID.
+- **New:** Database migration framework with an admin "database update required" notice; the 2.0.0 migration adds the SMS Logs columns and indexes.
+- **New:** REST API expanded under `texty/v1` — `metrics`, `logs`, `gateway`, `settings/schema`, `notification-settings`, and `notifications/schema` endpoints.
+- **New:** Error boundary and 404 screens for the admin app.
+- **Update:** Toasts now use sonner (via plugin-ui); `react-toastify` removed.
+- **Update:** Notification settings schema is generated server-side and rendered verbatim by the frontend.
+
 ### v1.1.5 (3 Feb, 2026)
 
 - **New:** Added notifications for WooCommerce order statuses: cancelled, failed, and refunded

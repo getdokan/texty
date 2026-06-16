@@ -21,9 +21,14 @@ class Api {
         $this->classes = [
             Api\Settings::class,
             Api\Notifications::class,
+            Api\NotificationSettings::class,
             Api\Tools::class,
             Api\Status::class,
             Api\Send::class,
+            Api\Metrics::class,
+            Api\SettingsController::class,
+            Api\Gateway::class,
+            Api\Logs::class,
         ];
 
         add_action( 'rest_api_init', [ $this, 'init_api' ] );
@@ -35,8 +40,14 @@ class Api {
      * @return void
      */
     public function init_api() {
-        foreach ( $this->classes as $class ) {
+        $classes = apply_filters( 'texty_rest_api_class_map', $this->classes );
+
+        foreach ( $classes as $class ) {
             $object = new $class();
+            // check if object is instance of WP_REST_Controller
+            if ( ! is_a( $object, 'WP_REST_Controller' ) ) {
+                continue;
+            }
             $object->register_routes();
         }
     }

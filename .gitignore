@@ -8,3 +8,8 @@ build
 .vscode
 dist/
 dependencies/
+bin/seed-*
+.env
+tests/e2e/auth/*.json
+tests/e2e/playwright-report/
+tests/e2e/test-results/

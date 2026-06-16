@@ -15,7 +15,7 @@ class Base extends Notification {
     /**
      * Set the user ID
      *
-     * @param int $order_id
+     * @param mixed $order
      *
      * @return self
      */
@@ -40,15 +40,25 @@ class Base extends Notification {
         foreach ( $this->replacement_keys() as $search => $method ) {
             $value = method_exists( $this->order, $method ) ? $this->order->$method() : '';
 
+            // WC accessors like `get_date_paid()` return null on unpaid orders
+            // and `WC_DateTime` objects on paid ones — normalize both to a
+            // string before any string handling. PHP 8.1 deprecates passing
+            // null to str_replace's $replace argument.
+            if ( null === $value ) {
+                $value = '';
+            } elseif ( ! is_scalar( $value ) ) {
+                $value = (string) $value;
+            }
+
             if ( 'order_total' === $search ) {
-                $value = wp_strip_all_tags( html_entity_decode( $value ) );
+                $value = wp_strip_all_tags( html_entity_decode( (string) $value ) );
             }
 
             if ( 'items' === $search ) {
                 $value = $this->get_items();
             }
 
-            $message = str_replace( '{' . $search . '}', $value, $message );
+            $message = str_replace( '{' . $search . '}', (string) $value, $message );
         }
 
         $message = $this->replace_global_keys( $message );
@@ -69,8 +79,14 @@ class Base extends Notification {
                 continue;
             }
 
-            $product    = $item->get_product();
-            $products[] = sprintf( '%s x %d', $product->get_name(), $item->get_quantity() );
+            $product = $item->get_product();
+
+            // A product may have been deleted after the order was placed —
+            // `get_product()` then returns false. Fall back to the line-item
+            // name stored on the order so building the message doesn't fatal.
+            $name = $product ? $product->get_name() : $item->get_name();
+
+            $products[] = sprintf( '%s x %d', $name, $item->get_quantity() );
         }
 
         $names = implode( "\n", $products );
@@ -84,12 +100,6 @@ class Base extends Notification {
      * @return array
      */
     public function get_recipients() {
-        if ( 'user' === $this->get_type() ) {
-            $number = $this->order->get_billing_phone();
-
-            return $number ? [ $number ] : [];
-        }
-
         return $this->get_numbers_by_roles();
     }
 
@@ -116,28 +126,99 @@ class Base extends Notification {
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function send(): bool {
-        if ( ! $this->order ) {
+        if ( ! $this->enabled() ) {
             return false;
         }
 
         $meta_key = '_texty_' . $this->get_id();
         $has_sent = $this->order->get_meta( $meta_key, true );
 
+        // if we've already sent the message, don't send again
         if ( $has_sent ) {
             return false;
         }
 
-        $is_sent = parent::send();
+        // mark as sent
+        $this->order->add_meta_data( $meta_key, 1 );
+        $this->order->save_meta_data();
 
-        if ( $is_sent ) {
-            $this->order->add_meta_data( $meta_key, 1 );
-            $this->order->save_meta_data();
+        if ( 'user' === $this->get_type() ) {
+            $number = $this->order->get_billing_phone();
+
+            $recipients = $number ? [ $number ] : [];
+        } else {
+            $recipients = $this->get_recipients();
         }
 
-        return $is_sent;
+        /**
+         * Filter the recipients for a notification.
+         *
+         * @param array        $recipients   The recipient phone numbers
+         * @param Notification $notification The notification instance
+         */
+        $recipients = apply_filters( 'texty_notification_recipients', $recipients, $this );
+
+        // Drop nulls / empty strings — a stale `texty_phone` meta value or a
+        // third-party filter can leave them in the array and crash the
+        // gateway send (which expects a string).
+        $recipients = is_array( $recipients ) ? array_values( array_filter( $recipients ) ) : [];
+
+        if ( ! $recipients ) {
+            return false;
+        }
+
+        $content = $this->get_message();
+
+        /**
+         * Filter the notification message content.
+         *
+         * @param string       $content      The message content
+         * @param Notification $notification The notification instance
+         */
+        $content = apply_filters( 'texty_notification_message', $content, $this );
+
+        /**
+         * Filter the message for a specific notification type.
+         *
+         * @param string       $content      The message content
+         * @param Notification $notification The notification instance
+         */
+        $content = apply_filters( 'texty_notification_message_' . $this->get_id(), $content, $this );
+
+        /**
+         * Fires before the notification send loop.
+         *
+         * @param Notification $notification The notification instance
+         * @param array        $recipients   The recipient phone numbers
+         * @param string       $content      The message content
+         */
+        do_action( 'texty_before_notification', $this, $recipients, $content );
+
+        $gateway = texty()->gateways();
+
+        // Stash the active notification so the after-send logger can attach
+        // notification_id / notification_group to each SmsStat row without
+        // threading them through the gateway pipeline.
+        texty()->notifications()->set_active( $this );
+
+        try {
+            foreach ( $recipients as $number ) {
+                $gateway->send( $number, $content );
+            }
+        } finally {
+            texty()->notifications()->clear_active();
+        }
+
+        /**
+         * Fires after the notification send loop.
+         *
+         * @param Notification $notification The notification instance
+         * @param array        $recipients   The recipient phone numbers
+         * @param string       $content      The message content
+         */
+        do_action( 'texty_after_notification', $this, $recipients, $content );
+
+        return true;
     }
 }

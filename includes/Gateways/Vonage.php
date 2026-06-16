@@ -3,6 +3,7 @@
 namespace Texty\Gateways;
 
 use WP_Error;
+use WP_REST_Request;
 
 /**
  * Nexmo Class
@@ -31,7 +32,7 @@ class Vonage implements GatewayInterface {
      * @return string
      */
     public function logo() {
-        return TEXTY_URL . '/assets/images/vonage.svg';
+        return TEXTY_URL . '/assets/images/vonage-logo.png';
     }
 
     /**
@@ -87,7 +88,7 @@ class Vonage implements GatewayInterface {
      * @param string $to
      * @param string $message
      *
-     * @return WP_Error|bool
+     * @return WP_Error|array
      */
     public function send( $to, $message ) {
         $creds = texty()->settings()->get( 'vonage' );
@@ -117,7 +118,10 @@ class Vonage implements GatewayInterface {
             );
         }
 
-        return true;
+        return [
+            'success'      => true,
+            'reference_id' => isset( $body->messages[0]->{'message-id'} ) ? $body->messages[0]->{'message-id'} : null,
+        ];
     }
 
     /**
@@ -125,7 +129,7 @@ class Vonage implements GatewayInterface {
      *
      * @param WP_REST_Request $request
      *
-     * @return WP_Error|true
+     * @return WP_Error|mixed
      */
     public function validate( $request ) {
         $creds = $request->get_param( 'vonage' );

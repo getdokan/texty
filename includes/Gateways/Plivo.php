@@ -3,6 +3,7 @@
 namespace Texty\Gateways;
 
 use WP_Error;
+use WP_REST_Request;
 
 /**
  * Plivo Class
@@ -48,7 +49,7 @@ class Plivo implements GatewayInterface {
      * @return string
      */
     public function logo() {
-        return TEXTY_URL . '/assets/images/plivo.svg';
+        return TEXTY_URL . '/assets/images/plivo-logo.png';
     }
 
     /**
@@ -87,7 +88,7 @@ class Plivo implements GatewayInterface {
      * @param string $to
      * @param string $message
      *
-     * @return WP_Error|true
+     * @return WP_Error|array
      */
     public function send( $to, $message ) {
         $creds = texty()->settings()->get( 'plivo' );
@@ -111,7 +112,12 @@ class Plivo implements GatewayInterface {
             return new WP_Error( $body->code, $body->message );
         }
 
-        return true;
+        return [
+            'success'      => true,
+            'reference_id' => isset( $body->message_uuid )
+                ? ( is_array( $body->message_uuid ) ? ( $body->message_uuid[0] ?? null ) : $body->message_uuid )
+                : null,
+        ];
     }
 
     /**
