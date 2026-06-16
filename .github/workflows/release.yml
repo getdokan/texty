@@ -22,26 +22,24 @@ jobs:
               with:
                 node-version: '22'
             - name: Build
+              # Order matters. `composer install` (dev mode) runs the mozart
+              # post-install hook that scopes Appsero into dependencies/. Then
+              # `npm run build` produces dist/. Finally `--no-dev -o` prunes dev
+              # packages from vendor/ and rebuilds the optimized autoloader while
+              # leaving the already-generated dependencies/ in place.
               run: |
                 composer install
                 npm install
                 npm run build
                 composer install --no-dev -o
-            - name: Stage plugin files for deployment
-              # Whitelist exactly what ships to WP.org. dist/ and vendor/ are
-              # gitignored build output, so the deploy action (which copies
-              # tracked files) skips them — staging them explicitly is the only
-              # way they reach trunk. Everything not copied here (tests, .claude,
-              # CLAUDE.md, tsconfig.json, playwright.config.ts, dev dotfiles) is
-              # left out of the release.
-              run: |
-                mkdir -p "$GITHUB_WORKSPACE/svn-build"
-                cp -R texty.php readme.txt dist includes assets languages vendor "$GITHUB_WORKSPACE/svn-build/"
             - name: Install SVN ( Subversion )
               run: |
                 sudo apt-get update
                 sudo apt-get install subversion
             - name: WordPress Plugin Deploy
+              # No manual file staging: the deploy action rsyncs the built repo
+              # to SVN and applies .distignore as the exclude list, so dist/,
+              # vendor/ and dependencies/ ship while dev files are dropped.
               id: deploy
               uses: 10up/action-wordpress-plugin-deploy@stable
               with:
@@ -50,7 +48,6 @@ jobs:
                 SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
                 SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
                 SLUG: texty
-                BUILD_DIR: ${{ github.workspace }}/svn-build
             - name: Create GitHub release
               uses: softprops/action-gh-release@v2
               with:
