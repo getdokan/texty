@@ -36,6 +36,7 @@ Texty integrates with 3rd party SMS providers to add support for text messaging.
 ### Supported Events
 
 **WordPress Core**
+
 - New User Registration
 - New Comment
 
@@ -107,16 +108,16 @@ npm run start
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run build` | Build production assets |
-| `npm run start` | Start development mode with file watching |
-| `npm run clean` | Remove the `dist` directory |
-| `npm run makepot` | Generate translation POT file |
+| Command            | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `npm run build`    | Build production assets                              |
+| `npm run start`    | Start development mode with file watching            |
+| `npm run clean`    | Remove the `dist` directory                          |
+| `npm run makepot`  | Generate translation POT file                        |
 | `npm run pot2json` | Convert POT file to JSON for JavaScript translations |
-| `npm run readme` | Convert `readme.txt` to `readme.md` |
-| `composer phpcs` | Run PHP CodeSniffer |
-| `composer phpcbf` | Auto-fix PHP CodeSniffer issues |
+| `npm run readme`   | Convert `readme.txt` to `readme.md`                  |
+| `composer phpcs`   | Run PHP CodeSniffer                                  |
+| `composer phpcbf`  | Auto-fix PHP CodeSniffer issues                      |
 
 ### Project Structure
 
@@ -178,9 +179,10 @@ add_filter( 'texty_sms_to', function ( $to, $message, $gateway ) {
 ```
 
 **Parameters:**
-- `$to` *(string)* — The recipient phone number
-- `$message` *(string)* — The message body
-- `$gateway` *(GatewayInterface)* — The active gateway instance
+
+- `$to` _(string)_ — The recipient phone number
+- `$message` _(string)_ — The message body
+- `$gateway` _(GatewayInterface)_ — The active gateway instance
 
 #### `texty_sms_message` (filter)
 
@@ -194,9 +196,10 @@ add_filter( 'texty_sms_message', function ( $message, $to, $gateway ) {
 ```
 
 **Parameters:**
-- `$message` *(string)* — The message body
-- `$to` *(string)* — The recipient phone number
-- `$gateway` *(GatewayInterface)* — The active gateway instance
+
+- `$message` _(string)_ — The message body
+- `$to` _(string)_ — The recipient phone number
+- `$gateway` _(GatewayInterface)_ — The active gateway instance
 
 #### `texty_pre_send_sms` (filter)
 
@@ -216,10 +219,11 @@ add_filter( 'texty_pre_send_sms', function ( $pre_send, $to, $message, $gateway 
 ```
 
 **Parameters:**
-- `$pre_send` *(null|mixed)* — Return non-null to short-circuit
-- `$to` *(string)* — The recipient phone number
-- `$message` *(string)* — The message body
-- `$gateway` *(GatewayInterface)* — The active gateway instance
+
+- `$pre_send` _(null|mixed)_ — Return non-null to short-circuit
+- `$to` _(string)_ — The recipient phone number
+- `$message` _(string)_ — The message body
+- `$gateway` _(GatewayInterface)_ — The active gateway instance
 
 #### `texty_before_send_sms` (action)
 
@@ -232,9 +236,10 @@ add_action( 'texty_before_send_sms', function ( $to, $message, $gateway ) {
 ```
 
 **Parameters:**
-- `$to` *(string)* — The recipient phone number
-- `$message` *(string)* — The message body
-- `$gateway` *(GatewayInterface)* — The active gateway instance
+
+- `$to` _(string)_ — The recipient phone number
+- `$message` _(string)_ — The message body
+- `$gateway` _(GatewayInterface)_ — The active gateway instance
 
 #### `texty_after_send_sms` (action)
 
@@ -251,10 +256,11 @@ add_action( 'texty_after_send_sms', function ( $result, $to, $message, $gateway 
 ```
 
 **Parameters:**
-- `$result` *(bool|WP_Error)* — The send result
-- `$to` *(string)* — The recipient phone number
-- `$message` *(string)* — The message body
-- `$gateway` *(GatewayInterface)* — The active gateway instance
+
+- `$result` _(bool|WP_Error)_ — The send result
+- `$to` _(string)_ — The recipient phone number
+- `$message` _(string)_ — The message body
+- `$gateway` _(GatewayInterface)_ — The active gateway instance
 
 #### `texty_send_sms_failed` (action)
 
@@ -268,10 +274,11 @@ add_action( 'texty_send_sms_failed', function ( $error, $to, $message, $gateway 
 ```
 
 **Parameters:**
-- `$error` *(WP_Error)* — The error object
-- `$to` *(string)* — The recipient phone number
-- `$message` *(string)* — The message body
-- `$gateway` *(GatewayInterface)* — The active gateway instance
+
+- `$error` _(WP_Error)_ — The error object
+- `$to` _(string)_ — The recipient phone number
+- `$message` _(string)_ — The message body
+- `$gateway` _(GatewayInterface)_ — The active gateway instance
 
 ---
 
@@ -295,8 +302,9 @@ add_filter( 'texty_notification_recipients', function ( $recipients, $notificati
 ```
 
 **Parameters:**
-- `$recipients` *(array)* — Phone numbers
-- `$notification` *(Notification)* — The notification instance
+
+- `$recipients` _(array)_ — Phone numbers
+- `$notification` _(Notification)_ — The notification instance
 
 #### `texty_notification_message` (filter)
 
@@ -309,8 +317,9 @@ add_filter( 'texty_notification_message', function ( $content, $notification ) {
 ```
 
 **Parameters:**
-- `$content` *(string)* — The message content
-- `$notification` *(Notification)* — The notification instance
+
+- `$content` _(string)_ — The message content
+- `$notification` _(Notification)_ — The notification instance
 
 #### `texty_notification_message_{$id}` (filter)
 
@@ -323,8 +332,9 @@ add_filter( 'texty_notification_message_registration', function ( $content, $not
 ```
 
 **Parameters:**
-- `$content` *(string)* — The message content
-- `$notification` *(Notification)* — The notification instance
+
+- `$content` _(string)_ — The message content
+- `$notification` _(Notification)_ — The notification instance
 
 #### `texty_before_notification` (action)
 
@@ -341,9 +351,10 @@ add_action( 'texty_before_notification', function ( $notification, $recipients, 
 ```
 
 **Parameters:**
-- `$notification` *(Notification)* — The notification instance
-- `$recipients` *(array)* — Phone numbers
-- `$content` *(string)* — The message content
+
+- `$notification` _(Notification)_ — The notification instance
+- `$recipients` _(array)_ — Phone numbers
+- `$content` _(string)_ — The message content
 
 #### `texty_after_notification` (action)
 
@@ -356,9 +367,10 @@ add_action( 'texty_after_notification', function ( $notification, $recipients, $
 ```
 
 **Parameters:**
-- `$notification` *(Notification)* — The notification instance
-- `$recipients` *(array)* — Phone numbers
-- `$content` *(string)* — The message content
+
+- `$notification` _(Notification)_ — The notification instance
+- `$recipients` _(array)_ — Phone numbers
+- `$content` _(string)_ — The message content
 
 #### `texty_notification_enabled` (filter)
 
@@ -376,9 +388,10 @@ add_filter( 'texty_notification_enabled', function ( $enabled, $id, $notificatio
 ```
 
 **Parameters:**
-- `$enabled` *(bool)* — Whether the notification is enabled
-- `$id` *(string)* — The notification ID
-- `$notification` *(Notification)* — The notification instance
+
+- `$enabled` _(bool)_ — Whether the notification is enabled
+- `$id` _(string)_ — The notification ID
+- `$notification` _(Notification)_ — The notification instance
 
 #### `texty_notification_settings` (filter)
 
@@ -396,9 +409,10 @@ add_filter( 'texty_notification_settings', function ( $settings, $id, $notificat
 ```
 
 **Parameters:**
-- `$settings` *(array)* — The notification settings
-- `$id` *(string)* — The notification ID
-- `$notification` *(Notification)* — The notification instance
+
+- `$settings` _(array)_ — The notification settings
+- `$id` _(string)_ — The notification ID
+- `$notification` _(Notification)_ — The notification instance
 
 ---
 
@@ -415,7 +429,8 @@ add_action( 'texty_register_gateways', function ( $manager ) {
 ```
 
 **Parameters:**
-- `$manager` *(Gateways)* — The gateway manager instance
+
+- `$manager` _(Gateways)_ — The gateway manager instance
 
 See [Custom Gateway Guide](#custom-gateway-guide) for a complete example.
 
@@ -431,8 +446,9 @@ add_filter( 'texty_gateway_instance', function ( $instance, $gateway_key ) {
 ```
 
 **Parameters:**
-- `$instance` *(GatewayInterface)* — The gateway instance
-- `$gateway_key` *(string)* — The gateway identifier
+
+- `$instance` _(GatewayInterface)_ — The gateway instance
+- `$gateway_key` _(string)_ — The gateway identifier
 
 #### `texty_available_gateways` (filter)
 
@@ -462,7 +478,8 @@ add_action( 'texty_register_notifications', function ( $manager ) {
 ```
 
 **Parameters:**
-- `$manager` *(Notifications)* — The notifications manager instance
+
+- `$manager` _(Notifications)_ — The notifications manager instance
 
 See [Custom Notification Guide](#custom-notification-guide) for a complete example.
 
@@ -516,8 +533,9 @@ add_filter( 'texty_setting', function ( $value, $key ) {
 ```
 
 **Parameters:**
-- `$value` *(mixed)* — The setting value
-- `$key` *(string)* — The setting key
+
+- `$value` _(mixed)_ — The setting value
+- `$key` _(string)_ — The setting key
 
 #### `texty_active_gateway_name` (filter)
 
@@ -535,7 +553,8 @@ add_filter( 'texty_active_gateway_name', function ( $gateway ) {
 ```
 
 **Parameters:**
-- `$gateway` *(string|false)* — The active gateway identifier
+
+- `$gateway` _(string|false)_ — The active gateway identifier
 
 ---
 
@@ -552,7 +571,8 @@ add_action( 'texty_loaded', function ( $texty ) {
 ```
 
 **Parameters:**
-- `$texty` *(Texty)* — The main plugin instance
+
+- `$texty` _(Texty)_ — The main plugin instance
 
 ---
 
@@ -726,30 +746,30 @@ $notifier->send();
 
 ### Hooks Reference
 
-| Hook | Type | Location | Purpose |
-|------|------|----------|---------|
-| `texty_sms_to` | filter | `Gateways::send()` | Modify recipient number |
-| `texty_sms_message` | filter | `Gateways::send()` | Modify SMS body |
-| `texty_pre_send_sms` | filter | `Gateways::send()` | Short-circuit sending |
-| `texty_before_send_sms` | action | `Gateways::send()` | Before each SMS |
-| `texty_after_send_sms` | action | `Gateways::send()` | After each SMS with result |
-| `texty_send_sms_failed` | action | `Gateways::send()` | On send failure |
-| `texty_register_gateways` | action | `Gateways::all()` | Register custom gateways |
-| `texty_gateway_instance` | filter | `Gateways::active_gateway()` | Modify gateway instance |
-| `texty_available_gateways` | filter | `Gateways::all()` | Filter gateway list (legacy) |
-| `texty_notification_recipients` | filter | `Notification::send()` | Modify recipients |
-| `texty_notification_message` | filter | `Notification::send()` | Modify notification message |
-| `texty_notification_message_{$id}` | filter | `Notification::send()` | Modify specific notification |
-| `texty_before_notification` | action | `Notification::send()` | Before send loop |
-| `texty_after_notification` | action | `Notification::send()` | After send loop |
-| `texty_notification_enabled` | filter | `Notification::enabled()` | Override enabled state |
-| `texty_notification_settings` | filter | `Notification::settings()` | Modify notification config |
-| `texty_register_notifications` | action | `Notifications::all()` | Register custom notifications |
-| `texty_available_notifications` | filter | `Notifications::all()` | Filter notification list (legacy) |
-| `texty_register_integrations` | action | `Dispatcher::__construct()` | Register custom integrations |
-| `texty_setting` | filter | `Settings::get()` | Modify any setting value |
-| `texty_active_gateway_name` | filter | `Settings::gateway()` | Override active gateway |
-| `texty_loaded` | action | `Texty::init_plugin()` | Plugin fully initialized |
+| Hook                               | Type   | Location                     | Purpose                           |
+| ---------------------------------- | ------ | ---------------------------- | --------------------------------- |
+| `texty_sms_to`                     | filter | `Gateways::send()`           | Modify recipient number           |
+| `texty_sms_message`                | filter | `Gateways::send()`           | Modify SMS body                   |
+| `texty_pre_send_sms`               | filter | `Gateways::send()`           | Short-circuit sending             |
+| `texty_before_send_sms`            | action | `Gateways::send()`           | Before each SMS                   |
+| `texty_after_send_sms`             | action | `Gateways::send()`           | After each SMS with result        |
+| `texty_send_sms_failed`            | action | `Gateways::send()`           | On send failure                   |
+| `texty_register_gateways`          | action | `Gateways::all()`            | Register custom gateways          |
+| `texty_gateway_instance`           | filter | `Gateways::active_gateway()` | Modify gateway instance           |
+| `texty_available_gateways`         | filter | `Gateways::all()`            | Filter gateway list (legacy)      |
+| `texty_notification_recipients`    | filter | `Notification::send()`       | Modify recipients                 |
+| `texty_notification_message`       | filter | `Notification::send()`       | Modify notification message       |
+| `texty_notification_message_{$id}` | filter | `Notification::send()`       | Modify specific notification      |
+| `texty_before_notification`        | action | `Notification::send()`       | Before send loop                  |
+| `texty_after_notification`         | action | `Notification::send()`       | After send loop                   |
+| `texty_notification_enabled`       | filter | `Notification::enabled()`    | Override enabled state            |
+| `texty_notification_settings`      | filter | `Notification::settings()`   | Modify notification config        |
+| `texty_register_notifications`     | action | `Notifications::all()`       | Register custom notifications     |
+| `texty_available_notifications`    | filter | `Notifications::all()`       | Filter notification list (legacy) |
+| `texty_register_integrations`      | action | `Dispatcher::__construct()`  | Register custom integrations      |
+| `texty_setting`                    | filter | `Settings::get()`            | Modify any setting value          |
+| `texty_active_gateway_name`        | filter | `Settings::gateway()`        | Override active gateway           |
+| `texty_loaded`                     | action | `Texty::init_plugin()`       | Plugin fully initialized          |
 
 ## Frequently Asked Questions
 
@@ -775,20 +795,18 @@ Yes. Use the `texty_sms_message` filter to modify the SMS body, or `texty_notifi
 
 ## Changelog
 
-### v2.0.0 (9 Jun, 2026)
+### v2.0.0 (16 Jun, 2026)
 
-- **New:** Full design revamp — every admin screen redesigned and rebuilt from scratch with a new layout, navigation, theming, and component system.
-- **New:** Dashboard page — SMS metrics, delivery-rate stats, volume analytics chart, and a Quick Send card.
-- **New:** SMS Logs page — searchable, filterable, paginated log of every message with a detail view and delivery-status badges.
-- **New:** SMS logging — every send is recorded in a dedicated `{prefix}texty_sms_stat` table (notification id/group, message body, gateway response, reference id).
-- **New:** Gateway configuration page — schema-driven settings UI with a Connect → Activate flow and per-gateway Activate / Deactivate / Disconnect actions.
-- **New:** Notifications revamp — User Events, Integrations, and global Settings tabs with collapsible per-event rows (toggle, recipients, message template, available variables) and per-group branding (WordPress / WooCommerce / Dokan).
-- **New:** Compliance controls — Pause All notifications, append company name to messages, and a global fallback Sender ID.
-- **New:** Database migration framework with an admin "database update required" notice; the 2.0.0 migration adds the SMS Logs columns and indexes.
-- **New:** REST API expanded under `texty/v1` — `metrics`, `logs`, `gateway`, `settings/schema`, `notification-settings`, and `notifications/schema` endpoints.
-- **New:** Error boundary and 404 screens for the admin app.
-- **Update:** Toasts now use sonner (via plugin-ui); `react-toastify` removed.
-- **Update:** Notification settings schema is generated server-side and rendered verbatim by the frontend.
+- **New:** Complete design revamp. Every admin screen has been redesigned and rebuilt from the ground up with a fresh layout, simpler navigation, and a consistent look across the plugin.
+- **New:** Dashboard page that brings SMS metrics, delivery-rate stats, and volume analytics together in one place, along with a Quick Send card for sending messages on the go.
+- **New:** SMS Logs page where every message can be searched, filtered, and reviewed. Each entry includes a detailed view and a clear delivery-status badge.
+- **New:** SMS logging that records every send automatically, so message history and delivery details are always available for reference.
+- **New:** Gateway configuration page with a guided Connect and Activate flow, plus easy controls to activate, deactivate, or disconnect each gateway.
+- **New:** Redesigned notifications area with separate tabs for User Events, Integrations, and global Settings. Each event can be expanded to manage its toggle, recipients, message template, and available variables, with dedicated branding for WordPress, WooCommerce, and Dokan.
+- **New:** Compliance controls that allow all notifications to be paused at once, a company name to be appended to outgoing messages, and a global fallback Sender ID to be set.
+- **New:** Smarter database update process with a clear notice when an update is required, making upgrades smooth and reliable.
+- **New:** Expanded REST API for deeper integrations, covering metrics, logs, gateway settings, notification settings, and more.
+- **New:** Friendly error and 404 screens added across the admin app for a smoother experience when something goes wrong.
 
 ### v1.1.5 (3 Feb, 2026)
 
@@ -830,4 +848,3 @@ Yes. Use the `texty_sms_message` filter to modify the SMS body, or `texty_notifi
 ### v0.2 (18 Jan, 2021)
 
 - Initial Release
-

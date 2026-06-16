@@ -150,18 +150,18 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 
 == Changelog ==
 
-= v2.0.0 (9 Jun, 2026) =
+= v2.0.0 (16 Jun, 2026) =
 
-- **New:** Full design revamp — every admin screen redesigned and rebuilt from scratch with a new layout, navigation, theming, and component system.
-- **New:** Dashboard page — SMS metrics, delivery-rate stats, volume analytics chart, and a Quick Send card.
-- **New:** SMS Logs page — searchable, filterable, paginated log of every message with a detail view and delivery-status badges.
-- **New:** SMS logging — every send is recorded in a dedicated `{prefix}texty_sms_stat` table (notification id/group, message body, gateway response, reference id).
-- **New:** Gateway configuration page — schema-driven settings UI with a Connect → Activate flow and per-gateway Activate / Deactivate / Disconnect actions.
-- **New:** Notifications revamp — User Events, Integrations, and global Settings tabs with collapsible per-event rows (toggle, recipients, message template, available variables) and per-group branding (WordPress / WooCommerce / Dokan).
-- **New:** Compliance controls — Pause All notifications, append company name to messages, and a global fallback Sender ID.
-- **New:** Database migration framework with an admin "database update required" notice; the 2.0.0 migration adds the SMS Logs columns and indexes.
-- **New:** REST API expanded under `texty/v1` — `metrics`, `logs`, `gateway`, `settings/schema`, `notification-settings`, and `notifications/schema` endpoints.
-- **New:** Error boundary and 404 screens for the admin app.
+- **New:** Complete design revamp. Every admin screen has been redesigned and rebuilt from the ground up with a fresh layout, simpler navigation, and a consistent look across the plugin.
+- **New:** Dashboard page that brings SMS metrics, delivery-rate stats, and volume analytics together in one place, along with a Quick Send card for sending messages on the go.
+- **New:** SMS Logs page where every message can be searched, filtered, and reviewed. Each entry includes a detailed view and a clear delivery-status badge.
+- **New:** SMS logging that records every send automatically, so message history and delivery details are always available for reference.
+- **New:** Gateway configuration page with a guided Connect and Activate flow, plus easy controls to activate, deactivate, or disconnect each gateway.
+- **New:** Redesigned notifications area with separate tabs for User Events, Integrations, and global Settings. Each event can be expanded to manage its toggle, recipients, message template, and available variables, with dedicated branding for WordPress, WooCommerce, and Dokan.
+- **New:** Compliance controls that allow all notifications to be paused at once, a company name to be appended to outgoing messages, and a global fallback Sender ID to be set.
+- **New:** Smarter database update process with a clear notice when an update is required, making upgrades smooth and reliable.
+- **New:** Expanded REST API for deeper integrations, covering metrics, logs, gateway settings, notification settings, and more.
+- **New:** Friendly error and 404 screens added across the admin app for a smoother experience when something goes wrong.
 
 = v1.1.5 (3 Feb, 2026) =
 
