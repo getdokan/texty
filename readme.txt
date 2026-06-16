@@ -5,7 +5,7 @@ Tags: sms, notification, twilio, woocommerce, dokan
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,10 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 5. WooCommerce customer notification
 
 == Changelog ==
+
+= v2.0.1 (16 Jun, 2026) =
+
+- **Fix:** Admin assets (the React dashboard bundle) are now included in the WP.org release; the 2.0.0 package was missing the compiled `dist/` files.
 
 = v2.0.0 (16 Jun, 2026) =
 
