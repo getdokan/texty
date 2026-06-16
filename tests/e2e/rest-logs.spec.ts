@@ -60,13 +60,11 @@ test.describe('REST: logs contract', () => {
         expect(res.status()).toBe(400);
     });
 
-    // KNOWN BUG (caught by this suite): Logs::get_item() passes an int to
-    // BaseDataStore::read(), which requires a ModelInterface, so every
-    // /logs/{id} call throws a fatal TypeError → HTTP 500 instead of a clean
-    // 404. `test.fail()` keeps the suite green while the defect exists; remove
-    // it once get_item() is fixed (the assertion below is the target contract).
+    // Regression: Logs::get_item() previously passed an int to
+    // BaseDataStore::read() (typed `read( ModelInterface &$model )`, throws on a
+    // missing row), throwing a fatal 500 on every /logs/{id} call. It now
+    // resolves the row via query(), so a missing id returns a clean 404.
     test('GET /logs/{id} on a non-existent id returns 404', async ({ page }) => {
-        test.fail(true, 'Logs::get_item() fatals (int → ModelInterface); returns 500, not 404');
         const res = await restCall(page.request, `${REST_NS}/logs/99999999`, { nonce });
         expect(res.status()).toBe(404);
         const body = await res.json();
