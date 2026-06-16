@@ -22,7 +22,17 @@ setup('authenticate as admin', async ({ page }) => {
     await page.fill('#user_pass', password);
     await page.click('#wp-submit');
 
-    await page.waitForURL('**/wp-admin/**');
+    // WordPress periodically interrupts login with the "Administration email
+    // verification" screen (served from wp-login.php, not /wp-admin/). Dismiss
+    // it via "Remind me later" so the session continues to the dashboard.
+    await page.waitForLoadState('domcontentloaded');
+    const remindLater = page.getByRole('link', { name: /Remind me later/i });
+    if (await remindLater.count()) {
+        await remindLater.first().click();
+    }
+
+    // Land on the dashboard regardless of any post-login interstitial.
+    await page.goto('/wp-admin/');
     await expect(page.locator('#wpadminbar')).toBeVisible();
 
     fs.mkdirSync(path.dirname(authFile), { recursive: true });

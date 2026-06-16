@@ -8,9 +8,13 @@ test.describe('Logs page', () => {
         const res = await apiPromise;
         expect(res.status()).toBe(200);
 
-        await expect(
-            page.getByText(/No items found|Created|Type|Status|Details/i).first()
-        ).toBeVisible();
+        // Scope to the SPA root: WP-admin notices (e.g. Appsero's opt-in
+        // <p class="description">) otherwise match a broad page-wide getByText
+        // and resolve to a hidden node. Empty-state copy is "No logs yet".
+        const app = page.locator('#texty-app');
+        const empty = app.getByText(/No logs yet|No items found/i);
+        const headers = app.getByText(/Date & Time|Type|Details/i).first();
+        await expect(empty.or(headers).first()).toBeVisible();
     });
 
     test('export button is present and points to export endpoint', async ({ page }) => {
@@ -25,6 +29,9 @@ test.describe('Logs page', () => {
         await gotoTextyHash(page, '/logs');
         await page.waitForLoadState('networkidle');
 
-        await expect(page.locator('body')).toContainText(/Status|Filter/i);
+        // The status filter (All / Sent / Failed / Pending) always renders,
+        // even with no rows. Scope to the SPA root to avoid WP-admin chrome.
+        const app = page.locator('#texty-app');
+        await expect(app.getByText(/Sent|Failed|Pending/i).first()).toBeVisible();
     });
 });

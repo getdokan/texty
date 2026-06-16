@@ -1,0 +1,143 @@
+name: E2E Tests
+
+# Real-time PR validation: every pull request (and every push to develop)
+# spins up a throwaway WordPress, activates Texty, and runs the Playwright suite.
+on:
+    # Run on every PR regardless of base branch (feature branches are often
+    # stacked, e.g. this suite's PR targets feature/dashboard, not develop).
+    pull_request:
+    push:
+        branches:
+            - develop
+            - main
+            - master
+    workflow_dispatch:
+
+# A newer commit on the same PR/branch cancels the in-flight run so feedback
+# always reflects the latest code.
+concurrency:
+    group: e2e-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    playwright:
+        name: Playwright (WordPress ${{ matrix.wordpress }})
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+
+        strategy:
+            fail-fast: false
+            matrix:
+                # Pin the lower bound (Requires at least: 6.8) and track latest so a
+                # core release can't silently break the plugin.
+                wordpress: [ '6.8', 'latest' ]
+
+        env:
+            WP_BASE_URL: http://localhost:8888
+            WP_ADMIN_USER: admin
+            WP_ADMIN_PASSWORD: password
+            # auth/admin.json is gitignored (never present in CI); force a fresh login.
+            FORCE_AUTH: 1
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  coverage: none
+                  tools: composer:v2
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ~/.cache/composer
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: ${{ runner.os }}-composer-
+
+            # Dev-mode install so the post-install hook runs Mozart and generates the
+            # prefixed `dependencies/` dir — without it the plugin fatals on autoload.
+            - name: Install PHP dependencies
+              run: composer install --prefer-dist --no-progress
+
+            # package-lock.json pins @wedevs/plugin-ui to git+ssh://git@github.com/…
+            # CI runners have no SSH key, so an ssh clone fails with "Permission
+            # denied (publickey)". The repo is public, so rewrite GitHub SSH URLs
+            # to HTTPS for an anonymous clone during npm ci.
+            - name: Use HTTPS for GitHub git dependencies
+              run: |
+                  git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+                  git config --global url."https://github.com/".insteadOf "git@github.com:"
+
+            - name: Install Node dependencies
+              run: npm ci
+
+            - name: Build admin SPA (dist/)
+              run: npm run build
+
+            - name: Cache Playwright browsers
+              uses: actions/cache@v4
+              id: playwright-cache
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+                  restore-keys: ${{ runner.os }}-playwright-
+
+            - name: Install Playwright browser (Chromium)
+              run: npx playwright install --with-deps chromium
+
+            # `.wp-env.json` pins core to null (latest stable). For the lower-bound
+            # row, override via WP_ENV_CORE so we boot the exact tagged release.
+            - name: Start WordPress (wp-env)
+              run: npx --yes @wordpress/env start
+              env:
+                  WP_ENV_CORE: ${{ matrix.wordpress != 'latest' && format('WordPress/WordPress#{0}', matrix.wordpress) || '' }}
+
+            - name: Verify site is up
+              run: curl -sSf -o /dev/null "$WP_BASE_URL/wp-login.php"
+
+            # A fresh wp-env has no active gateway, so the dashboard renders its
+            # "connect a gateway" state instead of the stat cards / quick-send
+            # card, and the logs table is empty — making the data-dependent UI
+            # specs assert against UI that isn't there. Seed the WP_DEBUG-only,
+            # credential-less `fake` gateway and one log row so those specs run
+            # against the configured state (matching a real, in-use install).
+            - name: Seed Texty state (active fake gateway + a log row)
+              run: |
+                  npx --yes @wordpress/env run cli wp option update texty_settings '{"gateway":"fake"}' --format=json
+                  npx --yes @wordpress/env run cli wp eval 'texty()->gateways()->send("15555550100","E2E seed message");'
+
+            - name: Run Playwright E2E suite
+              run: npm run test:e2e
+
+            - name: Upload Playwright HTML report
+              if: ${{ !cancelled() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-report-wp-${{ matrix.wordpress }}
+                  path: tests/e2e/playwright-report
+                  retention-days: 14
+
+            - name: Upload failure artifacts (traces, screenshots, video)
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-results-wp-${{ matrix.wordpress }}
+                  path: tests/e2e/test-results
+                  retention-days: 7
+
+            - name: Dump WordPress debug log on failure
+              if: ${{ failure() }}
+              run: npx --yes @wordpress/env run cli "cat /var/www/html/wp-content/debug.log" || true
+
+            - name: Stop WordPress
+              if: ${{ always() }}
+              run: npx --yes @wordpress/env stop || true
