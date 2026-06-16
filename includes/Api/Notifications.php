@@ -74,7 +74,7 @@ class Notifications extends Base {
      * `field_group_id`. The frontend renders this verbatim — no schema building
      * lives on the client.
      *
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      *
      * @param WP_REST_Request $request Request object.
      *
@@ -202,7 +202,7 @@ class Notifications extends Base {
     /**
      * Map a notification group to a plugin-ui (lucide) icon name.
      *
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      *
      * @param string $group_id Group key.
      *

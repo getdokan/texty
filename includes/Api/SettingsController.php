@@ -20,7 +20,7 @@
  *   POST /texty/v1/settings/schema  — save one gateway scope (also activates it)
  *
  * @package Texty\Api
- * @since   TEXTY_VERSION
+ * @since   2.0.0
  */
 
 namespace Texty\Api;
@@ -44,7 +44,7 @@ class SettingsController extends BaseSettingsRESTController {
 	/**
 	 * Constructor.
 	 *
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	public function __construct() {
 		parent::__construct( 'texty/v1', 'settings/schema', 'texty' );
@@ -61,7 +61,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * SettingsProvider can extract initial values from the field defaults.
 	 *
 	 * @return array[]
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	protected function get_settings_schema(): array {
 		$schema   = [];
@@ -99,7 +99,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $element Field element.
 	 *
 	 * @return string[]
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	protected function get_field_path( array $element ): array {
 		if ( ! empty( $element['page_id'] ) ) {
@@ -125,7 +125,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $schema Settings schema elements.
 	 *
 	 * @return array<string, array>
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	protected function load_values( array $schema ): array {
 		$stored = $this->load_stored_settings();
@@ -154,7 +154,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	public function get_items( $request ) {
 		$response = parent::get_items( $request );
@@ -205,7 +205,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	public function create_item( $request ) {
 		$scope_id = sanitize_key( (string) ( $request->get_param( 'scopeId' ) ?? '' ) );
@@ -297,7 +297,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array  $creds       Submitted credentials for that gateway.
 	 *
 	 * @return WP_Error|true
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	private function validate_gateway_credentials( string $gateway_key, array $creds ) {
 		$registered = texty()->gateways()->all();
@@ -325,7 +325,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $field Field element.
 	 *
 	 * @return string
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	private function build_dependency_key( array $field ): string {
 		return $field['id'];
@@ -335,7 +335,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * Read the backing option safely.
 	 *
 	 * @return array
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	private function load_stored_settings(): array {
 		$stored = get_option( self::OPTION_KEY, [] );
@@ -348,7 +348,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param string $label Human-readable field label, used in the message.
 	 *
 	 * @return array
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	private function required_validation( string $label ): array {
 		return [
@@ -374,7 +374,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param int              $priority Page priority (registry order).
 	 *
 	 * @return array[]
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	private function build_gateway_schema( string $key, GatewayInterface $gateway, int $priority ): array {
 		$doc_links = $this->doc_links();
@@ -448,7 +448,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param string $type     Field type declared by the gateway's get_settings().
 	 *
 	 * @return string
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	private function field_variant( string $cred_key, string $type ): string {
 		if ( 'password' === $type ) {
@@ -466,7 +466,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * Sign-up links for the built-in gateways, shown as the page's doc link.
 	 *
 	 * @return array<string, string>
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	private function doc_links(): array {
 		return [
@@ -481,7 +481,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * Translatable validation messages for built-in field types.
 	 *
 	 * @return array<string, string>
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	protected function get_validation_messages(): array {
 		return [
@@ -501,7 +501,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param string $context 'read' or 'write'.
 	 *
 	 * @return string
-	 * @since TEXTY_VERSION
+	 * @since 2.0.0
 	 */
 	protected function get_permission_error_message( string $context ): string {
 		return 'write' === $context

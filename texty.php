@@ -209,7 +209,7 @@ final class Texty {
     /**
      * Access to global notification settings.
      *
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      *
      * @return Texty\NotificationSettings
      */

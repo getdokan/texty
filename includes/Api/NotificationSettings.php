@@ -17,14 +17,14 @@ defined( 'ABSPATH' ) || exit;
  *   GET  /texty/v1/notification-settings           — read all settings
  *   POST /texty/v1/notification-settings           — update settings
  *
- * @since TEXTY_VERSION
+ * @since 2.0.0
  */
 class NotificationSettings extends Base {
 
     /**
      * Initialize.
      *
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function __construct() {
         $this->namespace = 'texty/v1';
@@ -35,7 +35,7 @@ class NotificationSettings extends Base {
      * Register routes.
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function register_routes() {
         register_rest_route(
@@ -64,7 +64,7 @@ class NotificationSettings extends Base {
      * @param WP_REST_Request $request Request object.
      *
      * @return \WP_REST_Response
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_items( $request ) {
         unset( $request );
@@ -84,7 +84,7 @@ class NotificationSettings extends Base {
      * @param WP_REST_Request $request Request object.
      *
      * @return \WP_REST_Response
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function update_items( $request ) {
         $service = texty()->notification_settings();
@@ -116,7 +116,7 @@ class NotificationSettings extends Base {
      * Endpoint args for the EDITABLE schema.
      *
      * @return array
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     private function get_settings_args() {
         return [

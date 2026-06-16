@@ -1,22 +1,22 @@
 # Copyright (c) 2026 weDevs Pte. Ltd. All Rights Reserved.
 msgid ""
 msgstr ""
-"Project-Id-Version: Texty 1.1.5\n"
+"Project-Id-Version: Texty 2.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/weDevsOfficial/texty/issues\n"
 "Last-Translator: support@wedevs.com\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-02-03T07:07:31+00:00\n"
+"POT-Creation-Date: 2026-06-16T11:03:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: texty\n"
 
 #. Plugin Name of the plugin
 #: texty.php
-#: includes/Admin/Menu.php:26
-#: includes/Admin/Menu.php:27
+#: includes/Admin/Menu.php:37
+#: includes/Admin/Menu.php:38
 msgid "Texty"
 msgstr ""
 
@@ -40,8 +40,176 @@ msgstr ""
 msgid "https://wptexty.com/"
 msgstr ""
 
-#: includes/Admin/Profile.php:28
+#: includes/Admin/Menu.php:51
+msgid "Dashboard"
+msgstr ""
+
+#: includes/Admin/Menu.php:55
+#: includes/Api/Logs.php:307
+msgid "Gateway"
+msgstr ""
+
+#: includes/Admin/Menu.php:59
+msgid "Notifications"
+msgstr ""
+
+#: includes/Admin/Menu.php:63
+msgid "Logs"
+msgstr ""
+
+#: includes/Admin/Profile.php:25
 msgid "Phone Number (Texty)"
+msgstr ""
+
+#: includes/Api/Gateway.php:64
+msgid "Gateway key to activate."
+msgstr ""
+
+#: includes/Api/Gateway.php:95
+msgid "Gateway key to disconnect (clears credentials)."
+msgstr ""
+
+#: includes/Api/Gateway.php:119
+#: includes/Api/Gateway.php:213
+msgid "A gateway key is required."
+msgstr ""
+
+#: includes/Api/Gateway.php:128
+msgid "Unknown gateway."
+msgstr ""
+
+#: includes/Api/Gateway.php:145
+msgid "Cannot activate a gateway that has no saved credentials. Save credentials first."
+msgstr ""
+
+#: includes/Api/Logs.php:60
+msgid "Current page number."
+msgstr ""
+
+#: includes/Api/Logs.php:65
+msgid "Items per page."
+msgstr ""
+
+#: includes/Api/Logs.php:70
+#: includes/Api/Logs.php:111
+msgid "Filter by status."
+msgstr ""
+
+#: includes/Api/Logs.php:76
+#: includes/Api/Logs.php:117
+msgid "Filter by notification id."
+msgstr ""
+
+#: includes/Api/Logs.php:81
+#: includes/Api/Logs.php:122
+msgid "Free-text search."
+msgstr ""
+
+#: includes/Api/Logs.php:86
+msgid "Sort field."
+msgstr ""
+
+#: includes/Api/Logs.php:91
+msgid "Sort direction."
+msgstr ""
+
+#: includes/Api/Logs.php:141
+msgid "Log entry ID."
+msgstr ""
+
+#: includes/Api/Logs.php:226
+#: includes/Api/Logs.php:265
+msgid "Logs store unavailable."
+msgstr ""
+
+#: includes/Api/Logs.php:243
+msgid "Log entry not found."
+msgstr ""
+
+#: includes/Api/Logs.php:304
+msgid "ID"
+msgstr ""
+
+#: includes/Api/Logs.php:305
+msgid "Date"
+msgstr ""
+
+#: includes/Api/Logs.php:306
+msgid "Type"
+msgstr ""
+
+#: includes/Api/Logs.php:308
+msgid "Recipient"
+msgstr ""
+
+#: includes/Api/Logs.php:309
+#: src/components/NotificationItem.js:77
+#: src/components/QuickSend.js:62
+msgid "Message"
+msgstr ""
+
+#: includes/Api/Logs.php:310
+msgid "Status"
+msgstr ""
+
+#: includes/Api/Logs.php:311
+msgid "Reference ID"
+msgstr ""
+
+#: includes/Api/Logs.php:312
+msgid "Response"
+msgstr ""
+
+#: includes/Api/Metrics.php:50
+msgid "The time range for metrics."
+msgstr ""
+
+#: includes/Api/Metrics.php:74
+msgid "SMS data store not available."
+msgstr ""
+
+#: includes/Api/Metrics.php:115
+msgid "Failed to load metrics data."
+msgstr ""
+
+#: includes/Api/Metrics.php:135
+msgid "Last Month"
+msgstr ""
+
+#: includes/Api/Metrics.php:142
+msgid "Last 7 Days"
+msgstr ""
+
+#: includes/Api/Metrics.php:149
+msgid "Last 30 Days"
+msgstr ""
+
+#: includes/Api/Metrics.php:156
+msgid "This Year"
+msgstr ""
+
+#: includes/Api/Metrics.php:164
+msgid "This Month"
+msgstr ""
+
+#: includes/Api/Notifications.php:59
+msgid "Notification group key."
+msgstr ""
+
+#: includes/Api/Notifications.php:90
+msgid "Invalid notification group."
+msgstr ""
+
+#: includes/Api/Notifications.php:154
+msgid "Recipients"
+msgstr ""
+
+#: includes/Api/Notifications.php:165
+msgid "Message Content"
+msgstr ""
+
+#: includes/Api/Notifications.php:188
+msgid "Available variables"
 msgstr ""
 
 #: includes/Api/Send.php:35
@@ -57,96 +225,220 @@ msgstr ""
 msgid "The selected gateway"
 msgstr ""
 
-#: includes/Gateways/Clickatell.php:25
+#: includes/Api/SettingsController.php:216
+msgid "Invalid values format."
+msgstr ""
+
+#: includes/Api/SettingsController.php:226
+msgid "Invalid scope ID."
+msgstr ""
+
+#. translators: %s: field label, e.g. "Account SID"
+#: includes/Api/SettingsController.php:358
+msgid "%s is required."
+msgstr ""
+
+#: includes/Api/SettingsController.php:393
+msgid "Get your account"
+msgstr ""
+
+#. translators: %s: credential field label, e.g. "Account SID"
+#: includes/Api/SettingsController.php:426
+msgid "Enter %s"
+msgstr ""
+
+#: includes/Api/SettingsController.php:488
+msgid "Must be a numeric value."
+msgstr ""
+
+#: includes/Api/SettingsController.php:489
+msgid "Must be \"on\" or \"off\"."
+msgstr ""
+
+#: includes/Api/SettingsController.php:490
+msgid "Invalid option selected."
+msgstr ""
+
+#: includes/Api/SettingsController.php:491
+msgid "Must be an array."
+msgstr ""
+
+#: includes/Api/SettingsController.php:492
+msgid "Contains invalid options."
+msgstr ""
+
+#: includes/Api/SettingsController.php:493
+msgid "Must be a valid hex color (e.g. #ff0000)."
+msgstr ""
+
+#: includes/Api/SettingsController.php:494
+msgid "Must be an object."
+msgstr ""
+
+#: includes/Api/SettingsController.php:508
+msgid "You do not have permission to update settings."
+msgstr ""
+
+#: includes/Api/SettingsController.php:509
+msgid "You do not have permission to view settings."
+msgstr ""
+
+#: includes/Compliance.php:51
+msgid "Outgoing SMS notifications are paused."
+msgstr ""
+
+#. translators: %s: company / store name
+#: includes/Compliance.php:91
+msgid "from %s"
+msgstr ""
+
+#: includes/Gateways.php:71
+msgid "No recipient phone number was provided."
+msgstr ""
+
+#: includes/Gateways/Clickatell.php:26
 msgid "Clickatell"
 msgstr ""
 
 #. translators: URL to Twilio settings and help docs
-#: includes/Gateways/Clickatell.php:36
+#: includes/Gateways/Clickatell.php:37
 msgid "Send SMS with Clickatell. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the API. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Clickatell.php:64
-#: includes/Gateways/Vonage.php:64
+#: includes/Gateways/Clickatell.php:65
+#: includes/Gateways/Vonage.php:65
 msgid "API Key"
 msgstr ""
 
-#: includes/Gateways/Fake.php:20
+#: includes/Gateways/Fake.php:29
 msgid "Fake Gateway"
 msgstr ""
 
-#: includes/Gateways/Fake.php:29
+#: includes/Gateways/Fake.php:38
 msgid "This is a fake gateway that logs the messages to <code>debug.log</code> file without sending the actual SMS."
 msgstr ""
 
-#: includes/Gateways/Plivo.php:25
+#: includes/Gateways/Plivo.php:26
 msgid "Plivo"
 msgstr ""
 
 #. translators: URL to Plivo settings and help docs
-#: includes/Gateways/Plivo.php:36
+#: includes/Gateways/Plivo.php:37
 msgid "Send SMS with Plivo. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the Auth ID and Token from Plivo. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Plivo.php:64
+#: includes/Gateways/Plivo.php:65
 msgid "Auth ID"
 msgstr ""
 
-#: includes/Gateways/Plivo.php:70
-#: includes/Gateways/Twilio.php:70
+#: includes/Gateways/Plivo.php:71
+#: includes/Gateways/Twilio.php:71
 msgid "Auth Token"
 msgstr ""
 
-#: includes/Gateways/Plivo.php:76
-#: includes/Gateways/Twilio.php:76
-#: includes/Gateways/Vonage.php:76
+#: includes/Gateways/Plivo.php:77
+#: includes/Gateways/Twilio.php:77
+#: includes/Gateways/Vonage.php:77
 msgid "From Number"
 msgstr ""
 
-#: includes/Gateways/Plivo.php:79
+#: includes/Gateways/Plivo.php:80
 msgid "Must be a valid number associated with your Plivo account"
 msgstr ""
 
-#: includes/Gateways/Twilio.php:25
+#: includes/Gateways/Twilio.php:26
 msgid "Twilio"
 msgstr ""
 
 #. translators: URL to Twilio settings and help docs
-#: includes/Gateways/Twilio.php:36
+#: includes/Gateways/Twilio.php:37
 msgid "Send SMS with Twilio. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the Account SID and Token from Twilio. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Twilio.php:64
+#: includes/Gateways/Twilio.php:65
 msgid "Account SID"
 msgstr ""
 
-#: includes/Gateways/Twilio.php:79
+#: includes/Gateways/Twilio.php:80
 msgid "Must be a valid number associated with your Twilio account"
 msgstr ""
 
-#: includes/Gateways/Vonage.php:25
+#: includes/Gateways/Twilio.php:139
+msgid "Twilio Account SID and Auth Token are required."
+msgstr ""
+
+#: includes/Gateways/Twilio.php:167
+msgid "Twilio rejected the credentials."
+msgstr ""
+
+#: includes/Gateways/Vonage.php:26
 msgid "Vonage (nexmo)"
 msgstr ""
 
 #. translators: Vonage dashboard settings URL and help docs
-#: includes/Gateways/Vonage.php:45
+#: includes/Gateways/Vonage.php:46
 msgid "Send SMS with Vonage (formerly Nexmo). Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the API Key and Secret from Vonage.  Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Vonage.php:70
+#: includes/Gateways/Vonage.php:71
 msgid "API Secret"
 msgstr ""
 
-#: includes/Notifications.php:92
+#: includes/Migrations/NoticeProvider.php:57
+msgid "Texty database update required"
+msgstr ""
+
+#. translators: 1: target plugin version, 2: current DB schema version
+#: includes/Migrations/NoticeProvider.php:60
+msgid "Texty %1$s needs to update your database from version %2$s. The update is safe to re-run and usually finishes in a few seconds."
+msgstr ""
+
+#: includes/Migrations/NoticeProvider.php:70
+msgid "Update database"
+msgstr ""
+
+#: includes/Migrations/NoticeProvider.php:71
+msgid "Updating…"
+msgstr ""
+
+#: includes/Migrations/NoticeProvider.php:96
+msgid "You do not have permission."
+msgstr ""
+
+#: includes/Migrations/NoticeProvider.php:104
+msgid "Upgrade already in progress."
+msgstr ""
+
+#: includes/Migrations/NoticeProvider.php:108
+msgid "No upgrade required."
+msgstr ""
+
+#: includes/Migrations/NoticeProvider.php:118
+msgid "Database updated successfully."
+msgstr ""
+
+#: includes/Notifications.php:132
 msgid "WordPress"
 msgstr ""
 
-#: includes/Notifications.php:97
+#: includes/Notifications.php:133
+msgid "Default WordPress system alerts"
+msgstr ""
+
+#: includes/Notifications.php:137
 msgid "WooCommerce"
 msgstr ""
 
-#: includes/Notifications.php:102
+#: includes/Notifications.php:138
+msgid "WooCommerce order and customer alerts"
+msgstr ""
+
+#: includes/Notifications.php:142
 msgid "Dokan"
+msgstr ""
+
+#: includes/Notifications.php:143
+msgid "Vendor and marketplace alerts"
 msgstr ""
 
 #: includes/Notifications/Dokan/CancelledVendor.php:11
@@ -221,80 +513,58 @@ msgstr ""
 msgid "New User Registration"
 msgstr ""
 
-#: src/components/Header.js:35
-#: src/components/Header.js:38
-msgid "Gateway Settings"
-msgstr ""
-
-#: src/components/Header.js:44
-#: src/components/Header.js:47
-#: src/pages/Notifications.js:90
-msgid "Notifications"
-msgstr ""
-
-#: src/components/Header.js:53
-#: src/components/Header.js:56
-#: src/pages/Tools.js:15
-msgid "Tools"
-msgstr ""
-
-#: src/components/NotificationItem.js:35
+#: src/components/NotificationItem.js:34
 msgid "active"
 msgstr ""
 
-#: src/components/NotificationItem.js:35
+#: src/components/NotificationItem.js:34
 msgid "inactive"
 msgstr ""
 
-#: src/components/NotificationItem.js:41
+#: src/components/NotificationItem.js:40
 msgid "Enable"
 msgstr ""
 
-#: src/components/NotificationItem.js:52
+#: src/components/NotificationItem.js:51
 msgid "Select one or multiple user roles. Users with phone number in their profile will receive the text"
 msgstr ""
 
-#: src/components/NotificationItem.js:78
-#: src/components/QuickSend.js:58
-msgid "Message"
-msgstr ""
-
-#: src/components/NotificationItem.js:86
+#: src/components/NotificationItem.js:85
 msgid "You may use these variables: "
 msgstr ""
 
-#: src/components/QuickSend.js:29
+#: src/components/QuickSend.js:28
 #: src/components/TestMessage.js:27
 msgid "Message has been sent."
 msgstr ""
 
-#: src/components/QuickSend.js:32
+#: src/components/QuickSend.js:33
 #: src/components/TestMessage.js:30
 msgid "Error, message could not be sent."
 msgstr ""
 
-#: src/components/QuickSend.js:49
+#: src/components/QuickSend.js:48
 msgid "Phone Number"
 msgstr ""
 
-#: src/components/QuickSend.js:60
+#: src/components/QuickSend.js:67
 msgid "Write your message..."
 msgstr ""
 
-#: src/components/QuickSend.js:68
+#: src/components/QuickSend.js:80
 #: src/components/TestMessage.js:59
 msgid "Sending..."
 msgstr ""
 
-#: src/components/QuickSend.js:68
+#: src/components/QuickSend.js:80
 msgid "Send Message"
 msgstr ""
 
-#: src/components/Status.js:33
+#: src/components/Status.js:40
 msgid "Connected"
 msgstr ""
 
-#: src/components/Status.js:33
+#: src/components/Status.js:40
 msgid "Not connected"
 msgstr ""
 
@@ -308,47 +578,4 @@ msgstr ""
 
 #: src/components/TestMessage.js:59
 msgid "Send Test"
-msgstr ""
-
-#: src/pages/Notifications.js:75
-#: src/pages/Settings.js:88
-msgid "Changes have been saved"
-msgstr ""
-
-#: src/pages/Notifications.js:92
-msgid "Enable or disable notification based on different events."
-msgstr ""
-
-#: src/pages/Notifications.js:113
-msgid "Plugin not installed"
-msgstr ""
-
-#: src/pages/Notifications.js:151
-#: src/pages/Settings.js:221
-msgid "Saving..."
-msgstr ""
-
-#: src/pages/Notifications.js:151
-#: src/pages/Settings.js:221
-msgid "Save Changes"
-msgstr ""
-
-#: src/pages/Settings.js:105
-msgid "Settings"
-msgstr ""
-
-#: src/pages/Settings.js:109
-msgid "SMS Gateway"
-msgstr ""
-
-#: src/pages/Settings.js:114
-msgid "Gateways"
-msgstr ""
-
-#: src/pages/Tools.js:22
-msgid "Test Message"
-msgstr ""
-
-#: src/pages/Tools.js:30
-msgid "Quick Send"
 msgstr ""

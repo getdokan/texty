@@ -10,7 +10,7 @@ use WeDevs\WPKit\DataLayer\DataLayerFactory;
  *
  * Represents a single SMS message transaction record with metadata.
  *
- * @since TEXTY_VERSION
+ * @since 2.0.0
  */
 class SmsStat extends BaseModel {
 
@@ -79,7 +79,7 @@ class SmsStat extends BaseModel {
      * @param string $context 'view' or 'edit'
      *
      * @return string
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_receiver( string $context = 'view' ): string {
         return $this->get_prop( 'receiver', $context );
@@ -91,7 +91,7 @@ class SmsStat extends BaseModel {
      * @param string $context 'view' or 'edit'
      *
      * @return string
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_gateway( string $context = 'view' ): string {
         return $this->get_prop( 'gateway', $context );
@@ -103,7 +103,7 @@ class SmsStat extends BaseModel {
      * @param string $context 'view' or 'edit'
      *
      * @return string
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_status( string $context = 'view' ): string {
         return $this->get_prop( 'status', $context );
@@ -115,7 +115,7 @@ class SmsStat extends BaseModel {
      * @param string $context 'view' or 'edit'
      *
      * @return string
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_notification_id( string $context = 'view' ): string {
         return $this->get_prop( 'notification_id', $context );
@@ -127,7 +127,7 @@ class SmsStat extends BaseModel {
      * @param string $context 'view' or 'edit'
      *
      * @return string
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_notification_group( string $context = 'view' ): string {
         return $this->get_prop( 'notification_group', $context );
@@ -139,7 +139,7 @@ class SmsStat extends BaseModel {
      * @param string $context 'view' or 'edit'
      *
      * @return string
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_message( string $context = 'view' ): string {
         return $this->get_prop( 'message', $context );
@@ -153,7 +153,7 @@ class SmsStat extends BaseModel {
      * @param string $context 'view' or 'edit'
      *
      * @return string
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_response( string $context = 'view' ): string {
         return $this->get_prop( 'response', $context );
@@ -165,7 +165,7 @@ class SmsStat extends BaseModel {
      * @param string $context 'view' or 'edit'
      *
      * @return \DateTimeInterface|null
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_created_at( string $context = 'view' ) {
         return $this->get_prop( 'created_at', $context );
@@ -177,7 +177,7 @@ class SmsStat extends BaseModel {
      * @param string $context 'view' or 'edit'
      *
      * @return \DateTimeInterface|null
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_updated_at( string $context = 'view' ) {
         return $this->get_prop( 'updated_at', $context );
@@ -189,7 +189,7 @@ class SmsStat extends BaseModel {
      * @param string $context 'view' or 'edit'
      *
      * @return string|null
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_reference_id( string $context = 'view' ): ?string {
         return $this->get_prop( 'reference_id', $context );
@@ -203,7 +203,7 @@ class SmsStat extends BaseModel {
      * @param string $receiver
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_receiver( string $receiver ): void {
         $this->set_prop( 'receiver', $receiver );
@@ -215,7 +215,7 @@ class SmsStat extends BaseModel {
      * @param string $gateway
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_gateway( string $gateway ): void {
         $this->set_prop( 'gateway', $gateway );
@@ -227,7 +227,7 @@ class SmsStat extends BaseModel {
      * @param string $status
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_status( string $status ): void {
         $this->set_prop( 'status', $status );
@@ -239,7 +239,7 @@ class SmsStat extends BaseModel {
      * @param string|null $notification_id
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_notification_id( ?string $notification_id ): void {
         $this->set_prop( 'notification_id', null === $notification_id ? '' : $notification_id );
@@ -251,7 +251,7 @@ class SmsStat extends BaseModel {
      * @param string|null $notification_group
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_notification_group( ?string $notification_group ): void {
         $this->set_prop( 'notification_group', null === $notification_group ? '' : $notification_group );
@@ -263,7 +263,7 @@ class SmsStat extends BaseModel {
      * @param string|null $message
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_message( ?string $message ): void {
         $this->set_prop( 'message', null === $message ? '' : $message );
@@ -276,7 +276,7 @@ class SmsStat extends BaseModel {
      * @param mixed $response
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_response( $response ): void {
         if ( null === $response ) {
@@ -296,7 +296,7 @@ class SmsStat extends BaseModel {
      * @param string|int|\DateTimeInterface|null $date
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_created_at( $date ): void {
         $this->set_date_prop( 'created_at', $date );
@@ -308,7 +308,7 @@ class SmsStat extends BaseModel {
      * @param string|int|\DateTimeInterface|null $date
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_updated_at( $date ): void {
         $this->set_date_prop( 'updated_at', $date );
@@ -322,7 +322,7 @@ class SmsStat extends BaseModel {
      * @param string|null $reference_id
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_reference_id( ?string $reference_id ): void {
         // Safety net: convert null to empty string
@@ -338,7 +338,7 @@ class SmsStat extends BaseModel {
      * @param array $props
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function set_props( array $props ): void {
         foreach ( $props as $key => $value ) {
@@ -356,7 +356,7 @@ class SmsStat extends BaseModel {
      * @param string $end_date   Date in 'Y-m-d' format
      *
      * @return array Array with 'total' and 'items' keys
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public static function get_sent_sms_between_dates( string $start_date, string $end_date ): array {
         $store = DataLayerFactory::make_store( self::class );
@@ -400,7 +400,7 @@ class SmsStat extends BaseModel {
      * @param string $end_date   Date in 'Y-m-d' format
      *
      * @return array Array with 'total' and 'items' keys
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public static function get_successful_sent_sms_between_dates( string $start_date, string $end_date ): array {
         $store = DataLayerFactory::make_store( self::class );

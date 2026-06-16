@@ -3,7 +3,7 @@
  * Base class for all Texty DB migrations.
  *
  * @package Texty\Migrations
- * @since   TEXTY_VERSION
+ * @since   2.0.0
  */
 
 namespace Texty\Migrations;

@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  *  - Pause all outgoing SMS when `pause_all` is on.
  *  - Append company name to outgoing messages.
  *
- * @since TEXTY_VERSION
+ * @since 2.0.0
  */
 class Compliance {
 
@@ -80,7 +80,7 @@ class Compliance {
             /**
              * Filter the company / store name appended to outgoing SMS.
              *
-             * @since TEXTY_VERSION
+             * @since 2.0.0
              *
              * @param string $store_name Default store name (site title).
              */

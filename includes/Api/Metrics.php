@@ -15,7 +15,7 @@ use WP_REST_Server;
 /**
  * Metrics REST Controller.
  *
- * @since TEXTY_VERSION
+ * @since 2.0.0
  */
 class Metrics extends Base {
 
@@ -23,7 +23,7 @@ class Metrics extends Base {
      * Initialize
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function __construct() {
         $this->namespace = 'texty/v1';
@@ -34,7 +34,7 @@ class Metrics extends Base {
      * Registers the routes for the objects of the controller.
      *
      * @return void
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function register_routes() {
         register_rest_route(
@@ -64,7 +64,7 @@ class Metrics extends Base {
      * @param WP_REST_Request $request
      *
      * @return WP_REST_Response|WP_Error
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     public function get_metrics( $request ) {
         try {
@@ -122,7 +122,7 @@ class Metrics extends Base {
      * @param string $period
      *
      * @return array{start:DateTimeImmutable,end:DateTimeImmutable,granularity:string,label:string}
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     private function resolve_range( $period ) {
         $tz  = wp_timezone();
@@ -181,7 +181,7 @@ class Metrics extends Base {
      * @param DateTimeImmutable $end
      *
      * @return array
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     private function fetch_items( $start, $end ) {
         $result = SmsStat::get_sent_sms_between_dates(
@@ -209,7 +209,7 @@ class Metrics extends Base {
      * @param array $range
      *
      * @return array
-     * @since TEXTY_VERSION
+     * @since 2.0.0
      */
     private function build_volume_chart( $items, $range ) {
         $tz       = wp_timezone();
