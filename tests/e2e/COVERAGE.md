@@ -45,6 +45,7 @@ npx playwright test rest-   # only the REST contract suites
 | `/gateway/deactivate` | POST | clears active gateway | `rest-gateway-lifecycle` |
 | `/gateway/disconnect` | POST | missing key → 400; fake → success+`disconnected` | `rest-gateway-lifecycle` |
 | `/send` | POST | missing params → 400 `rest_missing_callback_param`; partial → 400; full → success/message envelope | `rest-send-tools-status` |
+| `/send` (fake gateway) | POST | single send → logged `sent`/`fake_*`; bulk varied payloads (unicode/emoji/long/specials/newlines/no-+); repeated sends → distinct rows; tools/test logged; sends move `sms_sent`/`delivered` + volume-chart buckets (buckets sum == `delivered`); **Pause All blocks the send** (success=false + paused msg, no `sent` row); **Append Company Name appends a `from <store>` footer** to the logged message | `rest-send-fake-gateway` |
 | `/tools/test` | POST | missing `to` → 400; with `to` → envelope | `rest-send-tools-status` |
 | `/status` | GET | boolean `success` flag | `rest-send-tools-status` |
 | **All routes** | GET/POST | unauthenticated → 401/403 (8 reads + 7 writes); admin cookies w/o nonce → blocked | `rest-auth-matrix` |
@@ -75,10 +76,12 @@ Skips cleanly when the env keys are absent. Mutating tests restore the original 
 |---|---|---|
 | Admin shell | Texty page loads, SPA root mounts non-empty | `texty-admin` |
 | Dashboard | root→`/dashboard` redirect; metrics endpoint + stat cards; welcome/gateway block; volume chart; quick-send card | `dashboard` |
-| Dashboard (deep) | 4 stat cards; period select refetches `period=last_7_days`; send button gated on phone+message; char counter | `ui-dashboard` |
+| Dashboard (deep) | 4 stat cards; send button gated on phone+message; char counter; volume chart renders (recharts surface + line curve + x-axis ticks); **all 5 period filters** (This/Last Month, Last 7/30 Days, This Year) refetch with the matching `period=` arg + echo it back | `ui-dashboard` |
+| Quick Send (UI) | dashboard send via fake → "Message has been sent" toast → message logged `sent`/`fake` → `sms_sent`/`delivered` move; sent message findable in Logs UI search + readable in the View-Log detail dialog | `ui-quick-send` |
 | Gateway | schema endpoint hit; sidebar list + search; detail pane; search filter; gateway select updates detail; no-match empty; credential inputs/connect action | `gateway`, `ui-gateway` |
 | Logs | logs endpoint + table; export button; status filter; column headers/empty; export CSV; row → detail dialog | `logs`, `ui-logs` |
 | Notifications | 3 tabs; integrations cards; settings endpoint; integration detail route; user-events switches; compliance form fields; save → success toast | `notifications`, `ui-notifications` |
+| Notifications (deep) | **Settings:** sender-id round-trips + persists, Append Company Name toggle persists, Pause All confirm dialog → "Yes, Pause" persists. **User Events:** toggling a switch flips exactly one stored `enabled`; editing a "Message Content" textarea persists exactly that message (both restored after). **Integrations:** tab lists WC/Dokan (or empty); "Configure" opens the integration detail route + its group settings (switch + Save Changes) | `ui-notifications` |
 | Routing | hash nav dashboard↔notifications; unknown route → 404; Back to Dashboard; every route renders w/o ErrorBoundary | `routing` |
 | Health | every route mounts with zero console/page errors | `console-health` |
 
