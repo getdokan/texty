@@ -24,9 +24,19 @@ jobs:
             - name: Build
               run: |
                 composer install
-                composer install --no-dev -o
                 npm install
                 npm run build
+                composer install --no-dev -o
+            - name: Stage plugin files for deployment
+              # Whitelist exactly what ships to WP.org. dist/ and vendor/ are
+              # gitignored build output, so the deploy action (which copies
+              # tracked files) skips them — staging them explicitly is the only
+              # way they reach trunk. Everything not copied here (tests, .claude,
+              # CLAUDE.md, tsconfig.json, playwright.config.ts, dev dotfiles) is
+              # left out of the release.
+              run: |
+                mkdir -p "$GITHUB_WORKSPACE/svn-build"
+                cp -R texty.php readme.txt dist includes assets languages vendor "$GITHUB_WORKSPACE/svn-build/"
             - name: Install SVN ( Subversion )
               run: |
                 sudo apt-get update
@@ -36,6 +46,7 @@ jobs:
               uses: 10up/action-wordpress-plugin-deploy@stable
               with:
                 generate-zip: true
+                build-dir: svn-build
               env:
                 SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
                 SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
