@@ -68,6 +68,15 @@ jobs:
             - name: Install PHP dependencies
               run: composer install --prefer-dist --no-progress
 
+            # package-lock.json pins @wedevs/plugin-ui to git+ssh://git@github.com/…
+            # CI runners have no SSH key, so an ssh clone fails with "Permission
+            # denied (publickey)". The repo is public, so rewrite GitHub SSH URLs
+            # to HTTPS for an anonymous clone during npm ci.
+            - name: Use HTTPS for GitHub git dependencies
+              run: |
+                  git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+                  git config --global url."https://github.com/".insteadOf "git@github.com:"
+
             - name: Install Node dependencies
               run: npm ci
 
