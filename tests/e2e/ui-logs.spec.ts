@@ -6,9 +6,13 @@ test.describe('Logs UI', () => {
         await gotoTextyHash(page, '/logs');
         await page.waitForLoadState('networkidle');
 
-        const headers = page.getByText(/Type|Status|Details|Created/i).first();
-        const empty = page.getByText(/No items found/i);
-        await expect(headers.or(empty)).toBeVisible();
+        // Scope to the SPA root so WP-admin chrome (e.g. the Appsero opt-in
+        // notice, a <p class="description"> containing "…environment details…")
+        // can't satisfy a broad getByText match. Empty copy is "No logs yet".
+        const app = page.locator('#texty-app');
+        const empty = app.getByText(/No logs yet|No items found/i);
+        const headers = app.getByText(/Date & Time|Type|Details/i).first();
+        await expect(empty.or(headers).first()).toBeVisible();
     });
 
     test('export CSV control is present', async ({ page }) => {

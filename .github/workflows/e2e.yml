@@ -104,6 +104,17 @@ jobs:
             - name: Verify site is up
               run: curl -sSf -o /dev/null "$WP_BASE_URL/wp-login.php"
 
+            # A fresh wp-env has no active gateway, so the dashboard renders its
+            # "connect a gateway" state instead of the stat cards / quick-send
+            # card, and the logs table is empty — making the data-dependent UI
+            # specs assert against UI that isn't there. Seed the WP_DEBUG-only,
+            # credential-less `fake` gateway and one log row so those specs run
+            # against the configured state (matching a real, in-use install).
+            - name: Seed Texty state (active fake gateway + a log row)
+              run: |
+                  npx --yes @wordpress/env run cli wp option update texty_settings '{"gateway":"fake"}' --format=json
+                  npx --yes @wordpress/env run cli wp eval 'texty()->gateways()->send("15555550100","E2E seed message");'
+
             - name: Run Playwright E2E suite
               run: npm run test:e2e
 
