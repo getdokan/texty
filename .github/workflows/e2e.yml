@@ -30,7 +30,7 @@ jobs:
             matrix:
                 # Pin the lower bound (Requires at least: 6.8) and track latest so a
                 # core release can't silently break the plugin.
-                wordpress: [ '6.8', 'latest' ]
+                wordpress: [ '6.9', 'latest' ]
 
         env:
             WP_BASE_URL: http://localhost:8888
