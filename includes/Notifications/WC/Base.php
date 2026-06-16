@@ -79,8 +79,14 @@ class Base extends Notification {
                 continue;
             }
 
-            $product    = $item->get_product();
-            $products[] = sprintf( '%s x %d', $product->get_name(), $item->get_quantity() );
+            $product = $item->get_product();
+
+            // A product may have been deleted after the order was placed —
+            // `get_product()` then returns false. Fall back to the line-item
+            // name stored on the order so building the message doesn't fatal.
+            $name = $product ? $product->get_name() : $item->get_name();
+
+            $products[] = sprintf( '%s x %d', $name, $item->get_quantity() );
         }
 
         $names = implode( "\n", $products );
