@@ -226,12 +226,24 @@ class Logs extends Base {
             return new WP_Error( 'texty_no_store', __( 'Logs store unavailable.', 'texty' ), [ 'status' => 500 ] );
         }
 
-        $row = $store->read( $id );
-        if ( ! $row ) {
+        // BaseDataStore::read() takes a hydrated model by reference and throws
+        // when the row is missing, so it can't be fed a bare id. Query by the
+        // id column instead — it returns the same raw row shape present_row()
+        // already consumes for the listing, and an empty set on not-found.
+        $result = $store->query(
+            [
+                'id'          => $id,
+                'per_page'    => 1,
+                'count_total' => false,
+            ]
+        );
+        $items  = is_array( $result['items'] ?? null ) ? $result['items'] : [];
+
+        if ( empty( $items ) ) {
             return new WP_Error( 'texty_log_not_found', __( 'Log entry not found.', 'texty' ), [ 'status' => 404 ] );
         }
 
-        return rest_ensure_response( $this->present_row( $row ) );
+        return rest_ensure_response( $this->present_row( $items[0] ) );
     }
 
     /**
