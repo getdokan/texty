@@ -7,6 +7,7 @@ use Texty\Integrations\WooCommerce;
 use Texty\Models\SmsStat;
 use WeDevs\WPKit\DataLayer\DataLayerFactory;
 use Texty\Gateways\GatewayInterface;
+use WP_Comment;
 
 /**
  * Dispatcher Class
@@ -76,6 +77,14 @@ class Dispatcher {
      * @return void
      */
     public function new_comment( $comment_id ) {
+        // The comment may have been deleted, trashed, or flagged as spam
+        // (e.g. by an anti-spam plugin hooked on `comment_post`) before this
+        // runs. Bail so we don't render and bill an SMS for a comment that no
+        // longer exists.
+        if ( ! get_comment( $comment_id ) instanceof WP_Comment ) {
+            return;
+        }
+
         $class    = texty()->notifications()->get( 'comment' );
         $notifier = new $class();
 
