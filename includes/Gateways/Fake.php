@@ -44,7 +44,7 @@ class Fake implements GatewayInterface {
      * @return string
      */
     public function logo() {
-        return TEXTY_URL . '/assets/images/logo.svg';
+        return TEXTY_URL . '/assets/images/gateways/common-sms.png';
     }
 
     /**

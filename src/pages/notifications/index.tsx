@@ -1,35 +1,54 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@wedevs/plugin-ui';
+import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
+import { type ReactNode } from 'react';
 
 import Integrations from './Integrations';
 import Settings from './Settings';
 import UserEvents from './UserEvents';
 
+type NotificationTab = {
+  value: string;
+  label: string;
+  content: ReactNode;
+};
+
 const Notifications = () => {
+  const tabs = [
+    {
+      value: 'user-events',
+      label: __('User Events', 'texty'),
+      content: <UserEvents />,
+    },
+    {
+      value: 'integrations',
+      label: __('Integrations', 'texty'),
+      content: <Integrations />,
+    },
+    ...(applyFilters('texty_notifications_tabs', []) as NotificationTab[]),
+    {
+      value: 'settings',
+      label: __('Settings', 'texty'),
+      content: <Settings />,
+    },
+  ] as NotificationTab[];
+
   return (
     <div className="flex flex-col gap-6">
-      <Tabs defaultValue="user-events">
+      <Tabs defaultValue={tabs[0]?.value}>
         <TabsList className="bg-[#E2E2E7]">
-          <TabsTrigger value="user-events">
-            {__('User Events', 'texty')}
-          </TabsTrigger>
-          <TabsTrigger value="integrations">
-            {__('Integrations', 'texty')}
-          </TabsTrigger>
-          <TabsTrigger value="settings">{__('Settings', 'texty')}</TabsTrigger>
+          {tabs.map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="user-events" className="mt-4">
-          <UserEvents />
-        </TabsContent>
-
-        <TabsContent value="integrations" className="mt-4">
-          <Integrations />
-        </TabsContent>
-
-        <TabsContent value="settings" className="mt-4">
-          <Settings />
-        </TabsContent>
+        {tabs.map((tab) => (
+          <TabsContent key={tab.value} value={tab.value} className="mt-4">
+            {tab.content}
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );
