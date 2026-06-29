@@ -15,7 +15,7 @@ const reporters: ReporterDescription[] = [
     ['html', { outputFolder: 'tests/e2e/playwright-report', open: 'never' }],
 ];
 if (process.env.CI) {
-    reporters.splice(1, 0, ['github']);
+    reporters.splice(1, 0, ['github'], ['json', { outputFile: 'tests/e2e/results.json' }]);
 }
 
 export default defineConfig({

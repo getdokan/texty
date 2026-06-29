@@ -118,6 +118,13 @@ jobs:
             - name: Run Playwright E2E suite
               run: npm run test:e2e
 
+            # Render results.json into a pass/fail table on the run's summary page.
+            - name: Publish test summary
+              if: ${{ !cancelled() }}
+              env:
+                  WP_VERSION: ${{ matrix.wordpress }}
+              run: node .github/scripts/pw-summary.js
+
             - name: Upload Playwright HTML report
               if: ${{ !cancelled() }}
               uses: actions/upload-artifact@v4
