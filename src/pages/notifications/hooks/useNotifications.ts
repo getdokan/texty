@@ -2,6 +2,7 @@ import { toast } from '@wedevs/plugin-ui';
 import apiFetch from '@wordpress/api-fetch';
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 import type {
   NotificationItem,
@@ -51,7 +52,7 @@ export const useNotifications = (): UseNotifications => {
     const load = async (): Promise<void> => {
       try {
         const response = await apiFetch<NotificationsResponse>({
-          path: '/texty/v1/notifications?context=edit',
+          path: addQueryArgs('/texty/v1/notifications', { context: 'edit' }),
           method: 'GET',
         });
         if (cancelled) {

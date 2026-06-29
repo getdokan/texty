@@ -8,6 +8,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 import { Bell, Globe, ShoppingCart, Store, Zap } from 'lucide-react';
 import type { ComponentType } from 'react';
 
@@ -51,10 +52,14 @@ type Props = {
 // fetches it, renders it, and folds each collapsible card's children back into
 // the per-id save payload — generic over any group/feature that follows the
 // `<id>` + `<id>_<key>` / `<id>::<key>` field convention.
-const NotificationGroupSettings = ({ groupId, schemaPath, savePath }: Props) => {
+const NotificationGroupSettings = ({
+  groupId,
+  schemaPath,
+  savePath,
+}: Props) => {
   const fetchPath =
     schemaPath ??
-    `/texty/v1/notifications/schema?group=${encodeURIComponent(groupId ?? '')}`;
+    addQueryArgs('/texty/v1/notifications/schema', { group: groupId ?? '' });
   const postPath = savePath ?? '/texty/v1/notifications';
   const [schema, setSchema] = useState<SettingsElement[] | null>(null);
   // plugin-ui <Settings> is controlled for `values` (external values take
@@ -168,9 +173,18 @@ const NotificationGroupSettings = ({ groupId, schemaPath, savePath }: Props) => 
   }
 
   // Heading is rendered here (plugin-ui's built-in heading has no icon slot).
+  // Add-ons can register icons/logos for their own groups via these filters.
   const page = schema.find((el: SettingsElement) => el.type === 'page');
-  const HeaderIcon = ICON_MAP[String(page?.icon ?? '')] ?? Bell;
-  const logoFile = LOGO_MAP[String(page?.id ?? '')];
+  const iconMap = applyFilters(
+    'texty_notification_icon_map',
+    ICON_MAP
+  ) as Record<string, ComponentType<{ className?: string }>>;
+  const logoMap = applyFilters(
+    'texty_notification_logo_map',
+    LOGO_MAP
+  ) as Record<string, string>;
+  const HeaderIcon = iconMap[String(page?.icon ?? '')] ?? Bell;
+  const logoFile = logoMap[String(page?.id ?? '')];
   const title = page?.label ?? '';
   const description = page?.description ?? '';
 
