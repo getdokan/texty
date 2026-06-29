@@ -8,13 +8,10 @@ import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
-import { Bell, Globe, ShoppingCart, Store } from 'lucide-react';
+import { Bell, Globe, ShoppingCart, Store, Zap } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 import NotificationGroupSkeleton from './NotificationGroupSkeleton';
-
-// Separator for child field ids — `<id>_message`, `<id>_recipients`.
-const SEP = '_';
 
 // Maps the backend `icon` string on the page element to a lucide component.
 const ICON_MAP: Record<string, ComponentType<{ className?: string }>> = {
@@ -22,6 +19,7 @@ const ICON_MAP: Record<string, ComponentType<{ className?: string }>> = {
   ShoppingCart,
   Store,
   Bell,
+  Zap,
 };
 
 const assetUrl: string = window.texty?.asset_url ?? '';
@@ -38,22 +36,26 @@ type SchemaResponse = {
   values: Record<string, unknown>;
 };
 
-type SavePayloadEntry = {
-  enabled: boolean;
-  message: string;
-  recipients?: string[];
-};
-
-type SavePayload = Record<string, SavePayloadEntry>;
+type SavePayload = Record<string, Record<string, unknown>>;
 
 type Props = {
-  groupId: string;
+  // Built-in notifications group (renders /notifications/schema?group=…).
+  groupId?: string;
+  // Or point at any endpoint returning { schema, values } (e.g. Texty Pro's
+  // Automations), with a matching save endpoint.
+  schemaPath?: string;
+  savePath?: string;
 };
 
-// The full plugin-ui Settings schema is built on the server
-// (`GET /texty/v1/notifications/schema?group=…`). This component only fetches
-// it, renders it, and maps edits back into the save payload.
-const NotificationGroupSettings = ({ groupId }: Props) => {
+// The full plugin-ui Settings schema is built on the server. This component only
+// fetches it, renders it, and folds each collapsible card's children back into
+// the per-id save payload — generic over any group/feature that follows the
+// `<id>` + `<id>_<key>` / `<id>::<key>` field convention.
+const NotificationGroupSettings = ({ groupId, schemaPath, savePath }: Props) => {
+  const fetchPath =
+    schemaPath ??
+    `/texty/v1/notifications/schema?group=${encodeURIComponent(groupId ?? '')}`;
+  const postPath = savePath ?? '/texty/v1/notifications';
   const [schema, setSchema] = useState<SettingsElement[] | null>(null);
   // plugin-ui <Settings> is controlled for `values` (external values take
   // precedence over its internal edits), so edits must be lifted into state
@@ -68,11 +70,7 @@ const NotificationGroupSettings = ({ groupId }: Props) => {
     const load = async (): Promise<void> => {
       setLoading(true);
       try {
-        const resp = await apiFetch<SchemaResponse>({
-          path: `/texty/v1/notifications/schema?group=${encodeURIComponent(
-            groupId
-          )}`,
-        });
+        const resp = await apiFetch<SchemaResponse>({ path: fetchPath });
         if (cancelled) {
           return;
         }
@@ -96,7 +94,7 @@ const NotificationGroupSettings = ({ groupId }: Props) => {
     return () => {
       cancelled = true;
     };
-  }, [groupId]);
+  }, [fetchPath]);
 
   const handleChange = (
     _scopeId: string,
@@ -106,39 +104,44 @@ const NotificationGroupSettings = ({ groupId }: Props) => {
     setValues((prev: Record<string, unknown>) => ({ ...prev, [key]: value }));
   };
 
-  // Each `collapsible_switch` field id is a notification id; only role-type
-  // notifications carry a recipients child. Posts only this group's ids — the
-  // backend merges them over the stored option, preserving the other groups.
+  // Each `collapsible_switch` field id is a record id; its children
+  // (`<id>_message`, `<id>_recipients`, or `<id>::<key>`) are folded back into a
+  // nested entry keyed by the part after the id + separator. Posts only this
+  // group's ids — the backend merges them over the stored option.
   const handleSave = async (): Promise<void> => {
     if (!schema) {
       return;
     }
 
     const cur = values;
-    const roleIds = new Set<string>(
-      schema
-        .filter((el: SettingsElement) => el.variant === 'multicheck')
-        .map((el: SettingsElement) => String(el.field_group_id))
-    );
-
     const payload: SavePayload = {};
+
     for (const el of schema) {
       if (el.variant !== 'collapsible_switch') {
         continue;
       }
 
       const id = el.id;
-      const message = cur[`${id}${SEP}message`];
-      const entry: SavePayloadEntry = {
-        enabled: Boolean(cur[id]),
-        message: typeof message === 'string' ? message : '',
-      };
+      const entry: Record<string, unknown> = { enabled: Boolean(cur[id]) };
 
-      if (roleIds.has(id)) {
-        const recipients = cur[`${id}${SEP}recipients`];
-        entry.recipients = Array.isArray(recipients)
-          ? (recipients as string[])
-          : [];
+      for (const child of schema) {
+        if (child.field_group_id !== id || child.variant === 'info') {
+          continue;
+        }
+
+        const childId = String(child.id);
+        const key = (
+          childId.startsWith(id) ? childId.slice(id.length) : childId
+        ).replace(/^(::|_)/, '');
+
+        let value = cur[childId];
+        if (child.variant === 'multicheck') {
+          value = Array.isArray(value) ? value : [];
+        } else if (key === 'message') {
+          value = typeof value === 'string' ? value : '';
+        }
+
+        entry[key] = value;
       }
 
       payload[id] = entry;
@@ -146,11 +149,7 @@ const NotificationGroupSettings = ({ groupId }: Props) => {
 
     setSaving(true);
     try {
-      await apiFetch({
-        path: '/texty/v1/notifications',
-        method: 'POST',
-        data: payload,
-      });
+      await apiFetch({ path: postPath, method: 'POST', data: payload });
       toast.success(__('Changes saved.', 'texty'));
     } catch (err) {
       console.error('Failed to save notifications', err);
