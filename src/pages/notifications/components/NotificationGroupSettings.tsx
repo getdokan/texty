@@ -43,7 +43,6 @@ type Props = {
   // Built-in notifications group (renders /notifications/schema?group=…).
   groupId?: string;
   // Or point at any endpoint returning { schema, values } (e.g. Texty Pro's
-  // Automations), with a matching save endpoint.
   schemaPath?: string;
   savePath?: string;
 };
@@ -190,7 +189,7 @@ const NotificationGroupSettings = ({
 
   return (
     <div className="flex flex-col gap-2 bg-white rounded-lg">
-      <div className="flex items-center gap-3 px-6 pt-6">
+      <div className="flex items-center gap-3 px-6 py-4">
         <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-gray-100">
           {logoFile ? (
             <img
