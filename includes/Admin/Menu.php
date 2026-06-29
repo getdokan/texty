@@ -101,16 +101,18 @@ class Menu {
     public function enqueue_scripts() {
         $asset_file = include TEXTY_DIR . '/dist/index.asset.php';
 
-        // Reusable components bundle (window.textyComponents). Registered so
+        // Reusable components bundle (window.texty.components). Registered so
         // add-ons that depend on the `texty-components` handle (via webpack
-        // dependency extraction) get it loaded automatically.
+        // dependency extraction) get it loaded automatically. Depends on
+        // `texty-admin` so it merges onto window.texty *after* the localized
+        // `var texty = {…}` data, rather than being clobbered by it.
         if ( file_exists( TEXTY_DIR . '/dist/components.asset.php' ) ) {
             $components_asset = include TEXTY_DIR . '/dist/components.asset.php';
 
             wp_register_script(
                 'texty-components',
                 TEXTY_URL . '/dist/components.js',
-                $components_asset['dependencies'],
+                array_merge( $components_asset['dependencies'], [ 'texty-admin' ] ),
                 $components_asset['version'],
                 true
             );

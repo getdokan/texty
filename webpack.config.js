@@ -7,11 +7,11 @@ module.exports = {
   ...defaultConfig,
   entry: {
     index: './src/index.tsx',
-    // Reusable components exposed for add-ons (window.textyComponents).
+    // Reusable components exposed for add-ons (window.texty.components).
     components: {
       import: './src/components/index.tsx',
       library: {
-        name: 'textyComponents',
+        name: ['texty', 'components'],
         type: 'window',
       },
     },

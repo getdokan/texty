@@ -13,7 +13,7 @@
  */
 const requestToExternal = ( request ) => {
     if ( request === '@texty/components' ) {
-        return 'textyComponents';
+        return [ 'texty', 'components' ];
     }
 };
 
