@@ -114,6 +114,16 @@ final class Texty {
                 Texty\Models\SmsStat::class,
                 Texty\Models\SmsStatStore::class
             );
+
+            /**
+             * Fires after the DataLayerFactory is initialized and Texty's own
+             * stores are registered. Add-ons should register their DataLayer
+             * models/stores here (via DataLayerFactory::register_store) so the
+             * factory is guaranteed ready and prefixed. Runs before texty_loaded.
+             *
+             * @param Texty $texty The main plugin instance.
+             */
+            do_action( 'texty_datalayer_init', $this );
         } catch ( \Exception $e ) {
             error_log( 'Texty DataLayer Init Error: ' . $e->getMessage() );
         }
