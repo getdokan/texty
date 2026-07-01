@@ -13,7 +13,6 @@ import {
   useSearchParams,
   type Location,
   type NavigateFunction,
-  type Navigation,
   type Params,
   type RedirectFunction,
   type UIMatch,
@@ -37,7 +36,7 @@ export interface RouterProps {
   params: Readonly<Params<string>>;
   location: Location;
   matches: UIMatch<unknown, unknown>[];
-  navigation: Navigation;
+  navigation: ReturnType<typeof useNavigation>;
   searchParams: URLSearchParams;
   setSearchParams: ReturnType<typeof useSearchParams>[1];
   redirect: RedirectFunction;
