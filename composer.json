@@ -12,9 +12,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "appsero/client": "^v2.0.4",
-        "wedevs/wp-kit": "dev-main"
-
+        "php": ">=7.4"
     },
     "repositories": [
         {
@@ -29,6 +27,8 @@
         }
     },
     "require-dev": {
+        "appsero/client": "^v2.0.4",
+        "wedevs/wp-kit": "dev-main",
         "tareq1988/wp-php-cs-fixer": "dev-master",
         "wp-coding-standards/wpcs": "dev-develop",
         "phpcompatibility/php-compatibility": "*",
@@ -65,7 +65,8 @@
             "classmap_prefix": "Texty_",
             "packages": [
                 "appsero/updater",
-                "appsero/client"
+                "appsero/client",
+                "wedevs/wp-kit"
             ],
             "excluded_packages": [
                 "psr/container"

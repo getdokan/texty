@@ -16,7 +16,7 @@
 namespace Texty\Api;
 
 use Texty\Models\SmsStat;
-use WeDevs\WPKit\DataLayer\DataLayerFactory;
+use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataLayerFactory;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;

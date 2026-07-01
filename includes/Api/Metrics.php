@@ -6,7 +6,7 @@ use DateTimeImmutable;
 use Exception;
 use Texty\Models\SmsStat;
 use Texty\Models\SmsStatStore;
-use WeDevs\WPKit\DataLayer\DataLayerFactory;
+use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataLayerFactory;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;

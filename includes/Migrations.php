@@ -19,10 +19,10 @@ namespace Texty;
 use Texty\Migrations\NoticeProvider;
 use Texty\Migrations\TextyMigration;
 use Texty\Migrations\V_2_0_0;
-use WeDevs\WPKit\Migration\MigrationHooks;
-use WeDevs\WPKit\Migration\MigrationManager;
-use WeDevs\WPKit\Migration\MigrationRegistry;
-use WeDevs\WPKit\Migration\MigrationRESTController;
+use Texty\Dependencies\WeDevs\WPKit\Migration\MigrationHooks;
+use Texty\Dependencies\WeDevs\WPKit\Migration\MigrationManager;
+use Texty\Dependencies\WeDevs\WPKit\Migration\MigrationRegistry;
+use Texty\Dependencies\WeDevs\WPKit\Migration\MigrationRESTController;
 
 defined( 'ABSPATH' ) || exit;
 

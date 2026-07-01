@@ -4,7 +4,7 @@ namespace Texty;
 
 use Texty\Models\SmsStat;
 use Texty\Models\SmsStatStore;
-use WeDevs\WPKit\DataLayer\DataLayerFactory;
+use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataLayerFactory;
 
 /**
  * Installer Class
