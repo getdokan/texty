@@ -2,7 +2,7 @@
 
 namespace Texty\Models;
 
-use WeDevs\WPKit\DataLayer\DataStore\BaseDataStore;
+use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataStore\BaseDataStore;
 
 /**
  * SMS Statistics DataStore

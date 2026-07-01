@@ -26,7 +26,7 @@
 namespace Texty\Api;
 
 use Texty\Gateways\GatewayInterface;
-use WeDevs\WPKit\Settings\BaseSettingsRESTController;
+use Texty\Dependencies\WeDevs\WPKit\Settings\BaseSettingsRESTController;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -318,7 +318,7 @@ class SettingsController extends BaseSettingsRESTController {
 	/**
 	 * The key the frontend uses for a field's value.
 	 *
-	 * plugin-ui's SettingsProvider keys its flat values map by the raw field
+	 * The plugin-ui SettingsProvider keys its flat values map by the raw field
 	 * element `id` (see `collectKeys` in settings-context), so field ids must
 	 * be globally unique — hence the `<gateway>_<field>` naming in the schema.
 	 *

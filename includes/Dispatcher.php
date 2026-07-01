@@ -5,7 +5,7 @@ namespace Texty;
 use Texty\Integrations\Dokan;
 use Texty\Integrations\WooCommerce;
 use Texty\Models\SmsStat;
-use WeDevs\WPKit\DataLayer\DataLayerFactory;
+use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataLayerFactory;
 use Texty\Gateways\GatewayInterface;
 
 /**
