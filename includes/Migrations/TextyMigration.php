@@ -8,7 +8,7 @@
 
 namespace Texty\Migrations;
 
-use WeDevs\WPKit\Migration\BaseMigration;
+use Texty\Dependencies\WeDevs\WPKit\Migration\BaseMigration;
 
 defined( 'ABSPATH' ) || exit;
 

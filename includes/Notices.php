@@ -13,9 +13,9 @@
 
 namespace Texty;
 
-use WeDevs\WPKit\AdminNotification\Contracts\NoticeProviderInterface;
-use WeDevs\WPKit\AdminNotification\NoticeManager;
-use WeDevs\WPKit\AdminNotification\NoticeRESTController;
+use Texty\Dependencies\WeDevs\WPKit\AdminNotification\Contracts\NoticeProviderInterface;
+use Texty\Dependencies\WeDevs\WPKit\AdminNotification\NoticeManager;
+use Texty\Dependencies\WeDevs\WPKit\AdminNotification\NoticeRESTController;
 
 defined( 'ABSPATH' ) || exit;
 

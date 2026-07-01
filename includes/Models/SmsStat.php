@@ -2,8 +2,8 @@
 
 namespace Texty\Models;
 
-use WeDevs\WPKit\DataLayer\Model\BaseModel;
-use WeDevs\WPKit\DataLayer\DataLayerFactory;
+use Texty\Dependencies\WeDevs\WPKit\DataLayer\Model\BaseModel;
+use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataLayerFactory;
 
 /**
  * SMS Statistics Model

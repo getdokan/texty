@@ -4,8 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1b54b6611ad4be6e7ea80e827e628cdf",
-    "packages": [
+    "content-hash": "20546b32c06fad9667fb4d007bdc5645",
+    "packages": [],
+    "packages-dev": [
         {
             "name": "appsero/client",
             "version": "v2.0.6",
@@ -60,70 +61,6 @@
             },
             "time": "2026-02-24T04:46:05+00:00"
         },
-        {
-            "name": "wedevs/wp-kit",
-            "version": "dev-main",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/getdokan/wp-kit.git",
-                "reference": "e8de3cc6dd090965469f072dc1065247e73181b5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/getdokan/wp-kit/zipball/e8de3cc6dd090965469f072dc1065247e73181b5",
-                "reference": "e8de3cc6dd090965469f072dc1065247e73181b5",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.4"
-            },
-            "require-dev": {
-                "brain/monkey": "^2.6",
-                "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
-                "mockery/mockery": "^1.6",
-                "phpcompatibility/phpcompatibility-wp": "^2.1",
-                "phpunit/phpunit": "^9.0 || ^10.0",
-                "squizlabs/php_codesniffer": "^3.7",
-                "wp-coding-standards/wpcs": "^3.0"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "WeDevs\\WPKit\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "WeDevs\\WPKit\\Tests\\": "tests/phpunit/tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "phpunit"
-                ],
-                "phpcs": [
-                    "phpcs"
-                ],
-                "phpcbf": [
-                    "phpcbf"
-                ],
-                "lint": [
-                    "@phpcs"
-                ]
-            },
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "description": "WordPress toolkit: DataLayer, Migration, Admin Notifications",
-            "support": {
-                "source": "https://github.com/getdokan/wp-kit/tree/main",
-                "issues": "https://github.com/getdokan/wp-kit/issues"
-            },
-            "time": "2026-03-05T05:55:18+00:00"
-        }
-    ],
-    "packages-dev": [
         {
             "name": "coenjacobs/mozart",
             "version": "0.7.1",
@@ -1858,6 +1795,68 @@
             "time": "2023-06-19T06:26:04+00:00"
         },
         {
+            "name": "wedevs/wp-kit",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/getdokan/wp-kit.git",
+                "reference": "e8de3cc6dd090965469f072dc1065247e73181b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/getdokan/wp-kit/zipball/e8de3cc6dd090965469f072dc1065247e73181b5",
+                "reference": "e8de3cc6dd090965469f072dc1065247e73181b5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "brain/monkey": "^2.6",
+                "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+                "mockery/mockery": "^1.6",
+                "phpcompatibility/phpcompatibility-wp": "^2.1",
+                "phpunit/phpunit": "^9.0 || ^10.0",
+                "squizlabs/php_codesniffer": "^3.7",
+                "wp-coding-standards/wpcs": "^3.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WeDevs\\WPKit\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "WeDevs\\WPKit\\Tests\\": "tests/phpunit/tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit"
+                ],
+                "phpcs": [
+                    "phpcs"
+                ],
+                "phpcbf": [
+                    "phpcbf"
+                ],
+                "lint": [
+                    "@phpcs"
+                ]
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "WordPress toolkit: DataLayer, Migration, Admin Notifications",
+            "support": {
+                "source": "https://github.com/getdokan/wp-kit/tree/main",
+                "issues": "https://github.com/getdokan/wp-kit/issues"
+            },
+            "time": "2026-03-05T05:55:18+00:00"
+        },
+        {
             "name": "wp-coding-standards/wpcs",
             "version": "dev-develop",
             "source": {
@@ -1934,7 +1933,9 @@
     },
     "prefer-stable": true,
     "prefer-lowest": false,
-    "platform": {},
+    "platform": {
+        "php": ">=7.4"
+    },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }

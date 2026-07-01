@@ -10,8 +10,8 @@
 namespace Texty\Migrations;
 
 use Throwable;
-use WeDevs\WPKit\AdminNotification\Contracts\NoticeProviderInterface;
-use WeDevs\WPKit\AdminNotification\Notice;
+use Texty\Dependencies\WeDevs\WPKit\AdminNotification\Contracts\NoticeProviderInterface;
+use Texty\Dependencies\WeDevs\WPKit\AdminNotification\Notice;
 
 defined( 'ABSPATH' ) || exit;
 
