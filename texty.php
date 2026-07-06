@@ -86,6 +86,7 @@ final class Texty {
             new Texty\Admin();
         }
 
+        new Texty\Assets();
         new Texty\Api();
         new Texty\Dispatcher();
         new Texty\Compliance();

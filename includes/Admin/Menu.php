@@ -101,22 +101,10 @@ class Menu {
     public function enqueue_scripts() {
         $asset_file = include TEXTY_DIR . '/dist/index.asset.php';
 
-        // Reusable components bundle (window.texty.components). Registered so
-        // add-ons that depend on the `texty-components` handle (via webpack
-        // dependency extraction) get it loaded automatically. Depends on
-        // `texty-admin` so it merges onto window.texty *after* the localized
-        // `var texty = {…}` data, rather than being clobbered by it.
-        if ( file_exists( TEXTY_DIR . '/dist/components.asset.php' ) ) {
-            $components_asset = include TEXTY_DIR . '/dist/components.asset.php';
-
-            wp_register_script(
-                'texty-components',
-                TEXTY_URL . '/dist/components.js',
-                array_merge( $components_asset['dependencies'], [ 'texty-admin' ] ),
-                $components_asset['version'],
-                true
-            );
-        }
+        // The reusable `texty-components` bundle (window.texty.components) is
+        // registered globally by Texty\Assets so add-ons can depend on it on
+        // both admin and storefront. On this page it is pulled in on demand by
+        // whichever add-on script declares it as a dependency.
 
         wp_register_script(
             'texty-admin',
