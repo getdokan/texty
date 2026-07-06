@@ -8,20 +8,23 @@ defined( 'ABSPATH' ) || exit;
  * Shared asset registration.
  *
  * Registers the reusable components bundle (`window.texty.components`,
- * handle `texty-components`) on both wp-admin and the front-end so add-ons
- * that declare a `texty-components` script dependency get it loaded on
- * demand — including on storefront surfaces (checkout, my-account) where the
- * admin SPA never loads. Nothing is enqueued here; consumers pull the bundle
- * in by depending on the handle (or calling wp_enqueue_script directly).
+ * handle `texty-components`) on wp-admin, the front-end, and the login page
+ * so add-ons that declare a `texty-components` dependency get it loaded on
+ * demand — including on storefront surfaces (checkout, my-account) and the
+ * wp-login.php registration form, where the admin SPA never loads. Nothing is
+ * enqueued here; consumers pull the bundle in by depending on the handle (or
+ * calling wp_enqueue_script directly).
  */
 class Assets {
 
     /**
-     * Wire the global registration on both request contexts.
+     * Wire the global registration on every request context an add-on may
+     * enqueue from: wp-admin, the front-end, and wp-login.php.
      */
     public function __construct() {
         add_action( 'admin_enqueue_scripts', [ $this, 'register_components' ], 5 );
         add_action( 'wp_enqueue_scripts', [ $this, 'register_components' ], 5 );
+        add_action( 'login_enqueue_scripts', [ $this, 'register_components' ], 5 );
     }
 
     /**
