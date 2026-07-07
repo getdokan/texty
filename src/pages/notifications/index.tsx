@@ -1,5 +1,4 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@wedevs/plugin-ui';
-import { useMemo } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import { type ReactNode } from 'react';
@@ -20,27 +19,24 @@ const TAB_PARAM = 'tab';
 const Notifications = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const tabs = useMemo<NotificationTab[]>(
-    () => [
-      {
-        value: 'user-events',
-        label: __('User Events', 'texty'),
-        content: <UserEvents />,
-      },
-      {
-        value: 'integrations',
-        label: __('Integrations', 'texty'),
-        content: <Integrations />,
-      },
-      ...(applyFilters('texty_notifications_tabs', []) as NotificationTab[]),
-      {
-        value: 'settings',
-        label: __('Settings', 'texty'),
-        content: <Settings />,
-      },
-    ],
-    [],
-  );
+  const tabs: NotificationTab[] = [
+    {
+      value: 'user-events',
+      label: __('User Events', 'texty'),
+      content: <UserEvents />,
+    },
+    {
+      value: 'integrations',
+      label: __('Integrations', 'texty'),
+      content: <Integrations />,
+    },
+    ...(applyFilters('texty_notifications_tabs', []) as NotificationTab[]),
+    {
+      value: 'settings',
+      label: __('Settings', 'texty'),
+      content: <Settings />,
+    },
+  ];
 
   const requested = searchParams.get(TAB_PARAM);
   const activeTab = tabs.some((tab) => tab.value === requested)

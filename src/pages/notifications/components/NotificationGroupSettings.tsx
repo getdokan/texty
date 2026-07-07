@@ -39,13 +39,20 @@ type SchemaResponse = {
 
 type SavePayload = Record<string, Record<string, unknown>>;
 
-type Props = {
-  // Built-in notifications group (renders /notifications/schema?group=…).
-  groupId?: string;
-  // Or point at any endpoint returning { schema, values } (e.g. Texty Pro's
-  schemaPath?: string;
-  savePath?: string;
-};
+type Props =
+  | {
+      // Built-in notifications group (renders /notifications/schema?group=…).
+      groupId: string;
+      schemaPath?: never;
+      savePath?: never;
+    }
+  | {
+      // Or point at any endpoint returning { schema, values } (e.g. Texty Pro's
+      // custom notification features). Both paths are required together.
+      groupId?: never;
+      schemaPath: string;
+      savePath: string;
+    };
 
 // The full plugin-ui Settings schema is built on the server. This component only
 // fetches it, renders it, and folds each collapsible card's children back into
@@ -212,7 +219,9 @@ const NotificationGroupSettings = ({
       </div>
 
       <Settings
-        key={groupId}
+        // Remount on any identity change so form state never leaks between
+        // groups or custom endpoints. fetchPath already folds in groupId.
+        key={`${fetchPath}::${postPath}`}
         schema={schema}
         values={values}
         onChange={handleChange}
