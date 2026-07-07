@@ -15,7 +15,8 @@ const PhoneField = ({ element, onChange }: FieldComponentProps) => {
   // react-phone-input-2 emits digits without the leading "+"; re-add it so the
   // stored number stays E.164 (Twilio & co. require it for the From number).
   const handleChange = (val: string): void => {
-    if (element.id) onChange(element.id, val ? `+${val.replace(/^\+/, '')}` : '');
+    if (element.id)
+      onChange(element.id, val ? `+${val.replace(/^\+/, '')}` : '');
   };
 
   return (
@@ -35,16 +36,15 @@ const PhoneField = ({ element, onChange }: FieldComponentProps) => {
 
       <div className="w-full">
         <PhoneInput
-          country="bd"
+          enableSearch
           value={value}
           onChange={handleChange}
-          enableSearch
           disabled={element.disabled}
           inputProps={{ id: element.id, name: element.id }}
           containerClass="texty-phone-input"
-          inputClass="!h-9 !w-full !rounded-md !border !border-input !bg-background !pl-14 !text-sm !text-foreground"
-          buttonClass="!rounded-l-md !border-r !border-input !bg-background"
-          dropdownClass="!text-sm"
+          inputClass="h-9 w-full rounded-md border border-input bg-background pl-14 text-sm text-foreground"
+          buttonClass="rounded-l-md border-r border-input bg-background"
+          dropdownClass="text-sm"
         />
         {element.description && (
           <div className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
