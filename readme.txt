@@ -5,7 +5,7 @@ Tags: sms, notification, twilio, woocommerce, dokan
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -150,7 +150,13 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 
 == Changelog ==
 
-= v2.0.1 (16 Jun, 2026) =
+= v2.0.2 (10 Aug, 2026) =
+
+- **New:** Texty add-ons can now display their own settings inside Texty, with the same look and feel as the rest of the plugin.
+- **Fix:** WooCommerce order messages that fail to reach anyone are no longer treated as delivered, so the notification can still go out on the next order update.
+- **Fix:** Blank comment notifications are no longer sent when a comment is removed before its message goes out.
+- **Update:** Improved compatibility with other plugins to avoid conflicts on sites running many extensions.
+- **Update:** General security and stability improvements.
 
 - **Fix:** Admin assets (the React dashboard bundle) are now included in the WP.org release; the 2.0.0 package was missing the compiled `dist/` files.
 

@@ -1,22 +1,22 @@
 # Copyright (c) 2026 weDevs Pte. Ltd. All Rights Reserved.
 msgid ""
 msgstr ""
-"Project-Id-Version: Texty 2.0.0\n"
+"Project-Id-Version: Texty 2.0.2\n"
 "Report-Msgid-Bugs-To: https://github.com/weDevsOfficial/texty/issues\n"
 "Last-Translator: support@wedevs.com\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-16T11:03:41+00:00\n"
+"POT-Creation-Date: 2026-08-10T09:25:21+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: texty\n"
 
 #. Plugin Name of the plugin
 #: texty.php
-#: includes/Admin/Menu.php:37
-#: includes/Admin/Menu.php:38
+#: includes/Admin/Menu.php:103
+#: includes/Admin/Menu.php:104
 msgid "Texty"
 msgstr ""
 
@@ -40,20 +40,20 @@ msgstr ""
 msgid "https://wptexty.com/"
 msgstr ""
 
-#: includes/Admin/Menu.php:51
+#: includes/Admin/Menu.php:119
 msgid "Dashboard"
 msgstr ""
 
-#: includes/Admin/Menu.php:55
+#: includes/Admin/Menu.php:123
 #: includes/Api/Logs.php:307
 msgid "Gateway"
 msgstr ""
 
-#: includes/Admin/Menu.php:59
+#: includes/Admin/Menu.php:127
 msgid "Notifications"
 msgstr ""
 
-#: includes/Admin/Menu.php:63
+#: includes/Admin/Menu.php:131
 msgid "Logs"
 msgstr ""
 
@@ -505,7 +505,7 @@ msgstr ""
 msgid "Customer - When Order Status is Refunded"
 msgstr ""
 
-#: includes/Notifications/WP/Comment.php:18
+#: includes/Notifications/WP/Comment.php:19
 msgid "New Comment"
 msgstr ""
 
