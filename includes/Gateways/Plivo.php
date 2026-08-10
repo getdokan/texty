@@ -49,7 +49,7 @@ class Plivo implements GatewayInterface {
      * @return string
      */
     public function logo() {
-        return TEXTY_URL . '/assets/images/plivo-logo.png';
+        return TEXTY_URL . '/assets/images/gateways/plivo-logo.png';
     }
 
     /**

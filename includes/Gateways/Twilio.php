@@ -49,7 +49,7 @@ class Twilio implements GatewayInterface {
      * @return string
      */
     public function logo() {
-        return TEXTY_URL . '/assets/images/twilio-logo.png';
+        return TEXTY_URL . '/assets/images/gateways/twilio-logo.png';
     }
 
     /**

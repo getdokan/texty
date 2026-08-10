@@ -32,7 +32,7 @@ class Vonage implements GatewayInterface {
      * @return string
      */
     public function logo() {
-        return TEXTY_URL . '/assets/images/vonage-logo.png';
+        return TEXTY_URL . '/assets/images/gateways/vonage-logo.png';
     }
 
     /**

@@ -2,9 +2,13 @@ import { ThemeProvider, type ThemeTokens } from '@wedevs/plugin-ui';
 import domReady from '@wordpress/dom-ready';
 import { createRoot } from '@wordpress/element';
 
-import '@wedevs/plugin-ui/styles.css';
+// plugin-ui's stylesheet ships with the shared `plugin-ui` entry
+// (dist/plugin-ui.css, handle `texty-plugin-ui`) — importing it here too would
+// emit a second 300KB+ copy into dist/index.css. Texty\Admin\Menu pulls it in
+// as a dependency of `texty-vendor-css`.
 import 'react-phone-input-2/lib/style.css';
 import App from './App';
+import Header from './components/Header';
 import './styles/app.css';
 import './styles/style.scss';
 import './tailwind.css';
@@ -34,7 +38,30 @@ const textyTheme: ThemeTokens = {
   radius: '0.625rem',
 };
 
+// Admin notices are captured into a hidden wrapper by `Texty\Admin\Menu`. Move
+// it into the slot under the header and unhide it. This runs at script-eval
+// time — before core's `DOMContentLoaded` pass, which appends stray notices
+// after the first `.wp-header-end` — so the catcher is already in its final
+// position when core relocates them.
+const noticeList = document.getElementById('texty__notice-list');
+const noticeSlot = document.getElementById('texty-notices');
+if (noticeList && noticeSlot) {
+  noticeSlot.appendChild(noticeList);
+  noticeList.classList.remove('texty-notice-list-hide');
+}
+
 domReady(() => {
+  // The header mounts in its own root, outside the router, so it sits above
+  // the notice slot in the DOM: header → notices → app.
+  const headerNode = document.getElementById('texty-header');
+  if (headerNode) {
+    createRoot(headerNode).render(
+      <ThemeProvider pluginId="texty" className="texty-app" tokens={textyTheme}>
+        <Header />
+      </ThemeProvider>
+    );
+  }
+
   const mountNode = document.getElementById('texty-app');
   if (!mountNode) {
     return;

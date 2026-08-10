@@ -49,7 +49,7 @@ class Clickatell implements GatewayInterface {
      * @return string
      */
     public function logo() {
-        return TEXTY_URL . '/assets/images/clickatell-logo.png';
+        return TEXTY_URL . '/assets/images/gateways/clickatell-logo.png';
     }
 
     /**

@@ -80,3 +80,30 @@
 #wpcontent:has(#texty-app) {
   padding-left: 0 !important;
 }
+
+/* Captured admin notices stay hidden until JS moves them into #texty-notices,
+   so they never flash above the Texty header. */
+.texty-notice-list-hide {
+  display: none;
+}
+
+/* Notice slot lives between the header and the app mount. It sits outside the
+   .texty-app Tailwind scope on purpose — the importantized preflight there
+   would strip core's notice styling. Horizontal padding matches
+   .texty-container so notices line up with the page content. */
+#texty-notices {
+  margin-top: 1rem;
+  padding: 0 48px;
+}
+
+#texty-notices .notice,
+#texty-notices div.updated,
+#texty-notices div.error {
+  margin: 0 0 10px;
+}
+
+/* The moved wrapper is always present, so collapse the slot when it holds no
+   actual notices — otherwise it adds a stray gap above the app. */
+#texty-notices:not(:has(.notice, div.updated, div.error)) {
+  display: none;
+}
