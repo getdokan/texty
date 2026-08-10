@@ -1,20 +1,25 @@
 # What ships to WP.org = everything in the repo MINUS the patterns below.
+
 # Build output is intentionally NOT listed (must ship): dist/ vendor/ dependencies/
+
 # Keep this complete: it is the only filter the deploy action applies.
 
 # VCS / CI
+
 .git
 .gitignore
 .gitattributes
 .github
 
 # Editor / OS
+
 .editorconfig
 .idea
 .vscode
 .DS_Store
 
 # Lint / build tooling configs
+
 .php_cs
 .prettierrc
 .babelrc
@@ -28,6 +33,7 @@ playwright.config.ts
 Gruntfile.js
 
 # Package manifests + sources (built artifacts vendor/dist/dependencies are kept)
+
 composer.json
 composer.lock
 package.json
@@ -35,12 +41,16 @@ package-lock.json
 node_modules
 src
 build
+docs
+webpack-dependency-mapping.js
 
 # Tests / scripts
+
 tests
 bin
 
 # Docs / agent / local env
+
 README.md
 CLAUDE.md
 .claude
@@ -50,5 +60,6 @@ CLAUDE.md
 appsero.json
 
 # Self
+
 .distignore
 .svnignore
