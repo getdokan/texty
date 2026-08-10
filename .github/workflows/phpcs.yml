@@ -7,22 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Use desired version of NodeJS
-        uses: actions/setup-node@v4
-        with:
-            node-version: 20
-            cache: npm
-
-      - name: Npm install and build
-        run: |
-            npm i
-            npm run build
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: "8.1"
           coverage: none
           tools: cs2pr, composer:v2
 
