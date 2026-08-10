@@ -15,8 +15,9 @@ const PhoneField = ({ element, onChange }: FieldComponentProps) => {
   // react-phone-input-2 emits digits without the leading "+"; re-add it so the
   // stored number stays E.164 (Twilio & co. require it for the From number).
   const handleChange = (val: string): void => {
-    if (element.id)
+    if (element.id) {
       onChange(element.id, val ? `+${val.replace(/^\+/, '')}` : '');
+    }
   };
 
   return (

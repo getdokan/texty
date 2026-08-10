@@ -7,13 +7,21 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Shared asset registration.
  *
- * Registers the reusable components bundle (`window.texty.components`,
- * handle `texty-components`) on wp-admin, the front-end, and the login page
- * so add-ons that declare a `texty-components` dependency get it loaded on
- * demand — including on storefront surfaces (checkout, my-account) and the
- * wp-login.php registration form, where the admin SPA never loads. Nothing is
- * enqueued here; consumers pull the bundle in by depending on the handle (or
- * calling wp_enqueue_script directly).
+ * Registers the bundles Texty shares with its add-ons on wp-admin, the
+ * front-end and the login page:
+ *
+ * - `texty-plugin-ui`  — the @wedevs/plugin-ui kit (`window.texty.pluginUi`).
+ * - `texty-components` — Texty's reusable components (`window.texty.components`).
+ *
+ * Add-ons `import` from `@wedevs/plugin-ui` / `@texty/components` and let
+ * @wordpress/dependency-extraction-webpack-plugin (see
+ * webpack-dependency-mapping.js) rewrite the import to the global plus a
+ * dependency on the script handle — so one copy is loaded no matter how many
+ * add-ons use it, including on storefront surfaces (checkout, my-account) and
+ * the wp-login.php form where the admin SPA never loads.
+ *
+ * Nothing is enqueued here; consumers pull a bundle in by declaring the handle
+ * as a dependency (or calling wp_enqueue_script directly).
  */
 class Assets {
 
@@ -22,61 +30,97 @@ class Assets {
      * enqueue from: wp-admin, the front-end, and wp-login.php.
      */
     public function __construct() {
-        add_action( 'admin_enqueue_scripts', [ $this, 'register_components' ], 5 );
-        add_action( 'wp_enqueue_scripts', [ $this, 'register_components' ], 5 );
-        add_action( 'login_enqueue_scripts', [ $this, 'register_components' ], 5 );
+        add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ], 5 );
+        add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ], 5 );
+        add_action( 'login_enqueue_scripts', [ $this, 'register_assets' ], 5 );
+    }
+
+    /**
+     * Register every shared bundle.
+     *
+     * plugin-ui first — `texty-components` (and `texty-admin`) list it as a
+     * dependency through their generated asset files.
+     *
+     * @since 2.0.2
+     *
+     * @return void
+     */
+    public function register_assets() {
+        $this->register_plugin_ui();
+        $this->register_components();
+    }
+
+    /**
+     * Register the `texty-plugin-ui` handle.
+     *
+     * The bundle assigns the plugin-ui export surface to
+     * `window.texty.pluginUi` and its stylesheet is registered under the same
+     * handle. Texty's own admin bundle depends on it too, so the kit is loaded
+     * exactly once per page.
+     *
+     * @since 2.0.2
+     *
+     * @return void
+     */
+    public function register_plugin_ui() {
+        $this->register_bundle( 'texty-plugin-ui', 'plugin-ui', 'plugin-ui.css' );
     }
 
     /**
      * Register the `texty-components` handle.
      *
-     * The bundle self-initializes `window.texty` (webpack library
-     * `['texty','components']`). In wp-admin the SPA localizes `var texty =
-     * {…}` onto that global, which would clobber `.components` unless the
-     * bundle loads *after* it — so `texty-admin` is added as a dependency
-     * there. On the front-end there is no localize step and the admin SPA is
-     * absent, so the base asset deps are used as-is.
-     *
      * @return void
      */
     public function register_components() {
-        if ( wp_script_is( 'texty-components', 'registered' ) ) {
-            return;
-        }
+        $this->register_bundle( 'texty-components', 'components', 'style-components.css', [ 'texty-plugin-ui' ] );
+    }
 
-        $asset_path = TEXTY_DIR . '/dist/components.asset.php';
+    /**
+     * Register one built entry as a script (and, when present, a stylesheet)
+     * under a single handle.
+     *
+     * Script dependencies come from the entry's generated `*.asset.php`, which
+     * already carries the `texty-*` handles for any shared package the entry
+     * imports.
+     *
+     * @since 2.0.2
+     *
+     * @param string $handle     Script + style handle to register.
+     * @param string $entry      Webpack entry name (dist/<entry>.js).
+     * @param string $style_file Stylesheet filename inside dist/, if any.
+     * @param array  $style_deps Style dependencies.
+     *
+     * @return void
+     */
+    protected function register_bundle( $handle, $entry, $style_file, $style_deps = [] ) {
+        $asset_path = TEXTY_DIR . '/dist/' . $entry . '.asset.php';
 
         if ( ! file_exists( $asset_path ) ) {
             return;
         }
 
-        $asset = include $asset_path;
-        $deps  = isset( $asset['dependencies'] ) && is_array( $asset['dependencies'] ) ? $asset['dependencies'] : [];
+        $asset   = include $asset_path;
+        $deps    = isset( $asset['dependencies'] ) && is_array( $asset['dependencies'] ) ? $asset['dependencies'] : [];
+        $version = isset( $asset['version'] ) ? $asset['version'] : TEXTY_VERSION;
 
-        if ( is_admin() ) {
-            $deps = array_merge( $deps, [ 'texty-admin' ] );
+        if ( ! wp_script_is( $handle, 'registered' ) ) {
+            wp_register_script(
+                $handle,
+                TEXTY_URL . '/dist/' . $entry . '.js',
+                $deps,
+                $version,
+                true
+            );
         }
 
-        wp_register_script(
-            'texty-components',
-            TEXTY_URL . '/dist/components.js',
-            $deps,
-            isset( $asset['version'] ) ? $asset['version'] : TEXTY_VERSION,
-            true
-        );
+        $style_path = TEXTY_DIR . '/dist/' . $style_file;
 
-        // Base stylesheet for component-level styles (e.g. PhoneField's
-        // react-phone-input-2 layout). Emitted by the components entry as
-        // dist/style-components.css. Add-ons pull it by depending on this
-        // handle; nothing enqueues it here.
-        $style_path = TEXTY_DIR . '/dist/style-components.css';
-
-        if ( file_exists( $style_path ) && ! wp_style_is( 'texty-components', 'registered' ) ) {
+        if ( ! wp_style_is( $handle, 'registered' ) && file_exists( $style_path ) ) {
             wp_register_style(
-                'texty-components',
-                TEXTY_URL . '/dist/style-components.css',
-                [],
-                isset( $asset['version'] ) ? $asset['version'] : TEXTY_VERSION
+                $handle,
+                TEXTY_URL . '/dist/' . $style_file,
+                $style_deps,
+                $version
             );
         }
     }

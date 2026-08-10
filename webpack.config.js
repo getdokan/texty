@@ -15,6 +15,24 @@ module.exports = {
         type: 'window',
       },
     },
+    // The plugin-ui kit exposed for add-ons (window.texty.pluginUi), so lite and
+    // every add-on share one copy instead of bundling their own.
+    //
+    // Both imports are resolved to absolute paths on purpose: the bare
+    // '@wedevs/plugin-ui' request is externalized by requestToExternal, so
+    // importing it by name here would make this entry externalize to itself.
+    // The package's JS comes last — webpack takes the library exports from the
+    // last module of a multi-import entry.
+    'plugin-ui': {
+      import: [
+        require.resolve('@wedevs/plugin-ui/styles.css'),
+        require.resolve('@wedevs/plugin-ui'),
+      ],
+      library: {
+        name: ['texty', 'pluginUi'],
+        type: 'window',
+      },
+    },
   },
   output: {
     ...defaultConfig.output,
