@@ -38,8 +38,8 @@ class Assets {
     /**
      * Register every shared bundle.
      *
-     * plugin-ui first — `texty-components` (and `texty-admin`) list it as a
-     * dependency through their generated asset files.
+     * The plugin-ui bundle goes first — `texty-components` (and `texty-admin`)
+     * list it as a dependency through their generated asset files.
      *
      * @since 2.0.2
      *
@@ -96,6 +96,12 @@ class Assets {
         $asset_path = TEXTY_DIR . '/dist/' . $entry . '.asset.php';
 
         if ( ! file_exists( $asset_path ) ) {
+            // Bailing quietly here is what makes a stale/partial dist/ look like
+            // a working install: `texty-admin` declares `texty-plugin-ui` as a
+            // dependency, WP drops the whole handle when it is not registered,
+            // and the admin page renders empty with no error anywhere.
+            error_log( 'Texty: missing build artifact ' . $asset_path . ' — run `npm run build`. The "' . $handle . '" handle was not registered.' );
+
             return;
         }
 

@@ -175,19 +175,38 @@ class Menu {
      * @return void
      */
     public function enqueue_scripts() {
-        $asset_file = include TEXTY_DIR . '/dist/index.asset.php';
+        $asset_path = TEXTY_DIR . '/dist/index.asset.php';
+
+        if ( ! file_exists( $asset_path ) ) {
+            error_log( 'Texty: missing build artifact ' . $asset_path . ' — run `npm run build`. The admin app was not enqueued.' );
+
+            return;
+        }
+
+        $asset_file = include $asset_path;
+        $deps       = isset( $asset_file['dependencies'] ) && is_array( $asset_file['dependencies'] ) ? $asset_file['dependencies'] : [];
+        $version    = isset( $asset_file['version'] ) ? $asset_file['version'] : TEXTY_VERSION;
 
         // The shared bundles (`texty-plugin-ui` → window.texty.pluginUi,
         // `texty-components` → window.texty.components) are registered globally
         // by Texty\Assets so add-ons can depend on them on both admin and
-        // storefront. `texty-plugin-ui` is already listed in $asset_file's
-        // dependencies here, since the SPA imports @wedevs/plugin-ui.
+        // storefront. `texty-plugin-ui` is already listed in $deps here, since
+        // the SPA imports @wedevs/plugin-ui.
+        //
+        // WP silently drops a handle whose dependency is unregistered, so an
+        // unbuilt shared entry would blank the admin page with no error. Say so
+        // in the log instead of failing invisibly.
+        foreach ( $deps as $dep ) {
+            if ( strpos( $dep, 'texty-' ) === 0 && ! wp_script_is( $dep, 'registered' ) ) {
+                error_log( 'Texty: shared script handle "' . $dep . '" is not registered — the admin app will not load. Run `npm run build`.' );
+            }
+        }
 
         wp_register_script(
             'texty-admin',
             TEXTY_URL . '/dist/index.js',
-            $asset_file['dependencies'],
-            $asset_file['version'],
+            $deps,
+            $version,
             true
         );
 
@@ -195,9 +214,11 @@ class Menu {
         // bundles assign onto the same `window.texty` namespace and print
         // *before* this script (they are dependencies of it), so a plain
         // assignment would wipe out window.texty.pluginUi and crash the SPA.
+        $localized = wp_json_encode( $this->localize_script() );
+
         wp_add_inline_script(
             'texty-admin',
-            'window.texty = Object.assign( window.texty || {}, ' . wp_json_encode( $this->localize_script() ) . ' );',
+            'window.texty = Object.assign( window.texty || {}, ' . ( $localized ? $localized : '{}' ) . ' );',
             'before'
         );
 
@@ -211,14 +232,14 @@ class Menu {
             'texty-vendor-css',
             TEXTY_URL . '/dist/style-index.css',
             $vendor_style_deps,
-            $asset_file['version']
+            $version
         );
 
         wp_register_style(
             'texty-css',
             TEXTY_URL . '/dist/index.css',
             [ 'texty-vendor-css' ],
-            $asset_file['version']
+            $version
         );
 
         wp_enqueue_script( 'texty-admin' );
