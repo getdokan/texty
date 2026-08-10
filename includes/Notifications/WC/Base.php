@@ -139,8 +139,9 @@ class Base extends Notification {
             return false;
         }
 
-        // mark as sent
-        $this->order->add_meta_data( $meta_key, 1 );
+        // Claim the send up-front so concurrent status changes stay at-most-once.
+        // update_meta_data (not add_meta_data) keeps exactly one row per order/notification.
+        $this->order->update_meta_data( $meta_key, 1 );
         $this->order->save_meta_data();
 
         if ( 'user' === $this->get_type() ) {
@@ -195,7 +196,8 @@ class Base extends Notification {
          */
         do_action( 'texty_before_notification', $this, $recipients, $content );
 
-        $gateway = texty()->gateways();
+        $gateway  = texty()->gateways();
+        $any_sent = false;
 
         // Stash the active notification so the after-send logger can attach
         // notification_id / notification_group to each SmsStat row without
@@ -204,7 +206,11 @@ class Base extends Notification {
 
         try {
             foreach ( $recipients as $number ) {
-                $gateway->send( $number, $content );
+                $result = $gateway->send( $number, $content );
+
+                if ( ! is_wp_error( $result ) && false !== $result ) {
+                    $any_sent = true;
+                }
             }
         } finally {
             texty()->notifications()->clear_active();
@@ -218,6 +224,16 @@ class Base extends Notification {
          * @param string       $content      The message content
          */
         do_action( 'texty_after_notification', $this, $recipients, $content );
+
+        // Every recipient failed — release the claim so the next matching status
+        // change can retry. A partial success keeps the flag so the recipients
+        // who already received the SMS are not messaged again.
+        if ( ! $any_sent ) {
+            $this->order->delete_meta_data( $meta_key );
+            $this->order->save_meta_data();
+
+            return false;
+        }
 
         return true;
     }
