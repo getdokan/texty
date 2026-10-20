@@ -5,17 +5,42 @@ namespace Texty\Gateways;
 use WP_Error;
 use WP_REST_Request;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Clickatell Class
  *
  * @see https://www.clickatell.com/developers/api-documentation/rest-api-send-message/
  */
-class Clickatell implements GatewayInterface {
+class Clickatell extends AbstractGateway {
 
     /**
      * API Endpoint
      */
     const ENDPOINT = 'https://platform.clickatell.com/messages';
+
+    /**
+     * Registry key
+     *
+     * @var string
+     */
+    protected $key = 'clickatell';
+
+    /**
+     * Gateway metadata
+     *
+     * @since 2.1.0
+     *
+     * @return array
+     */
+    protected function meta() {
+        return [
+            'status'     => Metadata::STATUS_STABLE,
+            'docs_url'   => 'https://docs.clickatell.com/channels/sms-channels/sms-api-reference/',
+            'signup_url' => 'https://www.clickatell.com/sign-up/',
+            'validation' => 'format_only',
+        ];
+    }
 
     /**
      * Get the name
@@ -75,83 +100,80 @@ class Clickatell implements GatewayInterface {
      *
      * @param string $to
      * @param string $message
+     * @param array  $options Per-message options, see SendOptions
      *
-     * @return WP_Error|array
+     * @return Result
      */
-    public function send( $to, $message ) {
-        $creds = texty()->settings()->get( 'clickatell' );
+    public function send_result( $to, $message, $options = [] ) {
+        $key = $this->cred( $this->creds(), 'key' );
 
-        $args = [
-            'headers' => [
-                'Authorization' => $creds['key'],
-                'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
-            ],
-            'body' => wp_json_encode(
-                [
+        if ( '' === $key ) {
+            return Result::failure(
+                'texty_missing_credentials',
+                __( 'Clickatell API Key is required.', 'texty' )
+            );
+        }
+
+        $response = $this->http()->post(
+            self::ENDPOINT,
+            [
+                'headers' => [ 'Authorization' => $key ],
+                'json'    => [
                     'to'      => [ $to ],
                     'content' => $message,
-                ]
-            ),
-        ];
+                ],
+            ]
+        );
 
-        $response = wp_remote_post( self::ENDPOINT, $args );
+        $failure = $this->transport_failure( $response );
 
-        if ( is_wp_error( $response ) ) {
-            return $response;
+        if ( $failure ) {
+            return $failure;
         }
 
-        $body          = wp_remote_retrieve_body( $response );
-        $response_code = wp_remote_retrieve_response_code( $response );
-
-        // phpcs:disable
-        if ( 202 !== $response_code ) {
-            switch ( $response_code ) {
-                case 200:
-                    $body = json_decode( $body );
-
-                    return new WP_Error(
-                        $body->errorCode,
-                        $body->errorDescription
-                    );
-
-                case 400:
-                    return new WP_Error(
-                        400,
-                        'Bad Request'
-                    );
-
-                default:
-                    return new WP_Error(
-                        $response_code,
-                        'Bad Request'
-                    );
-            }
+        if ( 202 === $response->status() && false !== $response->get( 'messages.0.accepted' ) ) {
+            return Result::success( $response->get( 'messages.0.apiMessageId' ), $response );
         }
-        // phpcs:enable
-        $body = json_decode( $body );
-        $api_message_id = null;
-        if ( isset( $body->messages[0]->apiMessageId ) ) {
-            $api_message_id = $body->messages[0]->apiMessageId;
+
+        // Errors come either at the top level or on the message entry; the
+        // unused level is present but null.
+        $code    = $response->get( 'errorCode' );
+        $message = $response->get( 'errorDescription' );
+
+        if ( null === $code ) {
+            $code    = $response->get( 'messages.0.errorCode' );
+            $message = $response->get( 'messages.0.errorDescription' );
         }
-        return [
-            'success'      => true,
-            'reference_id' => $api_message_id,
-        ];
+
+        return Result::failure(
+            null !== $code ? $code : $response->status(),
+            null !== $message ? $message : __( 'Bad Request', 'texty' ),
+            $response
+        );
     }
 
     /**
      * Validate a REST API request
      *
+     * Clickatell has no side-effect-free auth endpoint for this API, so only
+     * the presence of the key is checked (metadata `validation: format_only`).
+     *
      * @param WP_REST_Request $request
      *
-     * @return WP_Error|mixed
+     * @return WP_Error|array
      */
     public function validate( $request ) {
-        $creds = $request->get_param( 'clickatell' );
+        $key = sanitize_text_field( $this->cred( $this->request_creds( $request ), 'key' ) );
+
+        if ( '' === $key ) {
+            return new WP_Error(
+                'texty_missing_credentials',
+                __( 'Clickatell API Key is required.', 'texty' )
+            );
+        }
 
         return [
-            'key' => $creds['key'],
+            'key' => $key,
         ];
     }
 }

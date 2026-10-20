@@ -1,0 +1,12 @@
+{
+    "_source": "https://www.twilio.com/docs/api/errors/21211",
+    "_note": "Inferred from the documented REST error body shape and error 21211 (Invalid 'To' Phone Number).",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "code": 21211,
+        "message": "Invalid 'To' Phone Number: +1555NOTANUMBER",
+        "more_info": "https://www.twilio.com/docs/errors/21211",
+        "status": 400
+    }
+}

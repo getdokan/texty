@@ -7,6 +7,7 @@ use Texty\Integrations\WooCommerce;
 use Texty\Models\SmsStat;
 use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataLayerFactory;
 use Texty\Gateways\GatewayInterface;
+use Texty\Gateways\Secrets;
 use WP_Comment;
 
 /**
@@ -140,7 +141,7 @@ class Dispatcher {
                 'notification_id'    => $notification_id,
                 'notification_group' => $notification_group,
                 'message'            => is_string( $message ) ? $message : '',
-                'response'           => $this->encode_response( $result ),
+                'response'           => $this->encode_response( $result, $gateway ),
                 'reference_id'       => is_scalar( $reference_id ) ? (string) $reference_id : '',
                 'created_at'         => current_time( 'mysql' ),
                 'updated_at'         => current_time( 'mysql' ),
@@ -156,17 +157,25 @@ class Dispatcher {
      * the failure is human-readable; arrays/objects are passed through;
      * scalars are JSON-encoded as-is.
      *
-     * @param mixed $result The send result (bool, array, or WP_Error).
+     * The gateway's saved secrets (its `password` fields) are scrubbed from
+     * the payload, since some providers echo credentials back in responses.
+     *
+     * @param mixed                  $result  The send result (bool, array, or WP_Error).
+     * @param GatewayInterface|false $gateway The gateway that sent it.
      *
      * @return array|string|null
      */
-    private function encode_response( $result ) {
+    private function encode_response( $result, $gateway ) {
         if ( is_wp_error( $result ) ) {
-            return [
+            $result = [
                 'code'    => $result->get_error_code(),
                 'message' => $result->get_error_message(),
                 'data'    => $result->get_error_data(),
             ];
+        }
+
+        if ( $gateway instanceof GatewayInterface ) {
+            $result = Secrets::redact( $result, Secrets::values( $gateway ) );
         }
 
         return $result;

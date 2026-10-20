@@ -26,6 +26,11 @@
             "Texty\\Dependencies\\": "dependencies/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Texty\\Tests\\": "tests/php/"
+        }
+    },
     "require-dev": {
         "appsero/client": "^v2.0.4",
         "wedevs/wp-kit": "dev-main",
@@ -34,7 +39,9 @@
         "phpcompatibility/php-compatibility": "*",
         "phpcompatibility/phpcompatibility-wp": "*",
         "coenjacobs/mozart": "^0.7.1",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7"
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+        "phpunit/phpunit": "^9.6",
+        "yoast/phpunit-polyfills": "^2.0"
     },
     "scripts": {
         "phpcs": [
@@ -42,6 +49,9 @@
         ],
         "phpcbf": [
             "phpcbf -p"
+        ],
+        "test": [
+            "phpunit"
         ],
         "post-install-cmd": [
             "[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",

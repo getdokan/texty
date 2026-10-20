@@ -30,6 +30,7 @@ postcss.config.js
 webpack.config.js
 tsconfig.json
 playwright.config.ts
+phpunit.xml.dist
 Gruntfile.js
 
 # Package manifests + sources (built artifacts vendor/dist/dependencies are kept)

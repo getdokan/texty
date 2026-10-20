@@ -5,17 +5,46 @@ namespace Texty\Gateways;
 use WP_Error;
 use WP_REST_Request;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Nexmo Class
  *
  * @see https://developer.nexmo.com/api/sms
  */
-class Vonage implements GatewayInterface {
+class Vonage extends AbstractGateway {
 
     /**
      * API Endpoint
      */
     const ENDPOINT = 'https://rest.nexmo.com';
+
+    /**
+     * Registry key
+     *
+     * @var string
+     */
+    protected $key = 'vonage';
+
+    /**
+     * Gateway metadata
+     *
+     * @since 2.1.0
+     *
+     * @return array
+     */
+    protected function meta() {
+        return [
+            'status'     => Metadata::STATUS_STABLE,
+            'docs_url'   => 'https://developer.vonage.com/en/api/sms',
+            'signup_url' => 'https://dashboard.nexmo.com/sign-up',
+            'features'   => [
+                'unicode'       => true,
+                'sender_id'     => true,
+                'balance_check' => true,
+            ],
+        ];
+    }
 
     /**
      * Get the name
@@ -87,41 +116,55 @@ class Vonage implements GatewayInterface {
      *
      * @param string $to
      * @param string $message
+     * @param array  $options Per-message options, see SendOptions
      *
-     * @return WP_Error|array
+     * @return Result
      */
-    public function send( $to, $message ) {
-        $creds = texty()->settings()->get( 'vonage' );
+    public function send_result( $to, $message, $options = [] ) {
+        $options = SendOptions::normalize( $options );
+        $creds   = $this->creds();
+        $key     = $this->cred( $creds, 'key' );
+        $secret  = $this->cred( $creds, 'secret' );
 
-        $args = [
-            'body' => [
-                'from'       => $creds['from'],
-                'text'       => $message,
-                'to'         => $to,
-                'api_key'    => $creds['key'],
-                'api_secret' => $creds['secret'],
-            ],
-        ];
-
-        $request       = wp_remote_post( self::ENDPOINT . '/sms/json', $args );
-        $body          = json_decode( wp_remote_retrieve_body( $request ) );
-        $response_code = wp_remote_retrieve_response_code( $request );
-
-        if ( is_wp_error( $request ) ) {
-            return $request;
-        }
-
-        if ( $body->messages[0]->status !== '0' ) {
-            return new WP_Error(
-                $body->messages[0]->status,
-                $body->messages[0]->{'error-text'}
+        if ( '' === $key || '' === $secret ) {
+            return Result::failure(
+                'texty_missing_credentials',
+                __( 'Vonage API Key and API Secret are required.', 'texty' )
             );
         }
 
-        return [
-            'success'      => true,
-            'reference_id' => isset( $body->messages[0]->{'message-id'} ) ? $body->messages[0]->{'message-id'} : null,
+        $form = [
+            'from'       => '' !== $options['from'] ? $options['from'] : $this->cred( $creds, 'from' ),
+            'text'       => $message,
+            'to'         => $to,
+            'api_key'    => $key,
+            'api_secret' => $secret,
         ];
+
+        if ( $options['unicode'] ) {
+            $form['type'] = 'unicode';
+        }
+
+        $response = $this->http()->post( self::ENDPOINT . '/sms/json', [ 'form' => $form ] );
+        $failure  = $this->transport_failure( $response );
+
+        if ( $failure ) {
+            return $failure;
+        }
+
+        // Vonage answers 200 even for rejected messages; the per-message
+        // status ("0" = accepted) is what decides success.
+        $status = $response->get( 'messages.0.status' );
+
+        if ( 200 === $response->status() && '0' === (string) $status ) {
+            return Result::success( $response->get( 'messages.0.message-id' ), $response );
+        }
+
+        return Result::failure(
+            null !== $status ? $status : 'vonage_error',
+            $response->get( 'messages.0.error-text', '' ),
+            $response
+        );
     }
 
     /**
@@ -129,32 +172,45 @@ class Vonage implements GatewayInterface {
      *
      * @param WP_REST_Request $request
      *
-     * @return WP_Error|mixed
+     * @return WP_Error|array
      */
     public function validate( $request ) {
-        $creds = $request->get_param( 'vonage' );
+        $creds  = $this->request_creds( $request );
+        $key    = sanitize_text_field( $this->cred( $creds, 'key' ) );
+        $secret = sanitize_text_field( $this->cred( $creds, 'secret' ) );
 
-        $args = [
-            'api_key'    => $creds['key'],
-            'api_secret' => $creds['secret'],
-        ];
-
-        $endpoint      = self::ENDPOINT . '/account/get-balance?' . http_build_query( $args );
-        $response      = wp_remote_get( $endpoint, $args );
-        $body          = json_decode( wp_remote_retrieve_body( $response ) );
-        $response_code = wp_remote_retrieve_response_code( $response );
-
-        if ( 401 === $response_code ) {
+        if ( '' === $key || '' === $secret ) {
             return new WP_Error(
-                $body->{'error-code'},
-                $body->{'error-code-label'}
+                'texty_missing_credentials',
+                __( 'Vonage API Key and API Secret are required.', 'texty' )
+            );
+        }
+
+        $response = $this->http()->get(
+            self::ENDPOINT . '/account/get-balance',
+            [
+                'query' => [
+                    'api_key'    => $key,
+                    'api_secret' => $secret,
+                ],
+            ]
+        );
+
+        if ( $response->is_transport_error() ) {
+            return $response->get_error();
+        }
+
+        if ( 401 === $response->status() ) {
+            return new WP_Error(
+                $response->get( 'error-code', 'vonage_auth_failed' ),
+                $response->get( 'error-code-label', __( 'Vonage rejected the credentials.', 'texty' ) )
             );
         }
 
         return [
-            'key'    => $creds['key'],
-            'secret' => $creds['secret'],
-            'from'   => $creds['from'],
+            'key'    => $key,
+            'secret' => $secret,
+            'from'   => sanitize_text_field( $this->cred( $creds, 'from' ) ),
         ];
     }
 }

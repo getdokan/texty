@@ -3,6 +3,8 @@
 namespace Texty;
 
 use Texty\Gateways\GatewayInterface;
+use Texty\Gateways\Result;
+use Texty\Gateways\SendOptions;
 use WP_Error;
 
 /**
@@ -39,26 +41,38 @@ class Gateways {
     /**
      * Send the message from the active gateway
      *
+     * Gateways may return a `Result`; it is converted to the legacy
+     * array / WP_Error shape before any hook fires, so hook consumers and
+     * callers always see `array|WP_Error`.
+     *
+     * @since 2.1.0 Added `$options`.
+     *
      * @param string $to      The TO phone number
      * @param string $message The message to send
+     * @param array  $options Per-message options, see `SendOptions`
      *
-     * @return bool|WP_Error
+     * @return bool|array|WP_Error
      */
-    public function send( $to, $message ) {
+    public function send( $to, $message, $options = [] ) {
         $gateway = $this->active_gateway();
 
         if ( ! ( $gateway instanceof GatewayInterface ) ) {
             return false;
         }
 
+        $options = SendOptions::normalize( $options );
+
         /**
          * Filter the recipient phone number.
+         *
+         * @since 2.1.0 Added `$options`.
          *
          * @param string           $to      The recipient phone number
          * @param string           $message The message body
          * @param GatewayInterface $gateway The active gateway instance
+         * @param array            $options Per-message options
          */
-        $to = apply_filters( 'texty_sms_to', $to, $message, $gateway );
+        $to = apply_filters( 'texty_sms_to', $to, $message, $gateway, $options );
 
         // Bail if there's still no recipient after the filter — the filter
         // runs first so extensions keep their chance to supply the number.
@@ -75,21 +89,27 @@ class Gateways {
         /**
          * Filter the SMS message body.
          *
+         * @since 2.1.0 Added `$options`.
+         *
          * @param string           $message The message body
          * @param string           $to      The recipient phone number
          * @param GatewayInterface $gateway The active gateway instance
+         * @param array            $options Per-message options
          */
-        $message = apply_filters( 'texty_sms_message', $message, $to, $gateway );
+        $message = apply_filters( 'texty_sms_message', $message, $to, $gateway, $options );
 
         /**
          * Short-circuit SMS sending. Return non-null to skip sending.
+         *
+         * @since 2.1.0 Added `$options`.
          *
          * @param null|mixed       $pre_send Return non-null to short-circuit
          * @param string           $to       The recipient phone number
          * @param string           $message  The message body
          * @param GatewayInterface $gateway  The active gateway instance
+         * @param array            $options  Per-message options
          */
-        $pre_send = apply_filters( 'texty_pre_send_sms', null, $to, $message, $gateway );
+        $pre_send = apply_filters( 'texty_pre_send_sms', null, $to, $message, $gateway, $options );
 
         if ( null !== $pre_send ) {
             return $pre_send;
@@ -98,34 +118,49 @@ class Gateways {
         /**
          * Fires before each SMS is sent.
          *
+         * @since 2.1.0 Added `$options`.
+         *
          * @param string           $to      The recipient phone number
          * @param string           $message The message body
          * @param GatewayInterface $gateway The active gateway instance
+         * @param array            $options Per-message options
          */
-        do_action( 'texty_before_send_sms', $to, $message, $gateway );
+        do_action( 'texty_before_send_sms', $to, $message, $gateway, $options );
 
-        $result = $gateway->send( $to, $message );
+        // Gateways implementing the original two-argument send() ignore the
+        // extra argument, so third-party gateways keep working unchanged.
+        $result = $gateway->send( $to, $message, $options );
+
+        if ( $result instanceof Result ) {
+            $result = $result->to_legacy();
+        }
 
         /**
          * Fires after each SMS is sent.
          *
-         * @param bool|WP_Error    $result  The send result
-         * @param string           $to      The recipient phone number
-         * @param string           $message The message body
-         * @param GatewayInterface $gateway The active gateway instance
+         * @since 2.1.0 Added `$options`.
+         *
+         * @param array|bool|WP_Error $result  The send result
+         * @param string              $to      The recipient phone number
+         * @param string              $message The message body
+         * @param GatewayInterface    $gateway The active gateway instance
+         * @param array               $options Per-message options
          */
-        do_action( 'texty_after_send_sms', $result, $to, $message, $gateway );
+        do_action( 'texty_after_send_sms', $result, $to, $message, $gateway, $options );
 
         if ( is_wp_error( $result ) ) {
             /**
              * Fires when SMS sending fails.
              *
+             * @since 2.1.0 Added `$options`.
+             *
              * @param WP_Error         $result  The error object
              * @param string           $to      The recipient phone number
              * @param string           $message The message body
              * @param GatewayInterface $gateway The active gateway instance
+             * @param array            $options Per-message options
              */
-            do_action( 'texty_send_sms_failed', $result, $to, $message, $gateway );
+            do_action( 'texty_send_sms_failed', $result, $to, $message, $gateway, $options );
         }
 
         return $result;

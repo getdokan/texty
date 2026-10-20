@@ -16,6 +16,7 @@
     "version": "bash bin/version-replace.sh",
     "release": "bash bin/build.sh",
     "release:dev": "bash bin/build.sh --dev",
+    "test:php": "npx --yes @wordpress/env run tests-cli --env-cwd=wp-content/plugins/texty vendor/bin/phpunit",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
