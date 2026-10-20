@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { Button, TextControl } from '@wordpress/components';
-import { toast } from 'react-toastify';
+import { toast } from '@wedevs/plugin-ui';
 
 function TestMessage() {
   const [isSending, setIsSending] = useState(false);

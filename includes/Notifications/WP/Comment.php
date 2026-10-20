@@ -3,6 +3,7 @@
 namespace Texty\Notifications\WP;
 
 use Texty\Notifications\Notification;
+use WP_Comment;
 
 class Comment extends Notification {
 
@@ -52,9 +53,23 @@ EOD;
 
         $comment = get_comment( $this->comment_id );
 
+        // The comment can vanish between the `comment_post` hook and the send
+        // (deleted, trashed, or spam). Bail to the global-key pass instead of
+        // dereferencing null and rendering an empty-bodied message.
+        if ( ! $comment instanceof WP_Comment ) {
+            return $this->replace_global_keys( $message );
+        }
+
         foreach ( $this->replacement_keys() as $search => $value ) {
-            $value   = ( $search === 'post_url' ) ? get_permalink( $comment->comment_post_ID ) : $comment->$value;
-            $message = str_replace( '{' . $search . '}', $value, $message );
+            // `post_url` has no comment property; everything else reads off the
+            // comment via WP_Comment's magic getter (e.g. `post_title` proxies
+            // to the post). Coerce to string so a missing value never reaches
+            // str_replace as null (deprecated since PHP 8.1).
+            $replacement = ( 'post_url' === $search )
+                ? (string) get_permalink( $comment->comment_post_ID )
+                : (string) ( $comment->$value ?? '' );
+
+            $message = str_replace( '{' . $search . '}', $replacement, $message );
         }
 
         $message = $this->replace_global_keys( $message );

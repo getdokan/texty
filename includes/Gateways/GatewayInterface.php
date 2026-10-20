@@ -10,7 +10,7 @@ interface GatewayInterface {
      * @param string $to
      * @param string $message
      *
-     * @return void
+     * @return mixed
      */
     public function send( $to, $message );
 

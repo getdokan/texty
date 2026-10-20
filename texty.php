@@ -5,7 +5,7 @@
  * Plugin URI: https://wordpress.org/plugins/texty/
  * Author: weDevs
  * Author URI: https://wptexty.com/
- * Version: 1.1.5
+ * Version: 2.0.2
  * License: GPL2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: texty
@@ -15,6 +15,8 @@
 defined( 'ABSPATH' ) || exit;
 
 require __DIR__ . '/vendor/autoload.php';
+
+use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataLayerFactory;
 
 /**
  * Texty Class
@@ -26,7 +28,7 @@ final class Texty {
      *
      * @var string
      */
-    private $version = '1.1.5';
+    private $version = '2.0.2';
 
     /**
      * Instances array
@@ -71,12 +73,23 @@ final class Texty {
      * @return void
      */
     public function init_plugin() {
+        // Initialize DataLayerFactory for SmsStat model
+        $this->init_datalayer();
+
+        // Instantiate the notices + migrations bootstraps so their
+        // rest_api_init hooks are wired before WP fires them. Notices first,
+        // because Migrations registers its NoticeProvider into Notices.
+        $this->notices();
+        $this->migrations();
+
         if ( is_admin() ) {
             new Texty\Admin();
         }
 
+        new Texty\Assets();
         new Texty\Api();
         new Texty\Dispatcher();
+        new Texty\Compliance();
 
         /**
          * Fires after the Texty plugin is fully initialized.
@@ -84,6 +97,37 @@ final class Texty {
          * @param Texty $texty The main plugin instance
          */
         do_action( 'texty_loaded', $this );
+    }
+
+    /**
+     * Initialize DataLayerFactory for SmsStat model
+     *
+     * @return void
+     */
+    private function init_datalayer() {
+
+        try {
+            // Initialize the factory with plugin prefix
+            DataLayerFactory::init( 'texty' );
+
+            // Register the SmsStat model and store
+            DataLayerFactory::register_store(
+                Texty\Models\SmsStat::class,
+                Texty\Models\SmsStatStore::class
+            );
+
+            /**
+             * Fires after the DataLayerFactory is initialized and Texty's own
+             * stores are registered. Add-ons should register their DataLayer
+             * models/stores here (via DataLayerFactory::register_store) so the
+             * factory is guaranteed ready and prefixed. Runs before texty_loaded.
+             *
+             * @param Texty $texty The main plugin instance.
+             */
+            do_action( 'texty_datalayer_init', $this );
+        } catch ( \Exception $e ) {
+            error_log( 'Texty DataLayer Init Error: ' . $e->getMessage() );
+        }
     }
 
     /**
@@ -148,6 +192,47 @@ final class Texty {
     }
 
     /**
+     * Access to the migrations bootstrap.
+     *
+     * @return Texty\Migrations
+     */
+    public function migrations() {
+        if ( ! isset( $this->instances['migrations'] ) ) {
+            $this->instances['migrations'] = new \Texty\Migrations();
+        }
+
+        return $this->instances['migrations'];
+    }
+
+    /**
+     * Access to the admin-notice bootstrap.
+     *
+     * @return Texty\Notices
+     */
+    public function notices() {
+        if ( ! isset( $this->instances['notices'] ) ) {
+            $this->instances['notices'] = new \Texty\Notices();
+        }
+
+        return $this->instances['notices'];
+    }
+
+    /**
+     * Access to global notification settings.
+     *
+     * @since 2.0.0
+     *
+     * @return Texty\NotificationSettings
+     */
+    public function notification_settings() {
+        if ( ! isset( $this->instances['notification_settings'] ) ) {
+            $this->instances['notification_settings'] = new \Texty\NotificationSettings();
+        }
+
+        return $this->instances['notification_settings'];
+    }
+
+    /**
      * Initialize the plugin tracker
      *
      * @return void
@@ -165,7 +250,7 @@ final class Texty {
  *
  * @return \Texty
  */
-function texty() {
+function texty() { // phpcs:ignore
     return Texty::instance();
 }
 

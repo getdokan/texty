@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
-import { Button, TextControl, TextareaControl } from '@wordpress/components';
-import { toast } from 'react-toastify';
+import { Input, Textarea, Button, Field, FieldLabel, FieldContent, toast } from '@wedevs/plugin-ui';
 
 function QuickSend() {
   const [isSending, setIsSending] = useState(false);
@@ -27,47 +26,59 @@ function QuickSend() {
 
         if (resp.success) {
           toast.success(__('Message has been sent.', 'texty'));
+          setPhoneNumber('');
+          setMessage('');
         } else {
           toast.error(
             __('Error, message could not be sent.', 'texty') +
-              ' ' +
-              resp.message
+            ' ' +
+            resp.message
           );
         }
       })
       .catch((err) => {
         setIsSending(false);
         console.log(err);
-        // toast.error(err.message);
       });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="texty-settings__form">
-      <fieldset disabled={isSending}>
-        <TextControl
-          label={__('Phone Number', 'texty')}
-          placeholder="+123456789"
-          type="tel"
-          value={phoneNumber}
-          onChange={(value) => setPhoneNumber(value)}
-          required
-        />
+    <form onSubmit={handleSubmit} className="texty-quick-send-form">
+      <Field>
+        <FieldLabel>{__('Phone Number', 'texty')}</FieldLabel>
+        <FieldContent>
+          <Input
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="+123456789"
+            type="tel"
+            disabled={isSending}
+            required
+          />
+        </FieldContent>
+      </Field>
 
-        <TextareaControl
-          label={__('Message', 'texty')}
-          value={message}
-          placeholder={__('Write your message...', 'texty')}
-          onChange={(value) => setMessage(value)}
-          required
-        />
-      </fieldset>
+      <Field>
+        <FieldLabel>{__('Message', 'texty')}</FieldLabel>
+        <FieldContent>
+          <Textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={__('Write your message...', 'texty')}
+            maxLength={160}
+            disabled={isSending}
+            required
+          />
+        </FieldContent>
+      </Field>
 
-      <div className="submit-area">
-        <Button type="submit" isPrimary={true} isBusy={isSending}>
-          {isSending ? __('Sending...', 'texty') : __('Send Message', 'texty')}
-        </Button>
-      </div>
+      <Button
+        variant="default"
+        type="submit"
+        disabled={isSending}
+      >
+        {isSending ? __('Sending...', 'texty') : __('Send Message', 'texty')}
+      </Button>
     </form>
   );
 }

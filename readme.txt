@@ -3,9 +3,9 @@ Contributors: tareq1988, wedevs, nizamuddinbabu
 Donate link: https://tareq.co/donate/
 Tags: sms, notification, twilio, woocommerce, dokan
 Requires at least: 6.8
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.5
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -150,6 +150,29 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 
 == Changelog ==
 
+= v2.0.2 (10 Aug, 2026) =
+
+- **New:** Texty add-ons can now display their own settings inside Texty, with the same look and feel as the rest of the plugin.
+- **Fix:** WooCommerce order messages that fail to reach anyone are no longer treated as delivered, so the notification can still go out on the next order update.
+- **Fix:** Blank comment notifications are no longer sent when a comment is removed before its message goes out.
+- **Update:** Improved compatibility with other plugins to avoid conflicts on sites running many extensions.
+- **Update:** General security and stability improvements.
+
+- **Fix:** Admin assets (the React dashboard bundle) are now included in the WP.org release; the 2.0.0 package was missing the compiled `dist/` files.
+
+= v2.0.0 (16 Jun, 2026) =
+
+- **New:** Complete design revamp. Every admin screen has been redesigned and rebuilt from the ground up with a fresh layout, simpler navigation, and a consistent look across the plugin.
+- **New:** Dashboard page that brings SMS metrics, delivery-rate stats, and volume analytics together in one place, along with a Quick Send card for sending messages on the go.
+- **New:** SMS Logs page where every message can be searched, filtered, and reviewed. Each entry includes a detailed view and a clear delivery-status badge.
+- **New:** SMS logging that records every send automatically, so message history and delivery details are always available for reference.
+- **New:** Gateway configuration page with a guided Connect and Activate flow, plus easy controls to activate, deactivate, or disconnect each gateway.
+- **New:** Redesigned notifications area with separate tabs for User Events, Integrations, and global Settings. Each event can be expanded to manage its toggle, recipients, message template, and available variables, with dedicated branding for WordPress, WooCommerce, and Dokan.
+- **New:** Compliance controls that allow all notifications to be paused at once, a company name to be appended to outgoing messages, and a global fallback Sender ID to be set.
+- **New:** Smarter database update process with a clear notice when an update is required, making upgrades smooth and reliable.
+- **New:** Expanded REST API for deeper integrations, covering metrics, logs, gateway settings, notification settings, and more.
+- **New:** Friendly error and 404 screens added across the admin app for a smoother experience when something goes wrong.
+
 = v1.1.5 (3 Feb, 2026) =
 
 - **New:** Added notifications for WooCommerce order statuses: cancelled, failed, and refunded
@@ -192,6 +215,9 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 - Initial Release
 
 == Upgrade Notice ==
+
+= 2.0.0 =
+Major release: fully redesigned admin (Dashboard, SMS Logs, Gateways, Notifications), SMS logging to a new database table, and an expanded REST API. A one-time database update is required after upgrading — click the prompt in wp-admin.
 
 = 1.1.5 =
 Adds new notification types for cancelled, failed, and refunded orders. Adds 21 extensibility hooks for developers.

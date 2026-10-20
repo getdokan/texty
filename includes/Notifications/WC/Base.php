@@ -15,7 +15,7 @@ class Base extends Notification {
     /**
      * Set the user ID
      *
-     * @param int $order_id
+     * @param mixed $order
      *
      * @return self
      */
@@ -40,15 +40,25 @@ class Base extends Notification {
         foreach ( $this->replacement_keys() as $search => $method ) {
             $value = method_exists( $this->order, $method ) ? $this->order->$method() : '';
 
+            // WC accessors like `get_date_paid()` return null on unpaid orders
+            // and `WC_DateTime` objects on paid ones — normalize both to a
+            // string before any string handling. PHP 8.1 deprecates passing
+            // null to str_replace's $replace argument.
+            if ( null === $value ) {
+                $value = '';
+            } elseif ( ! is_scalar( $value ) ) {
+                $value = (string) $value;
+            }
+
             if ( 'order_total' === $search ) {
-                $value = wp_strip_all_tags( html_entity_decode( $value ) );
+                $value = wp_strip_all_tags( html_entity_decode( (string) $value ) );
             }
 
             if ( 'items' === $search ) {
                 $value = $this->get_items();
             }
 
-            $message = str_replace( '{' . $search . '}', $value, $message );
+            $message = str_replace( '{' . $search . '}', (string) $value, $message );
         }
 
         $message = $this->replace_global_keys( $message );
@@ -69,8 +79,14 @@ class Base extends Notification {
                 continue;
             }
 
-            $product    = $item->get_product();
-            $products[] = sprintf( '%s x %d', $product->get_name(), $item->get_quantity() );
+            $product = $item->get_product();
+
+            // A product may have been deleted after the order was placed —
+            // `get_product()` then returns false. Fall back to the line-item
+            // name stored on the order so building the message doesn't fatal.
+            $name = $product ? $product->get_name() : $item->get_name();
+
+            $products[] = sprintf( '%s x %d', $name, $item->get_quantity() );
         }
 
         $names = implode( "\n", $products );
@@ -110,9 +126,9 @@ class Base extends Notification {
         ];
     }
 
-    public function send() {
+    public function send(): bool {
         if ( ! $this->enabled() ) {
-            return;
+            return false;
         }
 
         $meta_key = '_texty_' . $this->get_id();
@@ -120,11 +136,12 @@ class Base extends Notification {
 
         // if we've already sent the message, don't send again
         if ( $has_sent ) {
-            return;
+            return false;
         }
 
-        // mark as sent
-        $this->order->add_meta_data( $meta_key, 1 );
+        // Claim the send up-front so concurrent status changes stay at-most-once.
+        // update_meta_data (not add_meta_data) keeps exactly one row per order/notification.
+        $this->order->update_meta_data( $meta_key, 1 );
         $this->order->save_meta_data();
 
         if ( 'user' === $this->get_type() ) {
@@ -143,8 +160,13 @@ class Base extends Notification {
          */
         $recipients = apply_filters( 'texty_notification_recipients', $recipients, $this );
 
+        // Drop nulls / empty strings — a stale `texty_phone` meta value or a
+        // third-party filter can leave them in the array and crash the
+        // gateway send (which expects a string).
+        $recipients = is_array( $recipients ) ? array_values( array_filter( $recipients ) ) : [];
+
         if ( ! $recipients ) {
-            return;
+            return false;
         }
 
         $content = $this->get_message();
@@ -174,10 +196,24 @@ class Base extends Notification {
          */
         do_action( 'texty_before_notification', $this, $recipients, $content );
 
-        $gateway = texty()->gateways();
+        $gateway  = texty()->gateways();
+        $any_sent = false;
 
-        foreach ( $recipients as $number ) {
-            $gateway->send( $number, $content );
+        // Stash the active notification so the after-send logger can attach
+        // notification_id / notification_group to each SmsStat row without
+        // threading them through the gateway pipeline.
+        texty()->notifications()->set_active( $this );
+
+        try {
+            foreach ( $recipients as $number ) {
+                $result = $gateway->send( $number, $content );
+
+                if ( ! is_wp_error( $result ) && false !== $result ) {
+                    $any_sent = true;
+                }
+            }
+        } finally {
+            texty()->notifications()->clear_active();
         }
 
         /**
@@ -188,5 +224,17 @@ class Base extends Notification {
          * @param string       $content      The message content
          */
         do_action( 'texty_after_notification', $this, $recipients, $content );
+
+        // Every recipient failed — release the claim so the next matching status
+        // change can retry. A partial success keeps the flag so the recipients
+        // who already received the SMS are not messaged again.
+        if ( ! $any_sent ) {
+            $this->order->delete_meta_data( $meta_key );
+            $this->order->save_meta_data();
+
+            return false;
+        }
+
+        return true;
     }
 }

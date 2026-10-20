@@ -27,13 +27,13 @@ class Gateways {
     /**
      * Register a gateway
      *
-     * @param string $key   Gateway identifier
-     * @param string $class Fully qualified class name
+     * @param string $key       Gateway identifier
+     * @param string $classname Fully qualified class name
      *
      * @return void
      */
-    public function register( $key, $class ) {
-        $this->gateways[ $key ] = $class;
+    public function register( $key, $classname ) {
+        $this->gateways[ $key ] = $classname;
     }
 
     /**
@@ -59,6 +59,18 @@ class Gateways {
          * @param GatewayInterface $gateway The active gateway instance
          */
         $to = apply_filters( 'texty_sms_to', $to, $message, $gateway );
+
+        // Bail if there's still no recipient after the filter — the filter
+        // runs first so extensions keep their chance to supply the number.
+        // Returning a WP_Error keeps `texty_after_send_sms` consumers (the
+        // SMS-stat logger included) on their is_wp_error(...) failure path
+        // instead of triggering type errors downstream.
+        if ( ! is_string( $to ) || '' === trim( $to ) ) {
+            return new WP_Error(
+                'texty_missing_recipient',
+                __( 'No recipient phone number was provided.', 'texty' )
+            );
+        }
 
         /**
          * Filter the SMS message body.

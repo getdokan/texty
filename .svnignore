@@ -23,3 +23,11 @@ webpack.config.js
 .babelrc
 build
 node_modules
+tsconfig.json
+CLAUDE.md
+playwright.config.ts
+.claude/
+.distignore
+.svnignore
+.env.example
+.wp-env.json

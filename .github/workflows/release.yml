@@ -17,21 +17,29 @@ jobs:
                 php-version: '7.4'
                 coverage: none
                 tools: composer:v2
-            - name: Setup Node.js 12
+            - name: Setup Node.js 22
               uses: actions/setup-node@v4
               with:
-                node-version: '12' # TODO: it will remove this once we upgrade to Node.js latest
+                node-version: '22'
             - name: Build
+              # Order matters. `composer install` (dev mode) runs the mozart
+              # post-install hook that scopes Appsero into dependencies/. Then
+              # `npm run build` produces dist/. Finally `--no-dev -o` prunes dev
+              # packages from vendor/ and rebuilds the optimized autoloader while
+              # leaving the already-generated dependencies/ in place.
               run: |
                 composer install
-                composer install --no-dev -o
                 npm install
                 npm run build
+                composer install --no-dev -o
             - name: Install SVN ( Subversion )
               run: |
                 sudo apt-get update
                 sudo apt-get install subversion
             - name: WordPress Plugin Deploy
+              # No manual file staging: the deploy action rsyncs the built repo
+              # to SVN and applies .distignore as the exclude list, so dist/,
+              # vendor/ and dependencies/ ship while dev files are dropped.
               id: deploy
               uses: 10up/action-wordpress-plugin-deploy@stable
               with:
