@@ -1,0 +1,7 @@
+{
+    "_source": "https://docs.clickatell.com/channels/sms-channels/sms-api-reference/#section/Error-codes",
+    "_note": "Inferred: 500 with an empty body.",
+    "status": 500,
+    "headers": {},
+    "body_raw": ""
+}

@@ -1,0 +1,12 @@
+{
+    "_source": "https://help.africastalking.com/en/articles/742491-why-did-my-messages-fail",
+    "_note": "inferred: an empty Recipients list with the reason only in SMSMessageData.Message (e.g. invalid sender) is believed to occur but is unconfirmed.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "SMSMessageData": {
+            "Message": "InvalidSenderId",
+            "Recipients": []
+        }
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "_source": "https://developer.vonage.com/en/api/sms#send-an-sms",
+    "_note": "Trimmed from the documented send response.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "message-count": "1",
+        "messages": [
+            {
+                "to": "447700900000",
+                "message-id": "aaaaaaaa-bbbb-cccc-dddd-0123456789ab",
+                "status": "0",
+                "remaining-balance": "3.14159265",
+                "message-price": "0.03330000",
+                "network": "12345"
+            }
+        ]
+    }
+}

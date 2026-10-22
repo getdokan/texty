@@ -1,0 +1,10 @@
+{
+    "_source": "https://dev.bandwidth.com/docs/messaging/errors",
+    "_note": "inferred: captured from a live probe of GET https://messaging.bandwidth.com/api/v2/users/9900000/media with an invalid Bearer token; the body is empty and the reason is only in www-authenticate",
+    "status": 401,
+    "headers": {
+        "content-length": "0",
+        "www-authenticate": "Bearer realm=\"Bandwidth\", error=\"invalid_token\", error_description=\"The access token is invalid or has expired\""
+    },
+    "body_raw": ""
+}

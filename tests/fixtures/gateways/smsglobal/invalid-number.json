@@ -1,0 +1,7 @@
+{
+    "_source": "https://api.smsglobal.com/v2/doc#post--v2-sms",
+    "_note": "Inferred: 400 'input validation failed' from docs; body copied from a live malformed-JSON probe because the bad-number body is undocumented.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": { "code": 400, "message": "Bad Request" }
+}

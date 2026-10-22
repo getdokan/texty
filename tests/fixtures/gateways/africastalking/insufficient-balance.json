@@ -1,0 +1,20 @@
+{
+    "_source": "https://help.africastalking.com/en/articles/742491-why-did-my-messages-fail",
+    "_note": "inferred: the help article names insufficient balance as a failure reason but no source gives its numeric code; 405 is a placeholder.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "SMSMessageData": {
+            "Message": "Sent to 0/1 Total Cost: 0",
+            "Recipients": [
+                {
+                    "statusCode": 405,
+                    "number": "+254705336634",
+                    "cost": "0",
+                    "status": "InsufficientBalance",
+                    "messageId": "None"
+                }
+            ]
+        }
+    }
+}

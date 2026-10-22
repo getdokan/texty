@@ -1,0 +1,14 @@
+{
+    "_source": "https://docs.clickatell.com/channels/sms-channels/sms-api-reference/#tag/SMS-API/operation/sendMessageREST_1",
+    "_note": "Trimmed from the documented 202 response.",
+    "status": 202,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "messages": [
+            { "apiMessageId": "1d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a", "accepted": true, "to": "27999000001", "errorCode": null, "error": null, "errorDescription": null }
+        ],
+        "errorCode": null,
+        "error": null,
+        "errorDescription": null
+    }
+}

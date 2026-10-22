@@ -16,6 +16,7 @@
     "version": "bash bin/version-replace.sh",
     "release": "bash bin/build.sh",
     "release:dev": "bash bin/build.sh --dev",
+    "test:php": "npx --yes @wordpress/env run tests-cli --env-cwd=wp-content/plugins/texty vendor/bin/phpunit",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
@@ -53,6 +54,17 @@
     "@babel/runtime": "^7.26.10",
     "serialize-javascript": "^7.0.7",
     "markdownlint-cli": "^0.49.1",
-    "uuid": "^11.1.1"
+    "uuid": "^11.1.1",
+    "adm-zip": "^0.6.1",
+    "brace-expansion@^1": "^1.1.21",
+    "colord": "^2.9.4",
+    "fast-uri": "^3.1.6",
+    "follow-redirects": "^1.16.1",
+    "ip-address": "^10.5.1",
+    "js-yaml@^3": "^3.15.2",
+    "js-yaml@^4": "^4.3.2",
+    "js-yaml@^5": "^5.4.1",
+    "postcss-selector-parser": "^7.1.6",
+    "svgo@^3": "^3.3.5"
   }
 }

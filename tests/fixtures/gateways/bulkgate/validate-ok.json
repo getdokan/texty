@@ -1,0 +1,15 @@
+{
+    "_source": "https://www.bulkgate.com/en/docs/simple-api/simple-check-credit-balance/",
+    "_note": "from docs (response example). HTTP 200 is inferred.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "data": {
+            "wallet": "bg1805151838000001",
+            "credit": 215.8138,
+            "currency": "credits",
+            "free_messages": 51,
+            "datetime": "2018-06-13T09:57:21+02:00"
+        }
+    }
+}

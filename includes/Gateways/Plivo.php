@@ -2,20 +2,49 @@
 
 namespace Texty\Gateways;
 
+use Texty\Http\Response;
 use WP_Error;
 use WP_REST_Request;
+
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Plivo Class
  *
  * @see https://www.plivo.com/docs/sms/api/message#send-a-message
  */
-class Plivo implements GatewayInterface {
+class Plivo extends AbstractGateway {
 
     /**
      * API Endpoint
      */
     const ENDPOINT = 'https://api.plivo.com/v1/Account/{auth_id}/Message/';
+
+    /**
+     * Registry key
+     *
+     * @var string
+     */
+    protected $key = 'plivo';
+
+    /**
+     * Gateway metadata
+     *
+     * @since 2.1.0
+     *
+     * @return array
+     */
+    protected function meta() {
+        return [
+            'status'     => Metadata::STATUS_STABLE,
+            'docs_url'   => 'https://www.plivo.com/docs/messaging/api/message',
+            'signup_url' => 'https://console.plivo.com/accounts/register/',
+            'features'   => [
+                'unicode'   => true,
+                'sender_id' => true,
+            ],
+        ];
+    }
 
     /**
      * Get the name
@@ -87,37 +116,53 @@ class Plivo implements GatewayInterface {
      *
      * @param string $to
      * @param string $message
+     * @param array  $options Per-message options, see SendOptions
      *
-     * @return WP_Error|array
+     * @return Result
      */
-    public function send( $to, $message ) {
-        $creds = texty()->settings()->get( 'plivo' );
+    public function send_result( $to, $message, $options = [] ) {
+        $options = SendOptions::normalize( $options );
+        $creds   = $this->creds();
+        $auth_id = $this->cred( $creds, 'auth_id' );
+        $token   = $this->cred( $creds, 'token' );
 
-        $args = [
-            'headers' => [
-                'Authorization' => 'Basic ' . base64_encode( $creds['auth_id'] . ':' . $creds['token'] ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-            ],
-            'body'    => [
-                'src'  => $creds['from'],
-                'dst'  => $to,
-                'text' => $message,
-            ],
-        ];
-
-        $endpoint = str_replace( '{auth_id}', $creds['auth_id'], self::ENDPOINT );
-        $response = wp_remote_post( $endpoint, $args );
-        $body     = json_decode( wp_remote_retrieve_body( $response ) );
-
-        if ( 202 !== $response['response']['code'] ) {
-            return new WP_Error( $body->code, $body->message );
+        if ( '' === $auth_id || '' === $token ) {
+            return Result::failure(
+                'texty_missing_credentials',
+                __( 'Plivo Auth ID and Auth Token are required.', 'texty' )
+            );
         }
 
-        return [
-            'success'      => true,
-            'reference_id' => isset( $body->message_uuid )
-                ? ( is_array( $body->message_uuid ) ? ( $body->message_uuid[0] ?? null ) : $body->message_uuid )
-                : null,
-        ];
+        $response = $this->http()->post(
+            $this->endpoint( $auth_id ),
+            [
+                'headers' => $this->auth_headers( $auth_id, $token ),
+                'form'    => [
+                    'src'  => '' !== $options['from'] ? $options['from'] : $this->cred( $creds, 'from' ),
+                    'dst'  => $to,
+                    'text' => $message,
+                ],
+            ]
+        );
+
+        $failure = $this->transport_failure( $response );
+
+        if ( $failure ) {
+            return $failure;
+        }
+
+        if ( 202 === $response->status() ) {
+            // Plivo returns message_uuid as a list (one id per recipient).
+            $uuid = $response->get( 'message_uuid' );
+
+            return Result::success( is_array( $uuid ) ? reset( $uuid ) : $uuid, $response );
+        }
+
+        return Result::failure(
+            $response->get( 'code', 'plivo_error' ),
+            $this->error_message( $response ),
+            $response
+        );
     }
 
     /**
@@ -128,35 +173,88 @@ class Plivo implements GatewayInterface {
      * @return WP_Error|array
      */
     public function validate( $request ) {
-        $creds = $request->get_param( 'plivo' );
+        $creds   = $this->request_creds( $request );
+        $auth_id = sanitize_text_field( $this->cred( $creds, 'auth_id' ) );
+        $token   = sanitize_text_field( $this->cred( $creds, 'token' ) );
 
-        $args = [
-            'headers' => [
-                'Authorization' => 'Basic ' . base64_encode( $creds['auth_id'] . ':' . $creds['token'] ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-            ],
-            'body'    => [
-                'limit'  => 5,
-                'offset' => 0,
-            ],
-        ];
-
-        $endpoint      = "https://api.plivo.com/v1/Account/{$creds['auth_id']}/Message/";
-        $response      = wp_remote_get( $endpoint, $args );
-        $body          = json_decode( wp_remote_retrieve_body( $response ) );
-        $response_code = wp_remote_retrieve_response_code( $response );
-
-        if ( 200 !== $response_code ) {
+        if ( '' === $auth_id || '' === $token ) {
             return new WP_Error(
-                $body->code,
-                $body->detail ? $body->detail : $body->message,
-                $body
+                'texty_missing_credentials',
+                __( 'Plivo Auth ID and Auth Token are required.', 'texty' )
+            );
+        }
+
+        $response = $this->http()->get(
+            $this->endpoint( $auth_id ),
+            [
+                'headers' => $this->auth_headers( $auth_id, $token ),
+                'query'   => [
+                    'limit'  => 5,
+                    'offset' => 0,
+                ],
+            ]
+        );
+
+        if ( $response->is_transport_error() ) {
+            return $response->get_error();
+        }
+
+        if ( 200 !== $response->status() ) {
+            return new WP_Error(
+                $response->get( 'code', 'plivo_auth_failed' ),
+                $this->error_message( $response ),
+                $response->payload()
             );
         }
 
         return [
-            'auth_id' => $creds['auth_id'],
-            'token'   => $creds['token'],
-            'from'    => $creds['from'],
+            'auth_id' => $auth_id,
+            'token'   => $token,
+            'from'    => sanitize_text_field( $this->cred( $creds, 'from' ) ),
         ];
+    }
+
+    /**
+     * Message endpoint for an account
+     *
+     * @param string $auth_id
+     *
+     * @return string
+     */
+    private function endpoint( $auth_id ) {
+        return str_replace( '{auth_id}', rawurlencode( $auth_id ), self::ENDPOINT );
+    }
+
+    /**
+     * Build the Basic auth header
+     *
+     * @param string $auth_id
+     * @param string $token
+     *
+     * @return array
+     */
+    private function auth_headers( $auth_id, $token ) {
+        return [
+            'Authorization' => 'Basic ' . base64_encode( $auth_id . ':' . $token ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+        ];
+    }
+
+    /**
+     * Pull a readable error from a Plivo error body
+     *
+     * @param Response $response
+     *
+     * @return string
+     */
+    private function error_message( Response $response ) {
+        foreach ( [ 'error', 'detail', 'message' ] as $field ) {
+            $value = $response->get( $field );
+
+            if ( is_string( $value ) && '' !== $value ) {
+                return $value;
+            }
+        }
+
+        return '';
     }
 }

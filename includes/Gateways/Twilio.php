@@ -5,17 +5,51 @@ namespace Texty\Gateways;
 use WP_Error;
 use WP_REST_Request;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Twilio Class
  *
  * @see https://www.twilio.com/docs/sms/api/message
  */
-class Twilio implements GatewayInterface {
+class Twilio extends AbstractGateway {
 
     /**
      * API Endpoint
      */
     const ENDPOINT = 'https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json';
+
+    /**
+     * Endpoint used to check credentials
+     */
+    const ACCOUNTS_ENDPOINT = 'https://api.twilio.com/2010-04-01/Accounts.json';
+
+    /**
+     * Registry key
+     *
+     * @var string
+     */
+    protected $key = 'twilio';
+
+    /**
+     * Gateway metadata
+     *
+     * @since 2.1.0
+     *
+     * @return array
+     */
+    protected function meta() {
+        return [
+            'status'     => Metadata::STATUS_STABLE,
+            'docs_url'   => 'https://www.twilio.com/docs/sms/api/message-resource',
+            'signup_url' => 'https://www.twilio.com/try-twilio',
+            'features'   => [
+                'unicode'       => true,
+                'sender_id'     => true,
+                'balance_check' => true,
+            ],
+        ];
+    }
 
     /**
      * Get the name
@@ -87,40 +121,50 @@ class Twilio implements GatewayInterface {
      *
      * @param string $to
      * @param string $message
+     * @param array  $options Per-message options, see SendOptions
      *
-     * @return WP_Error|array
+     * @return Result
      */
-    public function send( $to, $message ) {
-        $creds = texty()->settings()->get( 'twilio' );
+    public function send_result( $to, $message, $options = [] ) {
+        $options = SendOptions::normalize( $options );
+        $creds   = $this->creds();
+        $sid     = $this->cred( $creds, 'sid' );
+        $token   = $this->cred( $creds, 'token' );
 
-        $args = [
-            'headers' => [
-                'Authorization' => 'Basic ' . base64_encode( $creds['sid'] . ':' . $creds['token'] ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-            ],
-            'body' => [
-                'From' => $creds['from'],
-                'To'   => $to,
-                'Body' => $message,
-            ],
-        ];
-
-        $endpoint = str_replace( '{sid}', $creds['sid'], self::ENDPOINT );
-        $response = wp_remote_post( $endpoint, $args );
-
-        if ( is_wp_error( $response ) ) {
-            return $response;
+        if ( '' === $sid || '' === $token ) {
+            return Result::failure(
+                'texty_missing_credentials',
+                __( 'Twilio Account SID and Auth Token are required.', 'texty' )
+            );
         }
 
-        $body = json_decode( wp_remote_retrieve_body( $response ) );
+        $response = $this->http()->post(
+            str_replace( '{sid}', rawurlencode( $sid ), self::ENDPOINT ),
+            [
+                'headers' => $this->auth_headers( $sid, $token ),
+                'form'    => [
+                    'From' => '' !== $options['from'] ? $options['from'] : $this->cred( $creds, 'from' ),
+                    'To'   => $to,
+                    'Body' => $message,
+                ],
+            ]
+        );
 
-        if ( 201 !== $response['response']['code'] ) {
-            return new WP_Error( $body->code, $body->message );
+        $failure = $this->transport_failure( $response );
+
+        if ( $failure ) {
+            return $failure;
         }
 
-        return [
-            'success'      => true,
-            'reference_id' => isset( $body->sid ) ? $body->sid : null,
-        ];
+        if ( 201 === $response->status() ) {
+            return Result::success( $response->get( 'sid' ), $response );
+        }
+
+        return Result::failure(
+            $response->get( 'code', 'twilio_error' ),
+            $response->get( 'message', '' ),
+            $response
+        );
     }
 
     /**
@@ -128,52 +172,57 @@ class Twilio implements GatewayInterface {
      *
      * @param WP_REST_Request $request
      *
-     * @return WP_Error|mixed
+     * @return WP_Error|array
      */
     public function validate( $request ) {
-        $creds = $request->get_param( 'twilio' );
+        $creds = $this->request_creds( $request );
+        $sid   = sanitize_text_field( $this->cred( $creds, 'sid' ) );
+        $token = sanitize_text_field( $this->cred( $creds, 'token' ) );
 
-        if ( ! is_array( $creds ) || empty( $creds['sid'] ) || empty( $creds['token'] ) ) {
+        if ( '' === $sid || '' === $token ) {
             return new WP_Error(
                 'texty_missing_credentials',
                 __( 'Twilio Account SID and Auth Token are required.', 'texty' )
             );
         }
 
-        $args = [
-            'headers' => [
-                'Authorization' => 'Basic ' . base64_encode( $creds['sid'] . ':' . $creds['token'] ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-            ],
-        ];
+        $response = $this->http()->get(
+            self::ACCOUNTS_ENDPOINT,
+            [ 'headers' => $this->auth_headers( $sid, $token ) ]
+        );
 
-        $endpoint      = 'https://api.twilio.com/2010-04-01/Accounts.json';
-        $response      = wp_remote_get( $endpoint, $args );
-
-        if ( is_wp_error( $response ) ) {
-            return $response;
+        if ( $response->is_transport_error() ) {
+            return $response->get_error();
         }
 
-        $body          = json_decode( wp_remote_retrieve_body( $response ) );
-        $response_code = wp_remote_retrieve_response_code( $response );
+        if ( 401 === $response->status() ) {
+            $message = $response->get( 'detail', $response->get( 'message', '' ) );
 
-        if ( 401 === $response_code ) {
-            $code = isset( $body->code ) ? $body->code : 'twilio_auth_failed';
-
-            if ( ! empty( $body->detail ) ) {
-                $message = $body->detail;
-            } elseif ( ! empty( $body->message ) ) {
-                $message = $body->message;
-            } else {
-                $message = __( 'Twilio rejected the credentials.', 'texty' );
-            }
-
-            return new WP_Error( $code, $message, $body );
+            return new WP_Error(
+                $response->get( 'code', 'twilio_auth_failed' ),
+                '' !== (string) $message ? $message : __( 'Twilio rejected the credentials.', 'texty' ),
+                $response->payload()
+            );
         }
 
         return [
-            'sid'   => $creds['sid'],
-            'token' => $creds['token'],
-            'from'  => isset( $creds['from'] ) ? $creds['from'] : '',
+            'sid'   => $sid,
+            'token' => $token,
+            'from'  => sanitize_text_field( $this->cred( $creds, 'from' ) ),
+        ];
+    }
+
+    /**
+     * Build the Basic auth header
+     *
+     * @param string $sid
+     * @param string $token
+     *
+     * @return array
+     */
+    private function auth_headers( $sid, $token ) {
+        return [
+            'Authorization' => 'Basic ' . base64_encode( $sid . ':' . $token ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
         ];
     }
 }

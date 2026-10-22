@@ -2,7 +2,10 @@
 
 namespace Texty\Api;
 
+use Texty\Gateways\GatewayInterface;
+use Texty\Gateways\Secrets;
 use Texty\Settings as TextySettings;
+use WP_Error;
 use WP_REST_Server;
 
 class Settings extends Base {
@@ -70,10 +73,19 @@ class Settings extends Base {
             ];
 
             foreach ( $gateways as $key => $gateway ) {
-                $response[ $key ] = ( new $gateway() )->get_settings();
+                $response[ $key ] = Secrets::mask_settings( ( new $gateway() )->get_settings() );
             }
         } else {
             $response = texty()->settings()->all();
+
+            // Saved secrets never leave the server.
+            foreach ( texty()->gateways()->all() as $key => $classname ) {
+                $gateway = new $classname();
+
+                if ( $gateway instanceof GatewayInterface && isset( $response[ $key ] ) ) {
+                    $response[ $key ] = Secrets::mask( $gateway, $response[ $key ] );
+                }
+            }
         }
 
         return rest_ensure_response( $response );
@@ -91,12 +103,23 @@ class Settings extends Base {
         $registered = texty()->gateways()->all();
         $gateway    = $request->get_param( 'gateway' );
 
+        if ( ! is_string( $gateway ) || ! isset( $registered[ $gateway ] ) ) {
+            return new WP_Error( 'texty_invalid_gateway', __( 'Unknown gateway.', 'texty' ), [ 'status' => 400 ] );
+        }
+
         $value = [
             'gateway' => $gateway,
         ];
 
         // create a new gateway instance and validate from the gateway
-        $object   = new $registered[ $gateway ]();
+        $object = new $registered[ $gateway ]();
+
+        // An unchanged mask means "keep the saved secret".
+        $request->set_param(
+            $gateway,
+            Secrets::restore( $object, $request->get_param( $gateway ), texty()->settings()->get( $gateway ) )
+        );
+
         $response = $object->validate( $request );
 
         // check if the credentials are correct

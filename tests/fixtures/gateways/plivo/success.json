@@ -1,0 +1,11 @@
+{
+    "_source": "https://www.plivo.com/docs/messaging/api/message#send-a-message",
+    "_note": "Trimmed from the documented send response.",
+    "status": 202,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "api_id": "db342550-7f1d-11e1-8ea7-1231380bc196",
+        "message": "message(s) queued",
+        "message_uuid": [ "db3ce55a-7f1d-11e1-8ea7-1231380bc196" ]
+    }
+}

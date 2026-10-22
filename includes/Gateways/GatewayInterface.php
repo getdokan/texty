@@ -7,6 +7,13 @@ interface GatewayInterface {
     /**
      * Send a text
      *
+     * Since 2.1.0 `Gateways::send()` passes per-message options (see
+     * `SendOptions`) as a third argument. It can't be part of this
+     * signature without breaking existing implementations, so declare
+     * `$options = []` in your class to receive it. Return an array on
+     * success (include `reference_id`) or a WP_Error; extending
+     * `AbstractGateway` handles this for you.
+     *
      * @param string $to
      * @param string $message
      *
