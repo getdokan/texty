@@ -1,0 +1,16 @@
+{
+    "_source": "https://bird.com/docs/api/errors.md",
+    "_note": "Inferred: 500 internal_error from the errors.md status table, in the documented envelope. The E-code is a placeholder.",
+    "status": 500,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "error": {
+            "type": "internal_error",
+            "code": "E00500",
+            "name": "InternalError",
+            "message": "An internal error occurred.",
+            "doc_url": "https://bird.com/docs/api/errors/E00500",
+            "request_id": "req_01krdgf2222222222222222222"
+        }
+    }
+}
