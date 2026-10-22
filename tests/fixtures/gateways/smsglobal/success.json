@@ -1,0 +1,7 @@
+{
+    "_source": "https://api.smsglobal.com/v2/doc#post--v2-sms",
+    "_note": "Inferred: shape from the documented return table plus the smsglobal-php tests/Resource/SmsTest.php mock; not a captured live response.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body_raw": "{\"messages\":[{\"id\":\"6359736682344313\",\"outgoing_id\":5211897953,\"origin\":\"MyBrand\",\"destination\":\"61400000000\",\"message\":\"Hello\",\"status\":\"sent\",\"dateTime\":\"2020-07-30 13:23:38 +0000\"}]}"
+}

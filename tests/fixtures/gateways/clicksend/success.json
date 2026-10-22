@@ -1,0 +1,41 @@
+{
+    "_source": "https://api.apis.guru/v2/specs/clicksend.com/1.0.0/openapi.json",
+    "_note": "From docs: paths./sms/send.post.responses.200 example, trimmed to one message.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "http_code": 200,
+        "response_code": "SUCCESS",
+        "response_msg": "Here are your data.",
+        "data": {
+            "total_price": 0.07,
+            "total_count": 1,
+            "queued_count": 1,
+            "messages": [
+                {
+                    "direction": "out",
+                    "date": 1436871253,
+                    "to": "+61411111111",
+                    "body": "Hello from Texty",
+                    "from": "sendmobile",
+                    "schedule": 1436874701,
+                    "message_id": "BF7AD270-0DE2-418B-B606-71D527D9C1AE",
+                    "message_parts": 1,
+                    "message_price": 0.07,
+                    "custom_string": "this is a test",
+                    "user_id": 1,
+                    "subaccount_id": 1,
+                    "country": "AU",
+                    "carrier": "Telstra",
+                    "status": "SUCCESS"
+                }
+            ],
+            "currency": {
+                "currency_name_short": "USD",
+                "currency_prefix_d": "$",
+                "currency_prefix_c": "¢",
+                "currency_name_long": "US Dollars"
+            }
+        }
+    }
+}
