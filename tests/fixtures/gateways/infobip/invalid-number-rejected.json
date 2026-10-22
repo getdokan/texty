@@ -1,0 +1,25 @@
+{
+    "_source": "https://www.infobip.com/docs/essentials/response-status-and-error-codes",
+    "_note": "inferred: envelope from the /sms/3/messages 200 example; REJECTED_DESTINATION (id 52, group 5) from the status codes page. Whether it is returned synchronously is not documented.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "bulkId": "2034072219640523074",
+        "messages": [
+            {
+                "messageId": "4450be2d4219-3af1-78856-aabe-1362af1edfd4",
+                "status": {
+                    "groupId": 5,
+                    "groupName": "REJECTED",
+                    "id": 52,
+                    "name": "REJECTED_DESTINATION",
+                    "description": "Invalid destination address"
+                },
+                "destination": "123",
+                "details": {
+                    "messageCount": 1
+                }
+            }
+        ]
+    }
+}
