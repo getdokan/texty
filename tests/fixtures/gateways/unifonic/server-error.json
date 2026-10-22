@@ -1,0 +1,7 @@
+{
+    "_source": "https://docs.unifonic.com/articles/products-documentation/sending-your-first-sms-via-unifonic-api",
+    "_note": "inferred: a 503 from the edge with a non-JSON HTML body.",
+    "status": 503,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><body><h1>503 Service Unavailable</h1></body></html>"
+}
