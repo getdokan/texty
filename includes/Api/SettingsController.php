@@ -453,15 +453,22 @@ class SettingsController extends BaseSettingsRESTController {
 		$field_priority = 10;
 
 		foreach ( $settings as $cred_key => $setting ) {
+			if ( ! is_array( $setting ) ) {
+				continue;
+			}
+
 			$label = isset( $setting['name'] ) ? $setting['name'] : $cred_key;
 			$type  = isset( $setting['type'] ) ? $setting['type'] : 'text';
+
+			$variant  = $this->field_variant( (string) $cred_key, $type, $setting );
+			$required = ! isset( $setting['required'] ) || false !== $setting['required'];
 
 			$field = [
 				'type'        => 'field',
 				'id'          => $key . '_' . $cred_key,
 				'page_id'     => $key,
 				'section_id'  => $section_id,
-				'variant'     => $this->field_variant( (string) $cred_key, $type ),
+				'variant'     => $variant,
 				'label'       => $label,
 				/* translators: %s: credential field label, e.g. "Account SID" */
 				'placeholder' => sprintf( __( 'Enter %s', 'texty' ), $label ),
@@ -471,8 +478,12 @@ class SettingsController extends BaseSettingsRESTController {
 				'default'     => 'password' === $type
 					? Secrets::mask_value( isset( $setting['value'] ) ? $setting['value'] : '' )
 					: ( isset( $setting['value'] ) ? $setting['value'] : '' ),
-				'validations' => $this->required_validation( $label ),
+				'validations' => $required ? $this->required_validation( $label ) : [],
 			];
+
+			if ( 'select' === $variant ) {
+				$field['options'] = $this->select_options( $setting['options'] );
+			}
 
 			if ( ! empty( $setting['help'] ) ) {
 				$field['description'] = $setting['help'];
@@ -488,22 +499,55 @@ class SettingsController extends BaseSettingsRESTController {
 	/**
 	 * Map a gateway settings field to a plugin-ui field variant.
 	 *
+	 * Besides `name`, `type`, `value` and `help`, a gateway setting may
+	 * declare (since 2.1.0):
+	 * - `options`      value => label map, used with `'type' => 'select'`
+	 * - `required`     false to make the field optional (default true)
+	 * - `alphanumeric` true on a `from` field that accepts a sender name,
+	 *                  so it renders as text instead of a phone input
+	 *
 	 * @param string $cred_key Credential key within the gateway (e.g. 'from').
 	 * @param string $type     Field type declared by the gateway's get_settings().
+	 * @param array  $setting  The full setting declaration.
 	 *
 	 * @return string
 	 * @since 2.0.0
 	 */
-	private function field_variant( string $cred_key, string $type ): string {
+	private function field_variant( string $cred_key, string $type, array $setting = [] ): string {
 		if ( 'password' === $type ) {
 			return 'show_hide';
 		}
 
-		if ( 'phone' === $type || 'from' === $cred_key ) {
+		if ( 'select' === $type && ! empty( $setting['options'] ) && is_array( $setting['options'] ) ) {
+			return 'select';
+		}
+
+		if ( 'phone' === $type || ( 'from' === $cred_key && empty( $setting['alphanumeric'] ) ) ) {
 			return 'phone';
 		}
 
 		return 'text';
+	}
+
+	/**
+	 * Turn a gateway's value => label map into plugin-ui select options.
+	 *
+	 * @param array $options Value => label map.
+	 *
+	 * @return array[]
+	 * @since 2.1.0
+	 */
+	private function select_options( array $options ): array {
+		$list = [];
+
+		foreach ( $options as $value => $label ) {
+			$list[] = [
+				'value' => (string) $value,
+				'label' => (string) $label,
+			];
+		}
+
+		return $list;
 	}
 
 	/**
