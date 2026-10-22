@@ -1,0 +1,17 @@
+{
+    "_source": "https://bird.com/docs/api/errors.md",
+    "_note": "From docs: the errors.md envelope example, verbatim. Status 422 inferred from type validation_error.",
+    "status": 422,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "error": {
+            "type": "validation_error",
+            "code": "E01001",
+            "name": "ValidationError",
+            "message": "Request validation failed.",
+            "doc_url": "https://bird.com/docs/api/errors/E01001",
+            "request_id": "req_01krdgeqcxet5s7t44vh8rt9mg",
+            "details": [ { "param": "contact_id", "message": "this field is reserved and not yet supported" } ]
+        }
+    }
+}
