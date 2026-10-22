@@ -1,0 +1,7 @@
+{
+    "_source": "https://www.smsapi.com/docs/#18-error-codes",
+    "_note": "Inferred: the docs give no 5xx example; the official PHP client treats 503 as \"Service unavailable\". Non-JSON body.",
+    "status": 503,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "Service Unavailable"
+}
