@@ -1,0 +1,12 @@
+{
+    "_source": "https://docs.aws.amazon.com/pinpoint/latest/apireference_smsvoicev2/CommonErrors.html",
+    "_note": "Inferred: DescribeAccountAttributes with an unknown access key; error name and 403 from docs (CommonErrors), body inferred.",
+    "status": 403,
+    "headers": {
+        "content-type": "application/x-amz-json-1.0"
+    },
+    "body": {
+        "__type": "UnrecognizedClientException",
+        "message": "The security token included in the request is invalid."
+    }
+}
