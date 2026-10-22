@@ -1,0 +1,11 @@
+{
+    "_source": "https://docs.fast2sms.com/reference/error-code-list.md",
+    "_note": "inferred: defensive case, HTTP 200 with return false. Code and message from the error code list (995); not documented as arriving with HTTP 200.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "return": false,
+        "status_code": 995,
+        "message": "Spamming detected (sending multiple SMS to same number is not allowed)"
+    }
+}

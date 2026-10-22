@@ -1,0 +1,7 @@
+{
+    "_source": "https://dev.octopush.com/en/sms-gateway-api-documentation/send-sms/",
+    "_note": "From docs: documented 201 CREATED response.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": { "sms_ticket": "sms_5f3fbce61266e", "number_of_contacts": 1, "total_cost": 5.00502839 }
+}

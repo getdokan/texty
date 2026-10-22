@@ -1,0 +1,7 @@
+{
+    "_source": "https://github.com/d7networks/direct7-php-sdk/blob/main/src/Client.php",
+    "_note": "inferred: 5xx is not documented; the official SDK reads `message` from the body.",
+    "status": 500,
+    "headers": { "content-type": "application/json" },
+    "body": { "message": "Internal Server Error" }
+}

@@ -1,0 +1,16 @@
+{
+    "_source": "https://dev.bandwidth.com/spec/messaging.yml",
+    "_note": "inferred: type/description from https://dev.bandwidth.com/docs/messaging/errors, fieldErrors item from the spec fieldError example (fieldName changed from `from` to `to`); not a verbatim docs example",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "type": "request-validation",
+        "description": "Your request could not be accepted",
+        "fieldErrors": [
+            {
+                "fieldName": "to",
+                "description": "'+invalid' must be replaced with a valid E164 formatted telephone number"
+            }
+        ]
+    }
+}

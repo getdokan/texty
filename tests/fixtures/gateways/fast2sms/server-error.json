@@ -1,0 +1,7 @@
+{
+    "_source": "https://docs.fast2sms.com/reference/error-code-list.md",
+    "_note": "inferred: no 5xx response is documented; modelled as an HTML gateway error page.",
+    "status": 503,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><head><title>503 Service Temporarily Unavailable</title></head><body><h1>503 Service Temporarily Unavailable</h1></body></html>"
+}

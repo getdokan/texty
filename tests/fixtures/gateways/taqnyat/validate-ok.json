@@ -1,0 +1,21 @@
+{
+    "_source": "https://dev.taqnyat.sa/en/doc/sms/",
+    "_note": "from docs: 'Sender names' 201 tab and OpenAPI SuccessSendersResponseObj (https://github.com/taqnyat/OpenAPI/blob/main/sms/v1/openapi.yaml). The second sender's status is changed to inactive (inferred) to exercise the inactive-sender path.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "statusCode": 201,
+        "senders": [
+            {
+                "senderName": "sender name 1",
+                "status": "active",
+                "destination": "KSA"
+            },
+            {
+                "senderName": "sender name 2",
+                "status": "inactive",
+                "destination": "international"
+            }
+        ]
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "_source": "https://docs.fast2sms.com/reference/wallet-balance.md",
+    "_note": "inferred: the wallet page documents no error response; code and message from https://docs.fast2sms.com/reference/error-code-list.md.",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "return": false,
+        "status_code": 412,
+        "message": "Invalid Authentication, Check Authorization Key"
+    }
+}

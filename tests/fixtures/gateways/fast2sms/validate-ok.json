@@ -1,0 +1,11 @@
+{
+    "_source": "https://docs.fast2sms.com/reference/wallet-balance.md",
+    "_note": "from docs: schema example values on wallet-balance.md (return is typed as a string there).",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "return": "true",
+        "wallet": "5566.0100",
+        "sms_count": 27830
+    }
+}
