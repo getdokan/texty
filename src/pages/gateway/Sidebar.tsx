@@ -11,7 +11,7 @@ import {
 import { RawHTML, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { CircleCheck, Search } from 'lucide-react';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 import BetaBadge from './components/BetaBadge';
 
 type Props = {
@@ -42,7 +42,14 @@ const Sidebar = ({ connectedGateways }: Props) => {
           {__('Available Gateways', 'texty')}
         </h2>
       </div>
-      <div className="px-3 pt-3 pb-2">
+      {/* Own <form>: browsers pair the nearest text input with the
+          gateway's password field and autofill saved logins into it. */}
+      <form
+        role="search"
+        autoComplete="off"
+        className="px-3 pt-3 pb-2"
+        onSubmit={(e: FormEvent<HTMLFormElement>) => e.preventDefault()}
+      >
         <InputGroup className="h-8">
           <InputGroupAddon>
             <Search className="size-4 text-muted-foreground" />
@@ -65,7 +72,7 @@ const Sidebar = ({ connectedGateways }: Props) => {
             data-form-type="other"
           />
         </InputGroup>
-      </div>
+      </form>
       <ScrollArea className="flex-1">
         <nav className="flex flex-col gap-0.5 px-2 pb-3">
           {filtered.map((page: SettingsElement) => {
