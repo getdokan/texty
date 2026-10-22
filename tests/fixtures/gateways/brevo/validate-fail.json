@@ -1,0 +1,10 @@
+{
+    "_source": "https://developers.brevo.com/docs/how-it-works",
+    "_note": "inferred: 401 with {code,message} shape from the how-it-works tables; code unauthorized from the enum. Message text is a placeholder.",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "code": "unauthorized",
+        "message": "Key not found (placeholder)"
+    }
+}
