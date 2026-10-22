@@ -1,0 +1,10 @@
+{
+    "_source": "https://dev.bandwidth.com/docs/messaging/errors",
+    "_note": "from docs: 403 forbidden error body",
+    "status": 403,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "type": "forbidden",
+        "description": "Access Denied"
+    }
+}

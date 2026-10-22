@@ -1,0 +1,7 @@
+{
+    "_source": "https://unpkg.com/@walkover/msg91@0.1.2/index.js",
+    "_note": "inferred: balance.php returns the route balance as plain text (wrapper hands back the raw string; wrapper docs echo 7866).",
+    "status": 200,
+    "headers": { "content-type": "text/plain" },
+    "body_raw": "7866"
+}

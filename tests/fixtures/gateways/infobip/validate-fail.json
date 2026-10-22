@@ -1,0 +1,14 @@
+{
+    "_source": "https://api.infobip.com/platform/1/openapi/account-management",
+    "_note": "from docs: GET /account/1/balance 401 example (legacy requestError.serviceException shape).",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "requestError": {
+            "serviceException": {
+                "messageId": "UNAUTHORIZED",
+                "text": "Unauthorized"
+            }
+        }
+    }
+}

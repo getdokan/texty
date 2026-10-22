@@ -1,0 +1,10 @@
+{
+    "_source": "https://dev.bandwidth.com/spec/messaging.yml",
+    "_note": "inferred: messagingRequestError schema { type, description } from the spec; values are placeholders, no example is given",
+    "status": 500,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "type": "internal-server-error",
+        "description": "Internal Server Error"
+    }
+}

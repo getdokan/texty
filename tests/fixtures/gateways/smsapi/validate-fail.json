@@ -1,0 +1,12 @@
+{
+    "_source": "https://www.smsapi.com/docs/#6-account-balance",
+    "_note": "From docs: section 6 \"Account balance\", example b). HTTP 401 is inferred (the docs do not state the status).",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "message": "Authorization failed",
+        "error": "authorization_failed",
+        "developer_description": null,
+        "errors": null
+    }
+}

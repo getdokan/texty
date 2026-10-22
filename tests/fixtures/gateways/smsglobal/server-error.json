@@ -1,0 +1,7 @@
+{
+    "_source": "https://api.smsglobal.com/v2/doc#post--v2-sms",
+    "_note": "Inferred: 5xx bodies are undocumented; shape follows the observed 400/404 bodies.",
+    "status": 500,
+    "headers": { "content-type": "application/json" },
+    "body": { "code": 500, "message": "Internal Server Error" }
+}

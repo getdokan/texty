@@ -1,0 +1,7 @@
+{
+    "_source": "https://api.msg91.com/apidoc/textsms/send-sms-flow.php",
+    "_note": "inferred: 502 from a proxy with an HTML body.",
+    "status": 502,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><head><title>502 Bad Gateway</title></head><body><center><h1>502 Bad Gateway</h1></center></body></html>"
+}

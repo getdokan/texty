@@ -1,0 +1,10 @@
+{
+    "_source": "https://api.msg91.com/apidoc/textsms/send-sms-flow.php",
+    "_note": "from docs: shape described in the official flow apidoc; literal value from the third-party mirror https://www.withone.ai/knowledge/msg91/conn_mod_def%3A%3AGNWEPfEWn3Q%3A%3AKr-zbEkdTQK82XTCFEhmhQ",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "type": "success",
+        "message": "5e1e93cad6fc054d8e759a5b"
+    }
+}
