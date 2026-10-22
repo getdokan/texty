@@ -1,0 +1,7 @@
+{
+    "_source": "https://docs.textmagic.com/#tag/Response-Codes",
+    "_note": "Inferred: 503 is documented as maintenance; a non-JSON body is assumed to exercise the fallback message.",
+    "status": 503,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><body>Service Unavailable</body></html>"
+}

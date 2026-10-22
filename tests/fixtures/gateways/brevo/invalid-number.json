@@ -1,0 +1,10 @@
+{
+    "_source": "https://developers.brevo.com/reference/send-transac-sms",
+    "_note": "inferred: 400 with code invalid_parameter from the send-transac-sms 400 enum; body shape from https://developers.brevo.com/docs/how-it-works. Message text is a placeholder.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "code": "invalid_parameter",
+        "message": "Invalid recipient (placeholder)"
+    }
+}

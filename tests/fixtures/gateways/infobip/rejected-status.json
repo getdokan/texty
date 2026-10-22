@@ -1,0 +1,25 @@
+{
+    "_source": "https://www.infobip.com/docs/essentials/response-status-and-error-codes",
+    "_note": "inferred: envelope from the /sms/3/messages 200 example; status values (group 5 REJECTED, id 12) from the status codes page. The docs show no real 200-with-REJECTED example.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "bulkId": "2034072219640523073",
+        "messages": [
+            {
+                "messageId": "3350be2d4219-3af1-78856-aabe-1362af1edfd3",
+                "status": {
+                    "groupId": 5,
+                    "groupName": "REJECTED",
+                    "id": 12,
+                    "name": "REJECTED_NOT_ENOUGH_CREDITS",
+                    "description": "Not enough credits"
+                },
+                "destination": "41793026727",
+                "details": {
+                    "messageCount": 1
+                }
+            }
+        ]
+    }
+}

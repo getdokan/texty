@@ -1,0 +1,12 @@
+{
+    "_source": "https://api.apis.guru/v2/specs/bulksms.com/1.0.0/openapi.json",
+    "_note": "inferred: 400 bad-request, shape copied from the spec's components.responses bad-request example; the detail text is a guess.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "detail": "The phone number 'abc' is not a valid international number.",
+        "status": 400,
+        "title": "Bad Request",
+        "type": "https://developer.bulksms.com/json/v1/errors/#bad-request"
+    }
+}
