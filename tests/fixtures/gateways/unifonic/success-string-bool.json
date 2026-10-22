@@ -1,0 +1,18 @@
+{
+    "_source": "https://github.com/api-evangelist/unifonic/blob/main/openapi/_original/unifonic-sms-openapi-original.json",
+    "_note": "from docs: official SMS OpenAPI Sendresponse example (readme.io export mirror), trimmed to the envelope and data fields Texty reads. success is the string \"true\", Status Queued.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "success": "true",
+        "message": "",
+        "errorCode": "ER-00",
+        "data": {
+            "MessageID": 3200017889310,
+            "CorrelationID": "",
+            "Status": "Queued",
+            "NumberOfUnits": 1,
+            "Recipient": "966505980169"
+        }
+    }
+}

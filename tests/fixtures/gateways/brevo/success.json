@@ -1,0 +1,13 @@
+{
+    "_source": "https://developers.brevo.com/reference/send-transac-sms",
+    "_note": "from docs (201 example for POST /v3/transactionalSMS/sms).",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "messageId": 1511882900176220,
+        "reference": "ab1cde2fgh3i4jklmno",
+        "remainingCredits": 82.85,
+        "smsCount": 2,
+        "usedCredits": 0.7
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "_source": "https://docs.unifonic.com/articles/products-documentation/sending-your-first-sms-via-unifonic-api",
+    "_note": "inferred: HTTP 480 \"This user cannot use the specified SenderID\" is documented but its body is not shown. Body is an empty JSON object so the documented status meaning is used as the message.",
+    "status": 480,
+    "headers": { "content-type": "application/json" },
+    "body": {}
+}

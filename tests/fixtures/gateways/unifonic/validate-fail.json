@@ -1,0 +1,12 @@
+{
+    "_source": "https://docs.unifonic.com/articles/products-documentation/sending-your-first-sms-via-unifonic-api",
+    "_note": "inferred: HTTP 401 \"Authentication failed\" is documented but its body is not shown. Body reuses the documented ER-04 envelope; errorCode ER-01 is a placeholder, not a confirmed Unifonic code.",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "success": false,
+        "message": "Authentication failed",
+        "errorCode": "ER-01",
+        "data": {}
+    }
+}

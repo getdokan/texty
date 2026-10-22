@@ -1,0 +1,7 @@
+{
+    "_source": "https://github.com/smsglobal/smsglobal-node/blob/master/test/Sms.spec.js",
+    "_note": "Inferred from the smsglobal-node nock mock; may be an SDK-wrapped shape rather than the raw API body.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": { "status": "Bad Request", "data": { "errors": { "origin": { "errors": [ "Origin is invalid." ] } } } }
+}
