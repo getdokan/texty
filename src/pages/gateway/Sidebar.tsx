@@ -12,7 +12,6 @@ import { RawHTML, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { CircleCheck, Search } from 'lucide-react';
 import type { ChangeEvent, FormEvent } from 'react';
-import BetaBadge from './components/BetaBadge';
 
 type Props = {
   connectedGateways: string[];
@@ -98,15 +97,12 @@ const Sidebar = ({ connectedGateways }: Props) => {
                 <span className="min-w-0 flex-1 text-left">
                   <RawHTML className="truncate">{page.label ?? page.id}</RawHTML>
                 </span>
-                <span className="flex shrink-0 items-center gap-1.5">
-                  <BetaBadge source={page} />
-                  {connected && (
-                    <CircleCheck
-                      className="size-4 shrink-0 fill-emerald-100 text-emerald-600"
-                      aria-label={__('Connected', 'texty')}
-                    />
-                  )}
-                </span>
+                {connected && (
+                  <CircleCheck
+                    className="size-4 shrink-0 fill-emerald-100 text-emerald-600"
+                    aria-label={__('Connected', 'texty')}
+                  />
+                )}
               </Button>
             );
           })}
