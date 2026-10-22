@@ -202,6 +202,7 @@ class Gateways {
                 'vonage'     => __NAMESPACE__ . '\Gateways\Vonage',
                 'clickatell' => __NAMESPACE__ . '\Gateways\Clickatell',
                 'plivo'      => __NAMESPACE__ . '\Gateways\Plivo',
+                'textmagic'  => __NAMESPACE__ . '\Gateways\Textmagic',
             ];
 
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
