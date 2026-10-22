@@ -1,0 +1,11 @@
+{
+    "_source": "https://github.com/AfricasTalkingLtd/africastalking-node/blob/master/test/application.js",
+    "_note": "inferred: UserData is confirmed by the official Node SDK test; the balance key and value are guesses.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "UserData": {
+            "balance": "KES 100.0000"
+        }
+    }
+}

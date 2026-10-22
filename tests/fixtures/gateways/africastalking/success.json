@@ -1,0 +1,20 @@
+{
+    "_source": "https://help.africastalking.com/en/articles/742491-why-did-my-messages-fail",
+    "_note": "from docs: body from the help article (single quotes normalized to JSON); HTTP 201 from the community mirror of the SMS docs.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "SMSMessageData": {
+            "Message": "Sent to 1/1 Total Cost: KES 0.8000",
+            "Recipients": [
+                {
+                    "statusCode": 101,
+                    "number": "+254705336634",
+                    "cost": "KES 0.8000",
+                    "status": "Success",
+                    "messageId": "ATXid_03cb5ecf11ce748794c0f9a85c276259"
+                }
+            ]
+        }
+    }
+}
