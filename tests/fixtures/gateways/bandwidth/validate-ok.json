@@ -1,0 +1,13 @@
+{
+    "_source": "https://dev.bandwidth.com/spec/messaging.yml",
+    "_note": "from docs (schema examples): listMedia response, an array of `media` objects; content value is a placeholder",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": [
+        {
+            "content": "https://messaging.bandwidth.com/api/v2/users/1234567/media/image.png",
+            "contentLength": 1024,
+            "mediaName": "image.png"
+        }
+    ]
+}

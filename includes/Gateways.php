@@ -202,6 +202,7 @@ class Gateways {
                 'vonage'     => __NAMESPACE__ . '\Gateways\Vonage',
                 'clickatell' => __NAMESPACE__ . '\Gateways\Clickatell',
                 'plivo'      => __NAMESPACE__ . '\Gateways\Plivo',
+                'bandwidth'  => __NAMESPACE__ . '\Gateways\Bandwidth',
                 'brevo'      => __NAMESPACE__ . '\Gateways\Brevo',
                 'octopush'   => __NAMESPACE__ . '\Gateways\Octopush',
                 'smsapi'     => __NAMESPACE__ . '\Gateways\SMSAPI',
