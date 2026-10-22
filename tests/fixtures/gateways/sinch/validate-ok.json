@@ -1,0 +1,24 @@
+{
+    "_source": "https://developers.sinch.com/_spec/docs/sms/api-reference/sms.json",
+    "_note": "From docs: components.examples.ApiBatchList (List batches), trimmed to one batch.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "count": "1",
+        "page": "0",
+        "batches": [
+            {
+                "id": "abc123",
+                "to": [ "01234567" ],
+                "from": "01234567",
+                "canceled": false,
+                "body": "Test message",
+                "type": "mt_text",
+                "created_at": "2023-11-11T09:00:20.0",
+                "modified_at": "2023-11-11T09:00:20.0",
+                "delivery_report": "none"
+            }
+        ],
+        "page_size": "1"
+    }
+}

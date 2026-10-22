@@ -1,0 +1,7 @@
+{
+    "_source": "https://bird.com/docs/api/errors.md",
+    "_note": "Inferred: a 503 from a proxy with a non-JSON body, to exercise the bird_http_<status> fallback.",
+    "status": 503,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><body>Service Unavailable</body></html>"
+}

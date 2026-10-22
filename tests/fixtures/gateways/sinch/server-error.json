@@ -1,0 +1,7 @@
+{
+    "_source": "https://developers.sinch.com/docs/sms/api-reference/status-codes",
+    "_note": "Inferred: the status-codes page documents 500 but no body, so the body is empty.",
+    "status": 500,
+    "headers": {},
+    "body_raw": ""
+}
