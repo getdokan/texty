@@ -1,0 +1,7 @@
+{
+    "_source": "https://www.bulkgate.com/en/docs/simple-api/simple-transactional/",
+    "_note": "inferred. The docs show no 5xx example; a non-JSON HTML error page is assumed.",
+    "status": 500,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><head><title>500 Internal Server Error</title></head><body><h1>Internal Server Error</h1></body></html>"
+}
