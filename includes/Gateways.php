@@ -202,6 +202,7 @@ class Gateways {
                 'vonage'     => __NAMESPACE__ . '\Gateways\Vonage',
                 'clickatell' => __NAMESPACE__ . '\Gateways\Clickatell',
                 'plivo'      => __NAMESPACE__ . '\Gateways\Plivo',
+                'd7networks' => __NAMESPACE__ . '\Gateways\D7Networks',
                 'textmagic'  => __NAMESPACE__ . '\Gateways\Textmagic',
                 'sinch'      => __NAMESPACE__ . '\Gateways\Sinch',
                 'clicksend'  => __NAMESPACE__ . '\Gateways\ClickSend',
