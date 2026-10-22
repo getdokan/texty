@@ -1,0 +1,15 @@
+{
+    "_source": "https://docs.textmagic.com/#operation/getCurrentUser",
+    "_note": "From docs: User schema property examples, trimmed.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "id": 305,
+        "username": "charles.conway",
+        "firstName": "Charles",
+        "lastName": "Conway",
+        "status": "A",
+        "balance": 208.64,
+        "currency": { "id": "GBP", "htmlSymbol": "&pound;" }
+    }
+}
