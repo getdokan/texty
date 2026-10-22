@@ -454,7 +454,8 @@ class AwsSms extends AbstractGateway {
     private function normalize_number( $to ) {
         $number = '+' . ltrim( (string) preg_replace( '/[^0-9+]/', '', (string) $to ), '+' );
 
-        return preg_match( '/^\+[1-9][0-9]{1,18}$/', $number ) ? $number : '';
+        // E.164: at most 15 digits; nothing real is shorter than 7.
+        return preg_match( '/^\+[1-9][0-9]{6,14}$/', $number ) ? $number : '';
     }
 
     /**

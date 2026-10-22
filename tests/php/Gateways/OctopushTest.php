@@ -114,7 +114,7 @@ class OctopushTest extends GatewayTestCase {
         $result = ( new Octopush() )->send_result( '33600000001', 'Hello' );
 
         $this->assertFalse( $result->is_success() );
-        $this->assertSame( '401', $result->get_error_code() );
+        $this->assertSame( '401', (string) $result->get_error_code() );
         $this->assertSame( 'Authentication failure', $result->get_error_message() );
         $this->assertSame( 401, $result->get_http_status() );
     }
@@ -231,7 +231,7 @@ class OctopushTest extends GatewayTestCase {
         );
 
         $this->assertWPError( $result );
-        $this->assertSame( '401', $result->get_error_code() );
+        $this->assertSame( '401', (string) $result->get_error_code() );
         $this->assertSame( 'Authentication failure', $result->get_error_message() );
         $this->assertSame(
             [

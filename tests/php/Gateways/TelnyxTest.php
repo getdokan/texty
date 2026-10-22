@@ -368,7 +368,8 @@ class TelnyxTest extends GatewayTestCase {
         );
 
         $this->assertWPError( $result );
-        $this->assertSame( '10009', $result->get_error_code() );
+        // WP_Error keys its codes, so PHP turns numeric strings into ints.
+        $this->assertSame( '10009', (string) $result->get_error_code() );
         $this->assertSame( '10009', $result->get_error_data()['errors'][0]['code'] );
     }
 

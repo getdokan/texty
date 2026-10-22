@@ -165,7 +165,8 @@ class TwilioTest extends GatewayTestCase {
         $this->assertIsArray( $ok );
         $this->assertSame( 'SM1f0e8ae6ade43cb3c0ce4525424e404f', $ok['reference_id'] );
         $this->assertWPError( $fail );
-        $this->assertSame( '21211', $fail->get_error_code() );
+        // WP_Error keys its codes, so PHP turns numeric strings into ints.
+        $this->assertSame( '21211', (string) $fail->get_error_code() );
     }
 
     public function test_manager_returns_legacy_array_and_logs_reference_id() {
@@ -193,7 +194,7 @@ class TwilioTest extends GatewayTestCase {
         $result = texty()->gateways()->send( '+1555NOTANUMBER', 'Hi' );
 
         $this->assertWPError( $result );
-        $this->assertSame( '21211', $result->get_error_code() );
+        $this->assertSame( '21211', (string) $result->get_error_code() );
         $this->assertSame( 400, $result->get_error_data()['http_status'] );
     }
 }
