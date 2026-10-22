@@ -1,0 +1,24 @@
+{
+    "_source": "https://github.com/api-evangelist/unifonic/blob/main/openapi/_original/unifonic-sms-openapi-original.json",
+    "_note": "from docs: official SMS OpenAPI GetMessagesDetails 200 example (readme.io export mirror), trimmed to one message and the envelope fields Texty reads.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "success": true,
+        "message": "",
+        "errorCode": "ER-00",
+        "data": {
+            "messages": [
+                {
+                    "MessageID": 3200017889310,
+                    "Recipient": "966505980169",
+                    "Status": "Delivered",
+                    "SenderID": "UNITEST"
+                }
+            ],
+            "TotalTextMessages": 1,
+            "Next": "",
+            "Prev": ""
+        }
+    }
+}

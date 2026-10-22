@@ -1,0 +1,22 @@
+{
+    "_source": "https://docs.unifonic.com/articles/products-documentation/sms-03-sending-api",
+    "_note": "from docs: the documented 200 response for POST /rest/SMS/messages, verbatim (success as a boolean).",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "success": true,
+        "message": "",
+        "errorCode": "ER-00",
+        "data": {
+            "MessageID": 42000348806924,
+            "CorrelationID": "CorrelationID",
+            "Status": "Sent",
+            "NumberOfUnits": 0,
+            "Cost": 0,
+            "Balance": 0,
+            "Recipient": "971507679351",
+            "TimeCreated": "2022-09-06 14:06:25.979",
+            "CurrencyCode": ""
+        }
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "_source": "https://docs.unifonic.com/articles/products-documentation/sending-bulk-sms-via-unifonic-api",
+    "_note": "inferred: a 200 success envelope carrying Status Rejected (a documented status filter value in the bulk docs). Not shown as a send response in the docs.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "success": true,
+        "message": "",
+        "errorCode": "ER-00",
+        "data": {
+            "MessageID": 42000348806925,
+            "CorrelationID": "",
+            "Status": "Rejected",
+            "NumberOfUnits": 0,
+            "Cost": 0,
+            "Balance": 0,
+            "Recipient": "966505980169",
+            "TimeCreated": "2022-09-06 14:06:25.979",
+            "CurrencyCode": ""
+        }
+    }
+}
