@@ -74,7 +74,10 @@ const Sidebar = ({ connectedGateways }: Props) => {
         </InputGroup>
       </form>
       <ScrollArea className="flex-1">
-        <nav className="flex flex-col gap-0.5 px-2 pb-3">
+        {/* ScrollArea content is min-width: fit-content, so the widest label
+            would set the width of every row; inline-size containment stops
+            labels from widening the list so they truncate instead. */}
+        <nav className="flex min-w-0 flex-col gap-0.5 px-2 pb-3 [contain:inline-size]">
           {filtered.map((page: SettingsElement) => {
             const active: boolean = activePage === page.id;
             const connected: boolean = connectedGateways.includes(page.id);
@@ -85,13 +88,15 @@ const Sidebar = ({ connectedGateways }: Props) => {
                 onClick={() => setActivePage(page.id)}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'w-full justify-between font-normal text-foreground/80',
+                  'w-full min-w-0 shrink justify-between gap-2 font-normal text-foreground/80',
                   active &&
                     'bg-muted font-semibold text-foreground hover:bg-muted'
                 )}
+                title={page.label ?? page.id}
               >
-                <span className="truncate">
-                  <RawHTML>{page.label ?? page.id}</RawHTML>
+                {/* min-w-0 lets long labels truncate instead of widening the row. */}
+                <span className="min-w-0 flex-1 text-left">
+                  <RawHTML className="truncate">{page.label ?? page.id}</RawHTML>
                 </span>
                 <span className="flex shrink-0 items-center gap-1.5">
                   <BetaBadge source={page} />
