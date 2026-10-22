@@ -1,0 +1,15 @@
+{
+    "_source": "https://github.com/team-telnyx/openapi (openapi/spec3.json components.responses.ServiceUnavailableErrorResponse)",
+    "_note": "from docs",
+    "status": 503,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "errors": [
+            {
+                "code": "10037",
+                "title": "Service unavailable",
+                "detail": "Service is unavailable."
+            }
+        ]
+    }
+}
