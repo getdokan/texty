@@ -1,0 +1,26 @@
+{
+    "_source": "https://api.apis.guru/v2/specs/bulksms.com/1.0.0/openapi.json",
+    "_note": "inferred from the Message.status schema (FAILED.NOT_SENT: no route for the supplied phone number).",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": [
+        {
+            "id": "1918293013",
+            "type": "SENT",
+            "to": "+999123",
+            "body": "Hello from Texty",
+            "encoding": "TEXT",
+            "numberOfParts": 1,
+            "creditCost": 0,
+            "submission": {
+                "id": "2-00000000000000009002",
+                "date": "2026-10-22T10:00:00Z"
+            },
+            "status": {
+                "id": "FAILED.NOT_SENT",
+                "type": "FAILED",
+                "subtype": "NOT_SENT"
+            }
+        }
+    ]
+}

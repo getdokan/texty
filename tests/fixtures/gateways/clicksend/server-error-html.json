@@ -1,0 +1,7 @@
+{
+    "_source": "https://api.apis.guru/v2/specs/clicksend.com/1.0.0/openapi.json",
+    "_note": "Inferred: non-JSON 5xx body (e.g. an upstream proxy error page).",
+    "status": 502,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><head><title>502 Bad Gateway</title></head><body>Bad Gateway</body></html>"
+}

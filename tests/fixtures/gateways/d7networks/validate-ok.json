@@ -1,0 +1,7 @@
+{
+    "_source": "https://github.com/d7networks/D7API-Sample-Codes/blob/master/README.md",
+    "_note": "from docs: balance response in the \"D7API - Check Balance\" README section.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": { "balance": 99.9999999 }
+}
