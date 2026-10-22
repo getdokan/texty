@@ -1,0 +1,10 @@
+{
+    "_source": "https://developers.sinch.com/_spec/docs/sms/api-reference/sms.json",
+    "_note": "From docs: 400 example on POST /xms/v1/{service_plan_id}/batches.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "code": "syntax_invalid_parameter_format",
+        "text": "The format of parameter 'to[0]' is invalid; value '+1' is not a valid MSISDN or group ID."
+    }
+}

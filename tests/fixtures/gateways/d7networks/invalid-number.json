@@ -1,0 +1,7 @@
+{
+    "_source": "https://d7networks.com/docs/sms/send-sms/",
+    "_note": "inferred: docs give only the 422 schema (loc/msg/type placeholders); field names are documented, values are invented.",
+    "status": 422,
+    "headers": { "content-type": "application/json" },
+    "body": { "detail": [ { "loc": [ "body", "messages", 0, "recipients", 0 ], "msg": "Invalid recipient number", "type": "value_error" } ] }
+}

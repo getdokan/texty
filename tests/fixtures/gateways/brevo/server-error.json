@@ -1,0 +1,7 @@
+{
+    "_source": "https://developers.brevo.com/docs/how-it-works",
+    "_note": "inferred: 5xx has no documented body; an HTML body exercises the status fallback.",
+    "status": 503,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><body><h1>503 Service Unavailable</h1></body></html>"
+}

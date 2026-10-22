@@ -1,0 +1,14 @@
+{
+    "_source": "https://docs.textmagic.com/#tag/Response-Codes",
+    "_note": "Inferred: BadRequestResponse shape from docs; the field-level message text for an invalid phone is not documented and is a placeholder.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "code": 400,
+        "message": "Validation Failed",
+        "errors": {
+            "common": [],
+            "fields": { "phones": [ "Invalid phone number format." ] }
+        }
+    }
+}
