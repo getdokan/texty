@@ -203,6 +203,13 @@ class Gateways {
                 'clickatell' => __NAMESPACE__ . '\Gateways\Clickatell',
                 'plivo'      => __NAMESPACE__ . '\Gateways\Plivo',
                 'africastalking' => __NAMESPACE__ . '\Gateways\AfricasTalking',
+                'd7networks' => __NAMESPACE__ . '\Gateways\D7Networks',
+                'textmagic'  => __NAMESPACE__ . '\Gateways\Textmagic',
+                'sinch'      => __NAMESPACE__ . '\Gateways\Sinch',
+                'clicksend'  => __NAMESPACE__ . '\Gateways\ClickSend',
+                'infobip'    => __NAMESPACE__ . '\Gateways\Infobip',
+                'telnyx'     => __NAMESPACE__ . '\Gateways\Telnyx',
+                'bird'       => __NAMESPACE__ . '\Gateways\Bird',
             ];
 
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
