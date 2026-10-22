@@ -1,0 +1,12 @@
+{
+    "_source": "https://www.bulkgate.com/en/docs/simple-api/simple-transactional/",
+    "_note": "from docs (error example). Body code mirrors the HTTP status.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "type": "invalid_phone_number",
+        "code": 400,
+        "error": "Invalid phone number",
+        "detail": null
+    }
+}

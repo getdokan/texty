@@ -1,0 +1,7 @@
+{
+    "_source": "https://github.com/smsglobal/smsglobal-node/blob/master/test/Sms.spec.js",
+    "_note": "From SDK test mock (smsglobal-node singleDestination): single message returned without the messages[] wrapper. Raw body keeps the 16-digit integer id unquoted.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body_raw": "{\"id\":6359736682344313,\"outgoing_id\":5211897953,\"origin\":\"NodeSdk\",\"destination\":\"61400000000\",\"message\":\"Test sms from node sdk\",\"status\":\"sent\",\"dateTime\":\"2020-07-30 13:23:38 +0000\"}"
+}

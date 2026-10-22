@@ -1,0 +1,24 @@
+{
+    "_source": "https://api.apis.guru/v2/specs/bulksms.com/1.0.0/openapi.json",
+    "_note": "inferred from the Profile schema; the spec's example value is null.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "id": "BBDE1B476E03498AA768F66A286AABDC",
+        "username": "texty-test",
+        "created": "2025-01-15T08:30:00Z",
+        "company": null,
+        "credits": {
+            "balance": 120.5,
+            "isTransferAllowed": false,
+            "limit": 0
+        },
+        "quota": {
+            "size": 1000,
+            "remaining": 980
+        },
+        "originAddresses": {
+            "allowed": []
+        }
+    }
+}

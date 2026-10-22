@@ -1,0 +1,14 @@
+{
+    "_source": "https://api.infobip.com/platform/1/openapi/account-management",
+    "_note": "from docs: GET /account/1/balance 403 example. Treating 403 as a valid key without the account-management:manage scope is inferred.",
+    "status": 403,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "requestError": {
+            "serviceException": {
+                "messageId": "FORBIDDEN",
+                "text": "Forbidden"
+            }
+        }
+    }
+}
