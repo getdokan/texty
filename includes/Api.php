@@ -30,6 +30,7 @@ class Api {
             Api\Gateway::class,
             Api\Logs::class,
             Api\EgressIps::class,
+            Api\OrderSms::class,
         ];
 
         add_action( 'rest_api_init', [ $this, 'init_api' ] );

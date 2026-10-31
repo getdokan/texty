@@ -7,6 +7,10 @@ module.exports = {
   ...defaultConfig,
   entry: {
     index: './src/index.tsx',
+    // "Send SMS" box on the WooCommerce order screen. Built on WordPress'
+    // own components (no plugin-ui / Tailwind) so it stays small and looks
+    // native in the WooCommerce sidebar.
+    'order-sms': './src/order-sms/index.tsx',
     // Reusable components exposed for add-ons (window.texty.components).
     components: {
       import: './src/components/index.tsx',

@@ -165,6 +165,8 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 = Unreleased =
 
 - **New:** Gateways that require IP whitelisting (SSL Wireless) show your server's outgoing IP on their settings page, with copy buttons. On sites with several servers or a load balancer, every server's IP is listed as it sends, marked Allowed or Blocked, and you can add your host's fixed outgoing IP by hand. A blocked send's error now names the exact IP to whitelist, and SSL Wireless requests always use IPv4.
+- **New:** Send an SMS from the WooCommerce order screen. A "Send SMS" box above Order notes suggests the order's billing, shipping and Dokan vendor numbers as you type (or enter any number), fills order details like {order_id} and {order_total}, counts characters and SMS parts (including Bangla/Unicode), and records the message as a private order note. Available to admins and shop managers.
+- **New:** Automatic order SMS (processing, completed, vendor and admin alerts) now add a private order note with the message and each recipient's result. Turn off with `add_filter( 'texty_add_order_sms_note', '__return_false' );`.
 - **New:** SSL Wireless (iSMS Plus, Bangladesh) gateway.
 - **New:** Quick Send has its own page under Texty → Quick Send, with a shortcut on the dashboard. The phone number field now starts on your store's country.
 - **New:** SMS notifications are sent in the background (using WooCommerce's Action Scheduler) instead of during checkout or order updates, so those pages no longer wait on the SMS gateway. Queued messages show as Pending in Logs, with Send now and Cancel buttons.

@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-31T19:05:45+00:00\n"
+"POT-Creation-Date: 2026-10-31T19:29:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: texty\n"
@@ -59,6 +59,14 @@ msgstr ""
 
 #: includes/Admin/Menu.php:135
 msgid "Logs"
+msgstr ""
+
+#: includes/Admin/OrderSmsBox.php:55
+msgid "Send SMS"
+msgstr ""
+
+#: includes/Admin/OrderSmsBox.php:92
+msgid "Loading…"
 msgstr ""
 
 #: includes/Admin/Profile.php:25
@@ -232,6 +240,30 @@ msgstr ""
 
 #: includes/Api/Notifications.php:188
 msgid "Available variables"
+msgstr ""
+
+#: includes/Api/OrderSms.php:53
+msgid "Order ID."
+msgstr ""
+
+#: includes/Api/OrderSms.php:58
+msgid "Receiver phone number."
+msgstr ""
+
+#: includes/Api/OrderSms.php:64
+msgid "Message; may contain order {tokens}."
+msgstr ""
+
+#: includes/Api/OrderSms.php:86
+msgid "WooCommerce is not active."
+msgstr ""
+
+#: includes/Api/OrderSms.php:93
+msgid "Sorry, you are not allowed to message customers about orders."
+msgstr ""
+
+#: includes/Api/OrderSms.php:111
+msgid "Order not found."
 msgstr ""
 
 #: includes/Api/Send.php:35
@@ -529,6 +561,31 @@ msgstr ""
 msgid "Vendor - When Order Status is Refunded"
 msgstr ""
 
+#. translators: 1: notification title, 2: gateway name
+#: includes/Notifications/WC/Base.php:301
+msgid "SMS “%1$s” via %2$s:"
+msgstr ""
+
+#: includes/Notifications/WC/Base.php:303
+msgid "no gateway"
+msgstr ""
+
+#. translators: %s: phone number (masked for staff/vendor recipients)
+#: includes/Notifications/WC/Base.php:319
+msgid "✓ Sent to %s"
+msgstr ""
+
+#. translators: 1: phone number (masked for staff/vendor recipients), 2: error code
+#: includes/Notifications/WC/Base.php:321
+msgid "✗ Failed for %1$s (%2$s), details in Texty → Logs"
+msgstr ""
+
+#. translators: %s: SMS text
+#: includes/Notifications/WC/Base.php:325
+#: includes/OrderSms.php:172
+msgid "Message: “%s”"
+msgstr ""
+
 #: includes/Notifications/WC/CancelledAdmin.php:11
 msgid "Admin - When Order Status is Cancelled"
 msgstr ""
@@ -557,6 +614,10 @@ msgstr ""
 msgid "Customer - When Order Status is On Hold"
 msgstr ""
 
+#: includes/Notifications/WC/ManualOrder.php:48
+msgid "Manual order SMS"
+msgstr ""
+
 #: includes/Notifications/WC/ProcessingAdmin.php:11
 msgid "Admin - When Order Status is Processing"
 msgstr ""
@@ -579,6 +640,60 @@ msgstr ""
 
 #: includes/Notifications/WP/Registration.php:18
 msgid "New User Registration"
+msgstr ""
+
+#: includes/OrderSms.php:39
+msgid "Billing"
+msgstr ""
+
+#: includes/OrderSms.php:47
+msgid "Shipping"
+msgstr ""
+
+#: includes/OrderSms.php:123
+msgid "Enter a valid phone number."
+msgstr ""
+
+#: includes/OrderSms.php:127
+msgid "Write a message first."
+msgstr ""
+
+#. translators: %d: maximum number of characters
+#: includes/OrderSms.php:134
+msgid "Keep the message under %d characters."
+msgstr ""
+
+#: includes/OrderSms.php:142
+msgid "No SMS gateway is active. Set one up under Texty → Gateway."
+msgstr ""
+
+#: includes/OrderSms.php:159
+msgid "The gateway did not accept the message."
+msgstr ""
+
+#. translators: 1: phone number, 2: gateway name, 3: error code
+#: includes/OrderSms.php:170
+msgid "SMS to %1$s via %2$s failed (%3$s), details in Texty → Logs"
+msgstr ""
+
+#. translators: 1: phone number, 2: gateway name, 3: message text
+#: includes/OrderSms.php:188
+msgid "SMS sent to %1$s via %2$s: “%3$s”"
+msgstr ""
+
+#. translators: %s: vendor store name
+#: includes/OrderSms.php:241
+msgid "Vendor (%s)"
+msgstr ""
+
+#. translators: %s: vendor store name
+#: includes/OrderSms.php:241
+msgid "Vendor"
+msgstr ""
+
+#. translators: 1: date, 2: time
+#: includes/OrderSms.php:266
+msgid "%1$s at %2$s"
 msgstr ""
 
 #: includes/Queue.php:174
