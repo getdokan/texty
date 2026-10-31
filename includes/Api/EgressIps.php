@@ -100,7 +100,7 @@ class EgressIps extends Base {
             $egress->record( $ip );
         }
 
-        return $this->response();
+        return $this->response( $ip );
     }
 
     /**
@@ -142,14 +142,18 @@ class EgressIps extends Base {
     }
 
     /**
-     * Shape the response: this server's IP (cached detection) plus the
-     * observed list.
+     * Shape the response: this server's IP plus the observed list.
+     *
+     * Only GET looks the IP up; POST / DELETE reuse the cached value so they
+     * never wait on the echo services.
+     *
+     * @param string|null $current This server's IP when already known; null uses the cache.
      *
      * @return WP_REST_Response
      */
-    protected function response() {
+    protected function response( $current = null ) {
         $egress  = texty()->egress_ip();
-        $current = $egress->detect();
+        $current = null === $current ? $egress->cached() : (string) $current;
 
         return rest_ensure_response(
             [

@@ -56,9 +56,19 @@ class EgressIp {
     const STALE_AFTER = 30 * DAY_IN_SECONDS;
 
     /**
-     * Upper bound on stored entries.
+     * Upper bound on stored entries (IPs added by hand are always kept).
      */
     const MAX_ENTRIES = 20;
+
+    /**
+     * Upper bound on server names remembered per IP.
+     */
+    const MAX_HOSTS = 10;
+
+    /**
+     * Timeout (seconds) for a lookup made inside a send.
+     */
+    const FAST_TIMEOUT = 2;
 
     /**
      * Skip rewriting an unchanged entry seen within this window, so every
@@ -92,10 +102,12 @@ class EgressIp {
      * This node's outgoing IPv4 address.
      *
      * @param bool $refresh Bypass the per-node cache.
+     * @param bool $fast    Only try the first echo service, with a short
+     *                      timeout (for lookups inside a send).
      *
      * @return string IPv4 address, or '' when it couldn't be determined.
      */
-    public function detect( $refresh = false ) {
+    public function detect( $refresh = false, $fast = false ) {
         $key = self::CACHE_PREFIX . md5( $this->host() );
 
         if ( ! $refresh ) {
@@ -110,7 +122,7 @@ class EgressIp {
             }
         }
 
-        $ip = $this->lookup();
+        $ip = $this->lookup( $fast );
 
         set_transient( $key, '' !== $ip ? $ip : 'none', '' !== $ip ? self::CACHE_TTL : self::FAILURE_TTL );
 
@@ -134,10 +146,12 @@ class EgressIp {
      * Called by IP-whitelisted gateways after each send.
      *
      * Pass `$lookup = false` on paths that must stay fast (successful sends:
-     * OTP codes go straight through the gateway, and a cold lookup can take
-     * seconds if the echo services are slow). It then only uses an already
-     * cached IP and records nothing when none is cached; the IP gets cached
-     * the next time the settings panel is opened or a send is rejected.
+     * OTP codes go straight through the gateway). It then only uses an
+     * already cached IP and records nothing when none is cached; the IP gets
+     * cached the next time the settings panel is opened or a send is rejected.
+     * With `$lookup = true` (a rejected send) a cold cache triggers a single,
+     * short lookup (one service, FAST_TIMEOUT seconds) so the rejected
+     * server can still be named.
      *
      * @param string $result  One of the RESULT_* constants.
      * @param string $gateway Gateway registry key.
@@ -147,7 +161,7 @@ class EgressIp {
      */
     public function report( $result, $gateway = '', $lookup = true ) {
         try {
-            $ip = $lookup ? $this->detect() : $this->cached();
+            $ip = $lookup ? $this->detect( false, true ) : $this->cached();
 
             if ( '' !== $ip ) {
                 $this->record( $ip, $result, $gateway );
@@ -183,27 +197,73 @@ class EgressIp {
             $result = $existing['result'];
         }
 
+        // Servers behind one NAT share an IP: remember every server name for
+        // the IP instead of overwriting a single one, so alternating senders
+        // don't rewrite the option on every SMS.
+        $known_hosts = $existing ? $this->entry_hosts( $existing ) : [];
+        $hosts       = $known_hosts;
+
+        if ( ! $manual && ! in_array( $this->host(), $hosts, true ) ) {
+            $hosts[] = $this->host();
+            $hosts   = array_slice( $hosts, -self::MAX_HOSTS );
+        }
+
         $unchanged = $existing
             && $existing['result'] === $result
-            && $existing['host'] === ( $manual ? $existing['host'] : $this->host() )
+            && $hosts === $known_hosts
+            && ( ! $manual || ! empty( $existing['manual'] ) )
             && ( $now - (int) $existing['last_seen'] ) < self::TOUCH_INTERVAL;
 
         if ( $unchanged ) {
             return true;
         }
 
-        $list[ $ip ] = [
-            'ip'        => $ip,
-            'host'      => $manual ? ( $existing['host'] ?? '' ) : $this->host(),
-            'result'    => $result,
-            'gateway'   => '' !== $gateway ? $gateway : ( $existing['gateway'] ?? '' ),
-            'manual'    => $manual || ! empty( $existing['manual'] ),
-            'last_seen' => $now,
-        ];
-
-        $this->save( $list );
+        $this->save_entry(
+            $ip,
+            [
+                'ip'        => $ip,
+                'hosts'     => $hosts,
+                'host'      => implode( ', ', $hosts ),
+                'result'    => $result,
+                'gateway'   => '' !== $gateway ? $gateway : ( $existing['gateway'] ?? '' ),
+                'manual'    => $manual || ! empty( $existing['manual'] ),
+                'last_seen' => $now,
+            ]
+        );
 
         return true;
+    }
+
+    /**
+     * Server names recorded for an entry (older entries stored one `host`).
+     *
+     * @param array $entry Stored entry.
+     *
+     * @return string[]
+     */
+    protected function entry_hosts( array $entry ) {
+        if ( isset( $entry['hosts'] ) && is_array( $entry['hosts'] ) ) {
+            return array_values( array_map( 'strval', $entry['hosts'] ) );
+        }
+
+        return ! empty( $entry['host'] ) ? [ (string) $entry['host'] ] : [];
+    }
+
+    /**
+     * Write one entry, re-reading the list right before saving so a
+     * concurrent write by another server (or an admin's removal of a
+     * different IP) isn't overwritten with a stale copy.
+     *
+     * @param string $ip    IPv4 address.
+     * @param array  $entry Entry to store.
+     *
+     * @return void
+     */
+    protected function save_entry( $ip, array $entry ) {
+        $list        = $this->load();
+        $list[ $ip ] = $entry;
+
+        $this->save( $list );
     }
 
     /**
@@ -213,6 +273,10 @@ class EgressIp {
      */
     public function observed() {
         $list = array_values( $this->load() );
+
+        foreach ( $list as $i => $entry ) {
+            $list[ $i ]['host'] = implode( ', ', $this->entry_hosts( $entry ) );
+        }
 
         usort(
             $list,
@@ -245,13 +309,16 @@ class EgressIp {
     }
 
     /**
-     * Forget every observed IP and this node's cached detection.
+     * Forget every observed IP.
+     *
+     * Each server's cached detection is kept (it's still correct), so the
+     * list refills without new echo-service lookups. Use detect( true ) to
+     * force a fresh lookup.
      *
      * @return void
      */
     public function clear() {
         delete_option( self::OPTION );
-        delete_transient( self::CACHE_PREFIX . md5( $this->host() ) );
     }
 
     /**
@@ -287,9 +354,11 @@ class EgressIp {
     /**
      * Ask the IP-echo services for this node's IPv4 address.
      *
+     * @param bool $fast Only try the first service, with FAST_TIMEOUT.
+     *
      * @return string
      */
-    protected function lookup() {
+    protected function lookup( $fast = false ) {
         /**
          * Filter the IP-echo services used to detect the outgoing IPv4 address.
          *
@@ -310,13 +379,19 @@ class EgressIp {
             ]
         );
 
+        if ( $fast ) {
+            $services = array_slice( $services, 0, 1 );
+        }
+
+        $timeout = $fast ? self::FAST_TIMEOUT : 3;
+
         foreach ( $services as $service ) {
             $service = (string) $service;
 
             $response = $this->with_ipv4(
                 $service,
-                static function () use ( $service ) {
-                    return wp_remote_get( $service, [ 'timeout' => 3 ] );
+                static function () use ( $service, $timeout ) {
+                    return wp_remote_get( $service, [ 'timeout' => $timeout ] );
                 }
             );
 
@@ -377,13 +452,25 @@ class EgressIp {
      * @return void
      */
     protected function save( array $entries ) {
-        uasort(
+        $by_recent = static function ( $a, $b ) {
+            return (int) $b['last_seen'] - (int) $a['last_seen'];
+        };
+
+        // IPs added by hand (e.g. the host's NAT address) are always kept;
+        // detected ones fill the remaining slots, newest first.
+        $manual   = array_filter(
             $entries,
-            static function ( $a, $b ) {
-                return (int) $b['last_seen'] - (int) $a['last_seen'];
+            static function ( $entry ) {
+                return ! empty( $entry['manual'] );
             }
         );
+        $detected = array_diff_key( $entries, $manual );
 
-        update_option( self::OPTION, array_slice( $entries, 0, self::MAX_ENTRIES, true ), false );
+        uasort( $manual, $by_recent );
+        uasort( $detected, $by_recent );
+
+        $kept = $manual + array_slice( $detected, 0, max( 0, self::MAX_ENTRIES - count( $manual ) ), true );
+
+        update_option( self::OPTION, $kept, false );
     }
 }

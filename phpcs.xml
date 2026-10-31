@@ -47,15 +47,6 @@
 			</property>
 		</properties>
 	</rule>
-	<!-- WooCommerce's order capabilities, used by the order "Send SMS" box. -->
-	<rule ref="WordPress.WP.Capabilities">
-		<properties>
-			<property name="custom_capabilities" type="array">
-				<element value="edit_others_shop_orders"/>
-			</property>
-		</properties>
-	</rule>
-
 	<rule ref="WordPress.WhiteSpace.ControlStructureSpacing">
 		<properties>
 			<property name="blank_line_check" value="true"/>

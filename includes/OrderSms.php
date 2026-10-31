@@ -2,7 +2,9 @@
 
 namespace Texty;
 
+use Texty\Notifications\WC\Base;
 use Texty\Notifications\WC\ManualOrder;
+use WC_DateTime;
 use WC_Order;
 use WP_Error;
 
@@ -163,7 +165,7 @@ class OrderSms {
                         // vendors, and gateway errors can include e.g. the
                         // server IP. The full error is in Texty → Logs.
                         /* translators: 1: phone number, 2: gateway name, 3: error code */
-                        sprintf( __( 'SMS to %1$s via %2$s failed (%3$s), details in Texty → Logs', 'texty' ), $to, $gateway->name(), is_wp_error( $result ) ? $result->get_error_code() : 'texty_send_failed' ),
+                        sprintf( __( 'SMS to %1$s via %2$s failed (%3$s), details in Texty → Logs', 'texty' ), $this->note_number( $order, $to ), $gateway->name(), is_wp_error( $result ) ? $result->get_error_code() : 'texty_send_failed' ),
                         /* translators: %s: SMS text */
                         sprintf( __( 'Message: “%s”', 'texty' ), $content ),
                     ]
@@ -181,7 +183,7 @@ class OrderSms {
         }
 
         /* translators: 1: phone number, 2: gateway name, 3: message text */
-        $note = $this->add_note( $order, sprintf( __( 'SMS sent to %1$s via %2$s: “%3$s”', 'texty' ), $to, $gateway->name(), $content ) );
+        $note = $this->add_note( $order, sprintf( __( 'SMS sent to %1$s via %2$s: “%3$s”', 'texty' ), $this->note_number( $order, $to ), $gateway->name(), $content ) );
 
         return [
             'content' => $content,
@@ -254,16 +256,90 @@ class OrderSms {
         $note_id = (int) $order->add_order_note( $text, 0, true );
         $user    = wp_get_current_user();
 
+        // Use the saved note's own timestamp (correct timezone) rather than
+        // re-deriving "now".
+        $saved = $note_id && function_exists( 'wc_get_order_note' ) ? wc_get_order_note( $note_id ) : null;
+        $date  = $saved && $saved->date_created ? $saved->date_created : new WC_DateTime( 'now', wp_timezone() );
+
         return [
             'id'      => $note_id,
             'content' => $text,
             'date'    => sprintf(
                 /* translators: 1: date, 2: time */
                 __( '%1$s at %2$s', 'texty' ),
-                wc_format_datetime( wc_string_to_datetime( 'now' ), wc_date_format() ),
-                wc_format_datetime( wc_string_to_datetime( 'now' ), wc_time_format() )
+                wc_format_datetime( $date, wc_date_format() ),
+                wc_format_datetime( $date, wc_time_format() )
             ),
             'author'  => $user ? (string) $user->display_name : '',
         ];
+    }
+
+    /**
+     * Receiver as written in an order note.
+     *
+     * Private notes are also shown to Dokan vendors, so only the order's own
+     * billing / shipping number is written in full; any other number (staff,
+     * other vendors, arbitrary numbers) is masked.
+     *
+     * @param WC_Order $order Order.
+     * @param string   $to    Receiver.
+     *
+     * @return string
+     */
+    protected function note_number( WC_Order $order, $to ) {
+        $digits = preg_replace( '/\D/', '', (string) $to );
+        $own    = [ $order->get_billing_phone() ];
+
+        if ( method_exists( $order, 'get_shipping_phone' ) ) {
+            $own[] = $order->get_shipping_phone();
+        }
+
+        foreach ( $own as $phone ) {
+            if ( '' !== $digits && preg_replace( '/\D/', '', (string) $phone ) === $digits ) {
+                return (string) $to;
+            }
+        }
+
+        return Base::mask_phone( (string) $to );
+    }
+
+    /**
+     * Capability required to send manual SMS from the order screen.
+     *
+     * @since 2.0.3
+     *
+     * @return string
+     */
+    public static function capability() {
+        /**
+         * Filter the capability needed to send a manual SMS from the order
+         * screen (box and REST route). Default `edit_others_shop_orders`
+         * (administrators and shop managers; not Dokan vendors, who only
+         * have `edit_shop_orders`). Use `manage_options` to limit it to admins.
+         *
+         * @since 2.0.3
+         *
+         * @param string $capability Capability.
+         */
+        return (string) apply_filters( 'texty_order_sms_capability', 'edit_others_shop_orders' );
+    }
+
+    /**
+     * Clean an SMS body without altering what the sender typed.
+     *
+     * SMS is plain text: unlike sanitize_textarea_field() this keeps `%xx`
+     * sequences ("20%Cashback") and `<` as typed, and only removes invalid
+     * UTF-8 and control characters (newlines and tabs are kept).
+     *
+     * @since 2.0.3
+     *
+     * @param mixed $message Raw message.
+     *
+     * @return string
+     */
+    public static function sanitize_message( $message ) {
+        $message = wp_check_invalid_utf8( (string) $message, true );
+
+        return (string) preg_replace( '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $message );
     }
 }

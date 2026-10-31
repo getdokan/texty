@@ -198,7 +198,7 @@ class Base extends Notification {
             return false;
         }
 
-        $content = $this->get_message();
+        $content = $this->message_for_send();
 
         /**
          * Filter the notification message content.

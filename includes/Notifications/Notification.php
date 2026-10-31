@@ -2,6 +2,8 @@
 
 namespace Texty\Notifications;
 
+use Closure;
+
 abstract class Notification {
 
     /**
@@ -107,6 +109,45 @@ abstract class Notification {
     }
 
     /**
+     * Message already rendered elsewhere (e.g. at queue time), used by send()
+     * instead of rendering again.
+     *
+     * @var string|null
+     */
+    protected $prepared_message = null;
+
+    /**
+     * Use an already-rendered message for the next send().
+     *
+     * The background queue renders a notification when it's queued; passing
+     * that text here makes send() use it as-is instead of calling
+     * get_message() again, so `{placeholder}` callbacks run once.
+     * `texty_notification_message*` filters still apply in send().
+     *
+     * @since 2.0.3
+     *
+     * @param string|null $message Rendered message, or null to render normally.
+     *
+     * @return self
+     */
+    public function set_prepared_message( $message ) {
+        $this->prepared_message = null === $message ? null : (string) $message;
+
+        return $this;
+    }
+
+    /**
+     * The message send() will use: the prepared one if set, else get_message().
+     *
+     * @since 2.0.3
+     *
+     * @return string
+     */
+    protected function message_for_send() {
+        return null !== $this->prepared_message ? $this->prepared_message : $this->get_message();
+    }
+
+    /**
      * Return the message, with `{placeholders}` replaced.
      *
      * Subclasses that bind an object (order, user, comment) override this to
@@ -147,8 +188,11 @@ abstract class Notification {
      *         return $placeholders;
      *     }, 10, 2 );
      *
-     * Shorthand: an entry may also be just a callable or a string value; the
-     * label is then derived from the token.
+     * Shorthand: an entry may also be just a value; the label is then derived
+     * from the token. Only a Closure, an invokable object or an
+     * `[ $object_or_class, 'method' ]` array is treated as a callback — a
+     * string is always literal text (so `'time'` means the text "time", never
+     * a call to time()).
      *
      * @since 2.0.3
      *
@@ -224,7 +268,7 @@ abstract class Notification {
                 continue;
             }
 
-            if ( is_callable( $placeholder['value'] ) ) {
+            if ( self::is_placeholder_callback( $placeholder['value'] ) ) {
                 $value = call_user_func( $placeholder['value'], $this, $token );
             } elseif ( array_key_exists( $token, $values ) ) {
                 $value = $values[ $token ];
@@ -262,7 +306,7 @@ abstract class Notification {
 
             $value = array_key_exists( 'value', $placeholder ) ? $placeholder['value'] : null;
 
-            if ( null !== $value && ! is_callable( $value ) ) {
+            if ( null !== $value && ! self::is_placeholder_callback( $value ) ) {
                 $fixed = self::placeholder_string( $value );
                 $value = static function () use ( $fixed ) {
                     return $fixed;
@@ -276,6 +320,28 @@ abstract class Notification {
         }
 
         return $normalized;
+    }
+
+    /**
+     * Whether a placeholder value is a callback.
+     *
+     * Deliberately excludes strings: a plain string value is literal text even
+     * when it happens to name a PHP function.
+     *
+     * @param mixed $value Value.
+     *
+     * @return bool
+     */
+    protected static function is_placeholder_callback( $value ) {
+        if ( $value instanceof Closure ) {
+            return true;
+        }
+
+        if ( is_object( $value ) || is_array( $value ) ) {
+            return is_callable( $value );
+        }
+
+        return false;
     }
 
     /**
@@ -338,6 +404,11 @@ abstract class Notification {
      * a value callable — the global keys plus anything added or overridden
      * through `texty_notification_placeholders` — so third-party placeholders
      * work for those notifications too.
+     *
+     * Limitation: by the time this runs, such a subclass has already replaced
+     * its own built-in tokens, so overriding or removing *those* tokens via
+     * the filter has no effect there. Subclasses should pass their values to
+     * render_placeholders( $message, $values ) instead to fully support it.
      *
      * @param string $message
      *
@@ -490,7 +561,7 @@ abstract class Notification {
         // Check unique recipients numbers
         $recipients = array_unique( $recipients );
 
-        $content = $this->get_message();
+        $content = $this->message_for_send();
 
         /**
          * Filter the notification message content.

@@ -11,6 +11,7 @@
 
 namespace Texty\Api;
 
+use Texty\OrderSms as TextyOrderSms;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -64,7 +65,9 @@ class OrderSms extends Base {
                             'description'       => __( 'Message; may contain order {tokens}.', 'texty' ),
                             'type'              => 'string',
                             'required'          => true,
-                            'sanitize_callback' => 'sanitize_textarea_field',
+                            // Not sanitize_textarea_field(): it would drop "%xx"
+                            // sequences and turn "<" into "&lt;" in the SMS.
+                            'sanitize_callback' => [ TextyOrderSms::class, 'sanitize_message' ],
                         ],
                     ],
                 ],
@@ -89,7 +92,7 @@ class OrderSms extends Base {
         // `edit_others_shop_orders`, not `edit_shop_orders`: Dokan gives
         // vendors `edit_shop_orders` for their own orders, which would let any
         // vendor message any customer through this endpoint.
-        if ( ! current_user_can( 'edit_others_shop_orders' ) ) {
+        if ( ! current_user_can( TextyOrderSms::capability() ) ) {
             return new WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to message customers about orders.', 'texty' ), [ 'status' => rest_authorization_required_code() ] );
         }
 

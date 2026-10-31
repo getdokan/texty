@@ -2,6 +2,7 @@
 
 namespace Texty\Admin;
 
+use Texty\OrderSms;
 use WC_Order;
 use WP_Post;
 
@@ -46,7 +47,7 @@ class OrderSmsBox {
      * @return void
      */
     public function register() {
-        if ( ! current_user_can( 'edit_others_shop_orders' ) ) {
+        if ( ! current_user_can( OrderSms::capability() ) ) {
             return;
         }
 
@@ -83,7 +84,7 @@ class OrderSmsBox {
             'tokens'      => texty()->order_sms()->tokens(),
             'gateway'     => $gateway ? (string) $gateway->name() : '',
             'settingsUrl' => admin_url( 'admin.php?page=texty#/gateway' ),
-            'maxLength'   => \Texty\OrderSms::MAX_LENGTH,
+            'maxLength'   => OrderSms::MAX_LENGTH,
         ];
 
         printf(
@@ -101,7 +102,16 @@ class OrderSmsBox {
     public function enqueue() {
         $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 
-        if ( ! $screen || $this->screen_id() !== $screen->id || ! current_user_can( 'edit_others_shop_orders' ) ) {
+        if ( ! $screen || $this->screen_id() !== $screen->id || ! current_user_can( OrderSms::capability() ) ) {
+            return;
+        }
+
+        // On HPOS the orders list shares the edit screen's id; only load on
+        // the single-order (edit / new) view.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen check.
+        $action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+
+        if ( 'shop_order' !== $screen->id && ! in_array( $action, [ 'edit', 'new' ], true ) ) {
             return;
         }
 

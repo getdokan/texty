@@ -56,7 +56,9 @@ EOD;
         $user = get_user_by( 'id', $this->user_id );
 
         if ( ! $user ) {
-            return $this->render_placeholders( $message );
+            // User deleted before the send: blank the user tokens (as before)
+            // rather than leaving `{username}` etc. in the SMS.
+            return $this->render_placeholders( $message, array_fill_keys( array_keys( $this->replacement_keys() ), '' ) );
         }
 
         $values = [];
