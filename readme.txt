@@ -88,6 +88,18 @@ Appsero SDK **does not gather any data by default.** The SDK only starts gatheri
 
 Learn more about how [Appsero collects and uses this data](https://appsero.com/privacy-policy/).
 
+= External services: outgoing IP detection =
+
+Some SMS gateways (currently SSL Wireless) only accept requests from whitelisted server IPs. For those gateways, Texty finds your server's outgoing IPv4 address by asking a public "what is my IP" service, so it can show you which IP to whitelist. This happens only when the gateway's settings page is opened, or after a message is sent through such a gateway, and the result is cached for 12 hours per server. The request contains no site or customer data; the service only sees your server's IP address.
+
+Services used, in order, until one answers:
+
+- ipify — [api.ipify.org](https://api.ipify.org) ([privacy policy](https://www.ipify.org/))
+- Amazon Web Services — [checkip.amazonaws.com](https://checkip.amazonaws.com) ([privacy notice](https://aws.amazon.com/privacy/))
+- icanhazip (Cloudflare) — [ipv4.icanhazip.com](https://ipv4.icanhazip.com) ([privacy policy](https://www.cloudflare.com/privacypolicy/))
+
+To change or disable these lookups, use the `texty_egress_ip_services` filter (return an empty array to disable them; you can still add IPs by hand).
+
 == Installation ==
 
 = Minimum Requirements =
@@ -152,6 +164,7 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 
 = Unreleased =
 
+- **New:** Gateways that require IP whitelisting (SSL Wireless) show your server's outgoing IP on their settings page, with copy buttons. On sites with several servers or a load balancer, every server's IP is listed as it sends, marked Allowed or Blocked, and you can add your host's fixed outgoing IP by hand. A blocked send's error now names the exact IP to whitelist, and SSL Wireless requests always use IPv4.
 - **New:** SSL Wireless (iSMS Plus, Bangladesh) gateway.
 - **New:** Quick Send has its own page under Texty → Quick Send, with a shortcut on the dashboard. The phone number field now starts on your store's country.
 - **New:** SMS notifications are sent in the background (using WooCommerce's Action Scheduler) instead of during checkout or order updates, so those pages no longer wait on the SMS gateway. Queued messages show as Pending in Logs, with Send now and Cancel buttons.
