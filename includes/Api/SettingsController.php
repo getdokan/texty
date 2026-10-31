@@ -470,10 +470,11 @@ class SettingsController extends BaseSettingsRESTController {
 	 */
 	private function doc_links(): array {
 		return [
-			'twilio'     => 'https://www.twilio.com/try-twilio',
-			'vonage'     => 'https://dashboard.nexmo.com/sign-up',
-			'plivo'      => 'https://console.plivo.com/accounts/register/',
-			'clickatell' => 'https://www.clickatell.com/sign-up/',
+			'twilio'      => 'https://www.twilio.com/try-twilio',
+			'vonage'      => 'https://dashboard.nexmo.com/sign-up',
+			'plivo'       => 'https://console.plivo.com/accounts/register/',
+			'clickatell'  => 'https://www.clickatell.com/sign-up/',
+			'sslwireless' => 'https://ismsplus.sslwireless.com/',
 		];
 	}
 

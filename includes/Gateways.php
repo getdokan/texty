@@ -163,10 +163,11 @@ class Gateways {
     public function all() {
         if ( ! $this->registered ) {
             $this->gateways = [
-                'twilio'     => __NAMESPACE__ . '\Gateways\Twilio',
-                'vonage'     => __NAMESPACE__ . '\Gateways\Vonage',
-                'clickatell' => __NAMESPACE__ . '\Gateways\Clickatell',
-                'plivo'      => __NAMESPACE__ . '\Gateways\Plivo',
+                'twilio'      => __NAMESPACE__ . '\Gateways\Twilio',
+                'vonage'      => __NAMESPACE__ . '\Gateways\Vonage',
+                'clickatell'  => __NAMESPACE__ . '\Gateways\Clickatell',
+                'plivo'       => __NAMESPACE__ . '\Gateways\Plivo',
+                'sslwireless' => __NAMESPACE__ . '\Gateways\SslWireless',
             ];
 
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
