@@ -8,6 +8,7 @@ const DEFAULT_METRICS: DashboardMetrics = {
   period: 'this_month',
   gateway_status: false,
   gateway_name: '',
+  gateway_label: '',
   sms_sent: 0,
   delivered: 0,
   failed: 0,

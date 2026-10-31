@@ -102,10 +102,17 @@ class Metrics extends Base {
 
             $gateway_name = texty()->settings()->gateway();
 
+            // `gateway_name` stays the registry key (e.g. `sslwireless`) for
+            // existing consumers; `gateway_label` is the gateway's display
+            // name (e.g. "SSL Wireless") for the UI.
+            $active_gateway = $gateway_name ? texty()->gateways()->active_gateway() : false;
+            $gateway_label  = $active_gateway ? (string) $active_gateway->name() : '';
+
             $response = [
                 'period'         => $period,
                 'gateway_status' => $gateway_name ? true : false,
                 'gateway_name'   => $gateway_name ? $gateway_name : '',
+                'gateway_label'  => '' !== $gateway_label ? $gateway_label : ( $gateway_name ? $gateway_name : '' ),
                 'sms_sent'       => $sent,
                 'delivered'      => $delivered,
                 'failed'         => $failed,
