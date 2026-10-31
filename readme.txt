@@ -71,6 +71,8 @@ Texty integrates with 3rd party SMS providers to add support for text messaging.
 
 Texty is built with developers in mind. Register custom gateways, add new notification types, modify messages on the fly, or integrate with any WordPress plugin. See the [Developer Documentation](https://github.com/getdokan/texty#developer-documentation) for details.
 
+Message placeholders such as `{order_id}` can be added, overridden or removed with the `texty_notification_placeholders` filter (or `texty_notification_placeholders_{notification_id}` for one notification). Changes appear in the "Available variables" lists and the order "Send SMS" box, and are applied when messages are sent.
+
 = Disclaimer =
 
 Texty integrates with 3rd party providers to send SMS messages. Please review each provider's terms before use:
@@ -164,6 +166,7 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 
 = Unreleased =
 
+- **New:** Developers can add, override or remove message placeholders (like `{order_id}`) with the `texty_notification_placeholders` filter. Custom placeholders show up in the "Available variables" lists and the order "Send SMS" box, and are filled in when messages are sent.
 - **New:** Gateways that require IP whitelisting (SSL Wireless) show your server's outgoing IP on their settings page, with copy buttons. On sites with several servers or a load balancer, every server's IP is listed as it sends, marked Allowed or Blocked, and you can add your host's fixed outgoing IP by hand. A blocked send's error now names the exact IP to whitelist, and SSL Wireless requests always use IPv4.
 - **New:** Send an SMS from the WooCommerce order screen. A "Send SMS" box above Order notes suggests the order's billing, shipping and Dokan vendor numbers as you type (or enter any number), fills order details like {order_id} and {order_total}, counts characters and SMS parts (including Bangla/Unicode), and records the message as a private order note. Available to admins and shop managers.
 - **New:** Automatic order SMS (processing, completed, vendor and admin alerts) now add a private order note with the message and each recipient's result. Turn off with `add_filter( 'texty_add_order_sms_note', '__return_false' );`.

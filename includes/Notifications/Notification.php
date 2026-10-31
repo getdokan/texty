@@ -107,12 +107,206 @@ abstract class Notification {
     }
 
     /**
-     * Return the message
+     * Return the message, with `{placeholders}` replaced.
+     *
+     * Subclasses that bind an object (order, user, comment) override this to
+     * pass their built-in values to render_placeholders().
      *
      * @return string
      */
     public function get_message() {
-        return $this->get_message_raw();
+        return $this->render_placeholders( $this->get_message_raw() );
+    }
+
+    /**
+     * Placeholders this notification supports, after third-party filters.
+     *
+     * Each entry is `'token' => [ 'label' => string, 'value' => callable|null ]`:
+     * - `label` is shown in the UI ("Available variables", the order Send SMS box).
+     * - `value` is null for built-in tokens (resolved by the notification
+     *   itself), or a callable `function ( Notification $notification, string $token ): string`.
+     *
+     * Third parties can add, override or remove placeholders:
+     *
+     *     add_filter( 'texty_notification_placeholders', function ( $placeholders, $notification ) {
+     *         // Add.
+     *         if ( $notification instanceof \Texty\Notifications\WC\Base ) {
+     *             $placeholders['tracking_number'] = [
+     *                 'label' => __( 'Tracking number', 'my-plugin' ),
+     *                 'value' => function ( $notification ) {
+     *                     $order = $notification->get_order();
+     *                     return $order ? (string) $order->get_meta( '_tracking_number' ) : '';
+     *                 },
+     *             ];
+     *         }
+     *         // Override a built-in value.
+     *         $placeholders['site_name']['value'] = function () { return 'My Shop'; };
+     *         // Remove (no longer listed, and left untouched in messages).
+     *         unset( $placeholders['items'] );
+     *
+     *         return $placeholders;
+     *     }, 10, 2 );
+     *
+     * Shorthand: an entry may also be just a callable or a string value; the
+     * label is then derived from the token.
+     *
+     * @since 2.0.3
+     *
+     * @return array<string, array{label:string, value:callable|null}>
+     */
+    public function placeholders() {
+        $placeholders = [];
+
+        foreach ( array_keys( (array) $this->replacement_keys() ) as $token ) {
+            $placeholders[ $token ] = [
+                'label' => self::placeholder_label( $token ),
+                'value' => null,
+            ];
+        }
+
+        foreach ( (array) $this->global_replacement_keys() as $token => $function ) {
+            $placeholders[ $token ] = [
+                'label' => self::placeholder_label( $token ),
+                'value' => static function () use ( $function ) {
+                    return is_callable( $function ) ? (string) call_user_func( $function ) : '';
+                },
+            ];
+        }
+
+        /**
+         * Filter the placeholders available to every notification.
+         *
+         * Add, override (set `value`) or remove (`unset`) entries. Changes are
+         * reflected both in the UI token lists and in message replacement.
+         *
+         * @since 2.0.3
+         *
+         * @param array        $placeholders `token => [ 'label' => string, 'value' => callable|null ]`.
+         * @param Notification $notification The notification.
+         */
+        $placeholders = apply_filters( 'texty_notification_placeholders', $placeholders, $this );
+
+        /**
+         * Filter the placeholders of one notification, by id
+         * (e.g. `texty_notification_placeholders_order_customer_processing`).
+         *
+         * @since 2.0.3
+         *
+         * @param array        $placeholders Placeholders after the general filter.
+         * @param Notification $notification The notification.
+         */
+        $placeholders = apply_filters( 'texty_notification_placeholders_' . $this->get_id(), $placeholders, $this );
+
+        return self::normalize_placeholders( $placeholders );
+    }
+
+    /**
+     * Replace `{placeholders}` in a message.
+     *
+     * For each placeholder still present after filtering: a callable `value`
+     * (a third-party addition or override) wins; otherwise the built-in value
+     * from `$values` is used. Removed placeholders are left untouched.
+     *
+     * @since 2.0.3
+     *
+     * @param string               $message Message template.
+     * @param array<string, mixed> $values  Built-in token => value for the bound object.
+     *
+     * @return string
+     */
+    public function render_placeholders( $message, array $values = [] ) {
+        $message = (string) $message;
+
+        foreach ( $this->placeholders() as $token => $placeholder ) {
+            $search = '{' . $token . '}';
+
+            if ( false === strpos( $message, $search ) ) {
+                continue;
+            }
+
+            if ( is_callable( $placeholder['value'] ) ) {
+                $value = call_user_func( $placeholder['value'], $this, $token );
+            } elseif ( array_key_exists( $token, $values ) ) {
+                $value = $values[ $token ];
+            } else {
+                continue;
+            }
+
+            $message = str_replace( $search, self::placeholder_string( $value ), $message );
+        }
+
+        return $message;
+    }
+
+    /**
+     * Normalize filtered placeholders to `token => [ label, value ]`.
+     *
+     * @param mixed $placeholders Filtered placeholders.
+     *
+     * @return array<string, array{label:string, value:callable|null}>
+     */
+    protected static function normalize_placeholders( $placeholders ) {
+        $normalized = [];
+
+        foreach ( (array) $placeholders as $token => $placeholder ) {
+            $token = trim( (string) $token, " \t\n\r\0\x0B{}" );
+
+            if ( '' === $token || false === $placeholder || null === $placeholder ) {
+                continue;
+            }
+
+            if ( ! is_array( $placeholder ) ) {
+                // Shorthand: a callable or a fixed value.
+                $placeholder = [ 'value' => $placeholder ];
+            }
+
+            $value = array_key_exists( 'value', $placeholder ) ? $placeholder['value'] : null;
+
+            if ( null !== $value && ! is_callable( $value ) ) {
+                $fixed = self::placeholder_string( $value );
+                $value = static function () use ( $fixed ) {
+                    return $fixed;
+                };
+            }
+
+            $normalized[ $token ] = [
+                'label' => isset( $placeholder['label'] ) && '' !== (string) $placeholder['label'] ? (string) $placeholder['label'] : self::placeholder_label( $token ),
+                'value' => $value,
+            ];
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Human label for a token: `order_total` → "Order Total".
+     *
+     * @param string $token Token without braces.
+     *
+     * @return string
+     */
+    protected static function placeholder_label( $token ) {
+        return ucwords( str_replace( '_', ' ', (string) $token ) );
+    }
+
+    /**
+     * Coerce a placeholder value to a string (null → '', objects with
+     * __toString such as WC_DateTime → their string).
+     *
+     * @param mixed $value Value.
+     *
+     * @return string
+     */
+    protected static function placeholder_string( $value ) {
+        if ( null === $value || is_array( $value ) ) {
+            return '';
+        }
+
+        if ( is_object( $value ) && ! method_exists( $value, '__toString' ) ) {
+            return '';
+        }
+
+        return (string) $value;
     }
 
     /**
@@ -137,18 +331,20 @@ abstract class Notification {
     }
 
     /**
-     * Replace messages with global replacement keys
+     * Replace the global and third-party placeholders in a message.
+     *
+     * Kept for subclasses (e.g. texty-pro automations) that replace their own
+     * tokens first and then call this: it applies every placeholder that has
+     * a value callable — the global keys plus anything added or overridden
+     * through `texty_notification_placeholders` — so third-party placeholders
+     * work for those notifications too.
      *
      * @param string $message
      *
      * @return string
      */
     protected function replace_global_keys( $message ) {
-        foreach ( $this->global_replacement_keys() as $search => $function ) {
-            $message = str_replace( '{' . $search . '}', $function(), $message );
-        }
-
-        return $message;
+        return $this->render_placeholders( $message );
     }
 
     /**

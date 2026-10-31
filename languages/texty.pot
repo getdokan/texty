@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-31T19:29:32+00:00\n"
+"POT-Creation-Date: 2026-10-31T19:43:52+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: texty\n"
@@ -238,7 +238,7 @@ msgstr ""
 msgid "Message Content"
 msgstr ""
 
-#: includes/Api/Notifications.php:188
+#: includes/Api/Notifications.php:186
 msgid "Available variables"
 msgstr ""
 
@@ -442,7 +442,7 @@ msgstr ""
 msgid "SSL Wireless rejected the request."
 msgstr ""
 
-#: includes/Gateways/SslWireless.php:239
+#: includes/Gateways/SslWireless.php:241
 msgid "SSL Wireless API token and SID are required."
 msgstr ""
 
@@ -562,27 +562,27 @@ msgid "Vendor - When Order Status is Refunded"
 msgstr ""
 
 #. translators: 1: notification title, 2: gateway name
-#: includes/Notifications/WC/Base.php:301
+#: includes/Notifications/WC/Base.php:313
 msgid "SMS “%1$s” via %2$s:"
 msgstr ""
 
-#: includes/Notifications/WC/Base.php:303
+#: includes/Notifications/WC/Base.php:315
 msgid "no gateway"
 msgstr ""
 
 #. translators: %s: phone number (masked for staff/vendor recipients)
-#: includes/Notifications/WC/Base.php:319
+#: includes/Notifications/WC/Base.php:331
 msgid "✓ Sent to %s"
 msgstr ""
 
 #. translators: 1: phone number (masked for staff/vendor recipients), 2: error code
-#: includes/Notifications/WC/Base.php:321
+#: includes/Notifications/WC/Base.php:333
 msgid "✗ Failed for %1$s (%2$s), details in Texty → Logs"
 msgstr ""
 
 #. translators: %s: SMS text
-#: includes/Notifications/WC/Base.php:325
-#: includes/OrderSms.php:172
+#: includes/Notifications/WC/Base.php:337
+#: includes/OrderSms.php:168
 msgid "Message: “%s”"
 msgstr ""
 
@@ -650,49 +650,49 @@ msgstr ""
 msgid "Shipping"
 msgstr ""
 
-#: includes/OrderSms.php:123
+#: includes/OrderSms.php:119
 msgid "Enter a valid phone number."
 msgstr ""
 
-#: includes/OrderSms.php:127
+#: includes/OrderSms.php:123
 msgid "Write a message first."
 msgstr ""
 
 #. translators: %d: maximum number of characters
-#: includes/OrderSms.php:134
+#: includes/OrderSms.php:130
 msgid "Keep the message under %d characters."
 msgstr ""
 
-#: includes/OrderSms.php:142
+#: includes/OrderSms.php:138
 msgid "No SMS gateway is active. Set one up under Texty → Gateway."
 msgstr ""
 
-#: includes/OrderSms.php:159
+#: includes/OrderSms.php:155
 msgid "The gateway did not accept the message."
 msgstr ""
 
 #. translators: 1: phone number, 2: gateway name, 3: error code
-#: includes/OrderSms.php:170
+#: includes/OrderSms.php:166
 msgid "SMS to %1$s via %2$s failed (%3$s), details in Texty → Logs"
 msgstr ""
 
 #. translators: 1: phone number, 2: gateway name, 3: message text
-#: includes/OrderSms.php:188
+#: includes/OrderSms.php:184
 msgid "SMS sent to %1$s via %2$s: “%3$s”"
 msgstr ""
 
 #. translators: %s: vendor store name
-#: includes/OrderSms.php:241
+#: includes/OrderSms.php:237
 msgid "Vendor (%s)"
 msgstr ""
 
 #. translators: %s: vendor store name
-#: includes/OrderSms.php:241
+#: includes/OrderSms.php:237
 msgid "Vendor"
 msgstr ""
 
 #. translators: 1: date, 2: time
-#: includes/OrderSms.php:266
+#: includes/OrderSms.php:262
 msgid "%1$s at %2$s"
 msgstr ""
 
