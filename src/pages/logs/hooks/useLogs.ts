@@ -1,7 +1,7 @@
 import { toast } from '@wedevs/plugin-ui';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 import type { LogsFilters, LogsResponse } from '../types';
 
@@ -33,12 +33,14 @@ type UseLogs = {
   data: LogsResponse;
   loading: boolean;
   error: string | null;
+  refresh: () => void;
 };
 
 export const useLogs = (filters: LogsFilters): UseLogs => {
   const [data, setData] = useState<LogsResponse>(EMPTY_RESPONSE);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshTick, setRefreshTick] = useState<number>(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -82,7 +84,12 @@ export const useLogs = (filters: LogsFilters): UseLogs => {
     filters.status,
     filters.type,
     filters.search,
+    refreshTick,
   ]);
 
-  return { data, loading, error };
+  const refresh = useCallback((): void => {
+    setRefreshTick((tick: number) => tick + 1);
+  }, []);
+
+  return { data, loading, error, refresh };
 };

@@ -183,40 +183,48 @@ abstract class Notification {
     protected function get_numbers_by_roles() {
         global $wpdb;
 
-        $numbers = [];
-        $roles   = $this->get_recipients_raw();
+        $roles = $this->get_recipients_raw();
 
         if ( ! ( is_array( $roles ) && $roles ) ) {
             return false;
         }
 
-        foreach ( $roles as $role ) {
-            // phpcs:disable
-            $users = get_users( [
-                'role'       => $role,
-                'fields'     => 'ID',
-                'meta_query' => [
+        // One user query across every role (a user holding two of the roles
+        // comes back once), then one meta query for all their numbers —
+        // instead of two queries per role.
+        // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+        $user_ids = get_users(
+            [
+                'role__in'    => array_values( $roles ),
+                'fields'      => 'ID',
+                'count_total' => false,
+                'meta_query'  => [
                     [
-                        'key' => 'texty_phone',
+                        'key'     => 'texty_phone',
+                        'compare' => 'EXISTS',
                     ],
                 ],
-            ] );
-            // phpcs:enable
+            ]
+        );
+        // phpcs:enable
 
-            if ( ! $users ) {
-                continue;
-            }
-
-            $results = $wpdb->get_col(
-                sprintf( "SELECT `meta_value` from $wpdb->usermeta WHERE `user_id` IN (%s) AND `meta_key` = 'texty_phone'", implode( ', ', $users ) ) // phpcs:ignore
-            );
-
-            foreach ( $results as $number ) {
-                $numbers[] = $number;
-            }
+        if ( ! $user_ids ) {
+            return [];
         }
 
-        return $numbers;
+        $user_ids     = array_map( 'absint', $user_ids );
+        $placeholders = implode( ', ', array_fill( 0, count( $user_ids ), '%d' ) );
+
+        // phpcs:disable WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery
+        $numbers = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT meta_value FROM {$wpdb->usermeta} WHERE meta_key = 'texty_phone' AND user_id IN ({$placeholders})",
+                $user_ids
+            )
+        );
+        // phpcs:enable
+
+        return is_array( $numbers ) ? $numbers : [];
     }
 
     /**

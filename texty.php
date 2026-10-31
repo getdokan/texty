@@ -91,6 +91,10 @@ final class Texty {
         new Texty\Dispatcher();
         new Texty\Compliance();
 
+        // Registers the background-send worker on every request, including
+        // the Action Scheduler runner that executes queued sends.
+        $this->queue();
+
         /**
          * Fires after the Texty plugin is fully initialized.
          *
@@ -189,6 +193,21 @@ final class Texty {
         }
 
         return $this->instances['notification'];
+    }
+
+    /**
+     * Access to the background notification queue.
+     *
+     * @since 2.0.3
+     *
+     * @return Texty\Queue
+     */
+    public function queue() {
+        if ( ! isset( $this->instances['queue'] ) ) {
+            $this->instances['queue'] = new \Texty\Queue();
+        }
+
+        return $this->instances['queue'];
     }
 
     /**

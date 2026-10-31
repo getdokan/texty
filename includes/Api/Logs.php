@@ -27,8 +27,16 @@ use WP_REST_Server;
  */
 class Logs extends Base {
 
-    const DEFAULT_PER_PAGE = 10;
-    const MAX_PER_PAGE     = 100;
+    const DEFAULT_PER_PAGE  = 10;
+    const MAX_PER_PAGE      = 100;
+    const EXPORT_BATCH_SIZE = 500;
+
+    /**
+     * Type labels already built this request, keyed by "id|group".
+     *
+     * @var array<string, string>
+     */
+    private $type_labels = [];
 
     /**
      * Constructor.
@@ -144,8 +152,77 @@ class Logs extends Base {
                         ],
                     ],
                 ],
+                [
+                    'methods'             => WP_REST_Server::DELETABLE,
+                    'callback'            => [ $this, 'cancel_pending' ],
+                    'permission_callback' => [ $this, 'admin_permissions_check' ],
+                    'args'                => [
+                        'id' => [
+                            'description' => __( 'Pending log entry ID.', 'texty' ),
+                            'type'        => 'integer',
+                            'required'    => true,
+                        ],
+                    ],
+                ],
             ]
         );
+
+        register_rest_route(
+            $this->namespace,
+            '/' . $this->rest_base . '/(?P<id>\d+)/send',
+            [
+                [
+                    'methods'             => WP_REST_Server::CREATABLE,
+                    'callback'            => [ $this, 'send_now' ],
+                    'permission_callback' => [ $this, 'admin_permissions_check' ],
+                    'args'                => [
+                        'id' => [
+                            'description' => __( 'Pending log entry ID.', 'texty' ),
+                            'type'        => 'integer',
+                            'required'    => true,
+                        ],
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * POST /logs/{id}/send — send a queued (pending) notification right now
+     * instead of waiting for the background worker.
+     *
+     * @param WP_REST_Request $request Request.
+     *
+     * @return WP_REST_Response|WP_Error
+     * @since 2.0.3
+     */
+    public function send_now( $request ) {
+        $result = texty()->queue()->send_now( (int) $request->get_param( 'id' ) );
+
+        if ( is_wp_error( $result ) ) {
+            return $result;
+        }
+
+        return rest_ensure_response( [ 'success' => true ] );
+    }
+
+    /**
+     * DELETE /logs/{id} — cancel a queued (pending) notification without
+     * sending it. Only pending rows can be deleted; sent/failed history stays.
+     *
+     * @param WP_REST_Request $request Request.
+     *
+     * @return WP_REST_Response|WP_Error
+     * @since 2.0.3
+     */
+    public function cancel_pending( $request ) {
+        $result = texty()->queue()->cancel( (int) $request->get_param( 'id' ) );
+
+        if ( is_wp_error( $result ) ) {
+            return $result;
+        }
+
+        return rest_ensure_response( [ 'success' => true ] );
     }
 
     /**
@@ -269,10 +346,32 @@ class Logs extends Base {
         $type   = sanitize_key( (string) $request->get_param( 'type' ) );
         $search = sanitize_text_field( (string) $request->get_param( 'search' ) );
 
+        // Streamed in batches instead of one per_page => -1 query, so a large
+        // log table never sits in memory (or in the object cache) all at once.
+        //
+        // Keyset pagination on the primary key (id DESC, then id < last id)
+        // instead of LIMIT/OFFSET: rows sharing a created_at second can't be
+        // skipped or repeated across batches, and rows inserted (new SMS) or
+        // deleted (claimed pending rows) mid-export can't shift later batches.
+        // Capping at the highest id at export start keeps new rows out.
+        $newest = $store->query(
+            [
+                'per_page'    => 1,
+                'orderby'     => 'id',
+                'order'       => 'DESC',
+                'no_cache'    => true,
+                'count_total' => false,
+            ]
+        );
+        $max_id = isset( $newest['items'][0] ) ? (int) ( (array) $newest['items'][0] )['id'] : 0;
+
         $args = [
-            'per_page' => -1,
-            'orderby'  => 'created_at',
-            'order'    => 'DESC',
+            'per_page'    => self::EXPORT_BATCH_SIZE,
+            'orderby'     => 'id',
+            'order'       => 'DESC',
+            'no_cache'    => true,
+            'count_total' => false,
+            'id__lte'     => $max_id,
         ];
         if ( '' !== $status ) {
             $args['status'] = $status;
@@ -283,9 +382,6 @@ class Logs extends Base {
         if ( '' !== $search ) {
             $args['search'] = $search;
         }
-
-        $result = $store->query( $args );
-        $items  = is_array( $result['items'] ?? null ) ? $result['items'] : [];
 
         $filename = 'texty-sms-logs-' . gmdate( 'Y-m-d-His' ) . '.csv';
 
@@ -313,22 +409,39 @@ class Logs extends Base {
             ]
         );
 
-        foreach ( $items as $row ) {
-            $data = $this->present_row( $row );
-            fputcsv(
-                $output,
-                [
-                    $data['id'],
-                    $data['created_at'],
-                    $data['type_label'],
-                    $data['gateway'],
-                    $data['receiver'],
-                    $data['message'],
-                    $data['status'],
-                    $data['reference_id'],
-                    $data['response'],
-                ]
-            );
+        $batch_count = 0;
+
+        // An empty table (max id 0) just writes the header row.
+        while ( $max_id > 0 ) {
+            $result = $store->query( $args );
+            $items  = is_array( $result['items'] ?? null ) ? $result['items'] : [];
+
+            $batch_count = count( $items );
+
+            foreach ( $items as $row ) {
+                $data = $this->present_row( $row );
+                fputcsv(
+                    $output,
+                    [
+                        $data['id'],
+                        $data['created_at'],
+                        $data['type_label'],
+                        $data['gateway'],
+                        $data['receiver'],
+                        $data['message'],
+                        $data['status'],
+                        $data['reference_id'],
+                        $data['response'],
+                    ]
+                );
+            }
+
+            if ( self::EXPORT_BATCH_SIZE !== $batch_count ) {
+                break;
+            }
+
+            $last          = (array) end( $items );
+            $args['id__lt'] = (int) $last['id'];
         }
 
         fclose( $output ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
@@ -408,6 +521,27 @@ class Logs extends Base {
             return '';
         }
 
+        // Rows repeat a handful of notification types; build each label once
+        // instead of instantiating the notification class for every row.
+        $cache_key = $notification_id . '|' . $notification_group;
+
+        if ( ! isset( $this->type_labels[ $cache_key ] ) ) {
+            $this->type_labels[ $cache_key ] = $this->resolve_type_label( $notification_id, $notification_group );
+        }
+
+        return $this->type_labels[ $cache_key ];
+    }
+
+    /**
+     * Resolve the "Type" label for one notification id/group pair.
+     *
+     * @param string $notification_id    Stored notification id.
+     * @param string $notification_group Stored group key.
+     *
+     * @return string
+     * @since 2.0.3
+     */
+    private function resolve_type_label( string $notification_id, string $notification_group ): string {
         $notifications = texty()->notifications()->all();
         $title         = '';
 

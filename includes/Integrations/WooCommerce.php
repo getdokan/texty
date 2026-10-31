@@ -106,10 +106,6 @@ class WooCommerce {
      * @return void
      */
     private function send( $event, $order ) {
-        $class        = texty()->notifications()->get( $event );
-        $notification = new $class();
-
-        $notification->set_order( $order );
-        $notification->send();
+        texty()->queue()->push( $event, [ 'order_id' => $order->get_id() ] );
     }
 }

@@ -8,9 +8,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-10T09:25:21+00:00\n"
+"POT-Creation-Date: 2026-10-31T18:33:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: texty\n"
 
 #. Plugin Name of the plugin
@@ -45,15 +45,19 @@ msgid "Dashboard"
 msgstr ""
 
 #: includes/Admin/Menu.php:123
-#: includes/Api/Logs.php:307
-msgid "Gateway"
+msgid "Quick Send"
 msgstr ""
 
 #: includes/Admin/Menu.php:127
-msgid "Notifications"
+#: includes/Api/Logs.php:403
+msgid "Gateway"
 msgstr ""
 
 #: includes/Admin/Menu.php:131
+msgid "Notifications"
+msgstr ""
+
+#: includes/Admin/Menu.php:135
 msgid "Logs"
 msgstr ""
 
@@ -82,81 +86,87 @@ msgstr ""
 msgid "Cannot activate a gateway that has no saved credentials. Save credentials first."
 msgstr ""
 
-#: includes/Api/Logs.php:60
+#: includes/Api/Logs.php:68
 msgid "Current page number."
 msgstr ""
 
-#: includes/Api/Logs.php:65
+#: includes/Api/Logs.php:73
 msgid "Items per page."
 msgstr ""
 
-#: includes/Api/Logs.php:70
-#: includes/Api/Logs.php:111
+#: includes/Api/Logs.php:78
+#: includes/Api/Logs.php:119
 msgid "Filter by status."
 msgstr ""
 
-#: includes/Api/Logs.php:76
-#: includes/Api/Logs.php:117
+#: includes/Api/Logs.php:84
+#: includes/Api/Logs.php:125
 msgid "Filter by notification id."
 msgstr ""
 
-#: includes/Api/Logs.php:81
-#: includes/Api/Logs.php:122
+#: includes/Api/Logs.php:89
+#: includes/Api/Logs.php:130
 msgid "Free-text search."
 msgstr ""
 
-#: includes/Api/Logs.php:86
+#: includes/Api/Logs.php:94
 msgid "Sort field."
 msgstr ""
 
-#: includes/Api/Logs.php:91
+#: includes/Api/Logs.php:99
 msgid "Sort direction."
 msgstr ""
 
-#: includes/Api/Logs.php:141
+#: includes/Api/Logs.php:149
 msgid "Log entry ID."
 msgstr ""
 
-#: includes/Api/Logs.php:226
-#: includes/Api/Logs.php:265
+#: includes/Api/Logs.php:161
+#: includes/Api/Logs.php:180
+msgid "Pending log entry ID."
+msgstr ""
+
+#: includes/Api/Logs.php:303
+#: includes/Api/Logs.php:342
+#: includes/Queue.php:406
 msgid "Logs store unavailable."
 msgstr ""
 
-#: includes/Api/Logs.php:243
+#: includes/Api/Logs.php:320
 msgid "Log entry not found."
 msgstr ""
 
-#: includes/Api/Logs.php:304
+#: includes/Api/Logs.php:400
 msgid "ID"
 msgstr ""
 
-#: includes/Api/Logs.php:305
+#: includes/Api/Logs.php:401
 msgid "Date"
 msgstr ""
 
-#: includes/Api/Logs.php:306
+#: includes/Api/Logs.php:402
 msgid "Type"
 msgstr ""
 
-#: includes/Api/Logs.php:308
+#: includes/Api/Logs.php:404
 msgid "Recipient"
 msgstr ""
 
-#: includes/Api/Logs.php:309
+#: includes/Api/Logs.php:405
 #: src/components/NotificationItem.js:77
 #: src/components/QuickSend.js:62
 msgid "Message"
 msgstr ""
 
-#: includes/Api/Logs.php:310
+#: includes/Api/Logs.php:406
 msgid "Status"
 msgstr ""
 
-#: includes/Api/Logs.php:311
+#: includes/Api/Logs.php:407
 msgid "Reference ID"
 msgstr ""
 
-#: includes/Api/Logs.php:312
+#: includes/Api/Logs.php:408
 msgid "Response"
 msgstr ""
 
@@ -168,27 +178,27 @@ msgstr ""
 msgid "SMS data store not available."
 msgstr ""
 
-#: includes/Api/Metrics.php:115
+#: includes/Api/Metrics.php:119
 msgid "Failed to load metrics data."
 msgstr ""
 
-#: includes/Api/Metrics.php:135
+#: includes/Api/Metrics.php:139
 msgid "Last Month"
 msgstr ""
 
-#: includes/Api/Metrics.php:142
+#: includes/Api/Metrics.php:146
 msgid "Last 7 Days"
 msgstr ""
 
-#: includes/Api/Metrics.php:149
+#: includes/Api/Metrics.php:153
 msgid "Last 30 Days"
 msgstr ""
 
-#: includes/Api/Metrics.php:156
+#: includes/Api/Metrics.php:160
 msgid "This Year"
 msgstr ""
 
-#: includes/Api/Metrics.php:164
+#: includes/Api/Metrics.php:168
 msgid "This Month"
 msgstr ""
 
@@ -225,61 +235,61 @@ msgstr ""
 msgid "The selected gateway"
 msgstr ""
 
-#: includes/Api/SettingsController.php:216
+#: includes/Api/SettingsController.php:217
 msgid "Invalid values format."
 msgstr ""
 
-#: includes/Api/SettingsController.php:226
+#: includes/Api/SettingsController.php:227
 msgid "Invalid scope ID."
 msgstr ""
 
 #. translators: %s: field label, e.g. "Account SID"
-#: includes/Api/SettingsController.php:358
+#: includes/Api/SettingsController.php:359
 msgid "%s is required."
 msgstr ""
 
-#: includes/Api/SettingsController.php:393
+#: includes/Api/SettingsController.php:394
 msgid "Get your account"
 msgstr ""
 
 #. translators: %s: credential field label, e.g. "Account SID"
-#: includes/Api/SettingsController.php:426
+#: includes/Api/SettingsController.php:427
 msgid "Enter %s"
 msgstr ""
 
-#: includes/Api/SettingsController.php:488
+#: includes/Api/SettingsController.php:474
 msgid "Must be a numeric value."
 msgstr ""
 
-#: includes/Api/SettingsController.php:489
+#: includes/Api/SettingsController.php:475
 msgid "Must be \"on\" or \"off\"."
 msgstr ""
 
-#: includes/Api/SettingsController.php:490
+#: includes/Api/SettingsController.php:476
 msgid "Invalid option selected."
 msgstr ""
 
-#: includes/Api/SettingsController.php:491
+#: includes/Api/SettingsController.php:477
 msgid "Must be an array."
 msgstr ""
 
-#: includes/Api/SettingsController.php:492
+#: includes/Api/SettingsController.php:478
 msgid "Contains invalid options."
 msgstr ""
 
-#: includes/Api/SettingsController.php:493
+#: includes/Api/SettingsController.php:479
 msgid "Must be a valid hex color (e.g. #ff0000)."
 msgstr ""
 
-#: includes/Api/SettingsController.php:494
+#: includes/Api/SettingsController.php:480
 msgid "Must be an object."
 msgstr ""
 
-#: includes/Api/SettingsController.php:508
+#: includes/Api/SettingsController.php:494
 msgid "You do not have permission to update settings."
 msgstr ""
 
-#: includes/Api/SettingsController.php:509
+#: includes/Api/SettingsController.php:495
 msgid "You do not have permission to view settings."
 msgstr ""
 
@@ -305,8 +315,8 @@ msgstr ""
 msgid "Send SMS with Clickatell. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the API. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Clickatell.php:65
-#: includes/Gateways/Vonage.php:65
+#: includes/Gateways/Clickatell.php:74
+#: includes/Gateways/Vonage.php:74
 msgid "API Key"
 msgstr ""
 
@@ -327,23 +337,56 @@ msgstr ""
 msgid "Send SMS with Plivo. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the Auth ID and Token from Plivo. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Plivo.php:65
+#: includes/Gateways/Plivo.php:74
 msgid "Auth ID"
 msgstr ""
 
-#: includes/Gateways/Plivo.php:71
-#: includes/Gateways/Twilio.php:71
+#: includes/Gateways/Plivo.php:80
+#: includes/Gateways/Twilio.php:80
 msgid "Auth Token"
 msgstr ""
 
-#: includes/Gateways/Plivo.php:77
-#: includes/Gateways/Twilio.php:77
-#: includes/Gateways/Vonage.php:77
+#: includes/Gateways/Plivo.php:86
+#: includes/Gateways/Twilio.php:86
+#: includes/Gateways/Vonage.php:86
 msgid "From Number"
 msgstr ""
 
-#: includes/Gateways/Plivo.php:80
+#: includes/Gateways/Plivo.php:89
 msgid "Must be a valid number associated with your Plivo account"
+msgstr ""
+
+#: includes/Gateways/SslWireless.php:33
+msgid "SSL Wireless"
+msgstr ""
+
+#. translators: URL to the SSL Wireless iSMS Plus portal
+#: includes/Gateways/SslWireless.php:44
+msgid "Send SMS in Bangladesh with SSL Wireless iSMS Plus. Get your API token and Sender ID from the <a href=\"%1$s\" target=\"_blank\">iSMS Plus portal</a>, and whitelist your server IP there."
+msgstr ""
+
+#: includes/Gateways/SslWireless.php:80
+msgid "API Token"
+msgstr ""
+
+#: includes/Gateways/SslWireless.php:86
+msgid "SID"
+msgstr ""
+
+#: includes/Gateways/SslWireless.php:89
+msgid "Stakeholder / Sender ID provided by SSL Wireless."
+msgstr ""
+
+#: includes/Gateways/SslWireless.php:106
+msgid "SSL Wireless API token and SID are not configured."
+msgstr ""
+
+#: includes/Gateways/SslWireless.php:151
+msgid "SSL Wireless rejected the request."
+msgstr ""
+
+#: includes/Gateways/SslWireless.php:194
+msgid "SSL Wireless API token and SID are required."
 msgstr ""
 
 #: includes/Gateways/Twilio.php:26
@@ -355,19 +398,19 @@ msgstr ""
 msgid "Send SMS with Twilio. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the Account SID and Token from Twilio. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Twilio.php:65
+#: includes/Gateways/Twilio.php:74
 msgid "Account SID"
 msgstr ""
 
-#: includes/Gateways/Twilio.php:80
+#: includes/Gateways/Twilio.php:89
 msgid "Must be a valid number associated with your Twilio account"
 msgstr ""
 
-#: includes/Gateways/Twilio.php:139
+#: includes/Gateways/Twilio.php:148
 msgid "Twilio Account SID and Auth Token are required."
 msgstr ""
 
-#: includes/Gateways/Twilio.php:167
+#: includes/Gateways/Twilio.php:176
 msgid "Twilio rejected the credentials."
 msgstr ""
 
@@ -376,11 +419,11 @@ msgid "Vonage (nexmo)"
 msgstr ""
 
 #. translators: Vonage dashboard settings URL and help docs
-#: includes/Gateways/Vonage.php:46
+#: includes/Gateways/Vonage.php:55
 msgid "Send SMS with Vonage (formerly Nexmo). Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the API Key and Secret from Vonage.  Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Vonage.php:71
+#: includes/Gateways/Vonage.php:80
 msgid "API Secret"
 msgstr ""
 
@@ -511,6 +554,18 @@ msgstr ""
 
 #: includes/Notifications/WP/Registration.php:18
 msgid "New User Registration"
+msgstr ""
+
+#: includes/Queue.php:174
+msgid "The message was not sent: it may be disabled, already sent, or have no recipients. Check the log for details."
+msgstr ""
+
+#: includes/Queue.php:437
+msgid "The queued message could not be found."
+msgstr ""
+
+#: includes/Queue.php:545
+msgid "This message is no longer pending."
 msgstr ""
 
 #: src/components/NotificationItem.js:34

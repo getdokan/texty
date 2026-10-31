@@ -126,16 +126,33 @@ class Base extends Notification {
         ];
     }
 
+    /**
+     * Whether this notification was already sent for the bound order.
+     *
+     * Reads the `_texty_{id}` order meta that send() uses as its
+     * at-most-once flag.
+     *
+     * @since 2.0.3
+     *
+     * @return bool
+     */
+    public function has_sent() {
+        if ( empty( $this->order ) ) {
+            return false;
+        }
+
+        return (bool) $this->order->get_meta( '_texty_' . $this->get_id(), true );
+    }
+
     public function send(): bool {
         if ( ! $this->enabled() ) {
             return false;
         }
 
         $meta_key = '_texty_' . $this->get_id();
-        $has_sent = $this->order->get_meta( $meta_key, true );
 
         // if we've already sent the message, don't send again
-        if ( $has_sent ) {
+        if ( $this->has_sent() ) {
             return false;
         }
 

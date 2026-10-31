@@ -6,9 +6,10 @@ import {
 } from '@wedevs/plugin-ui';
 import { __ } from '@wordpress/i18n';
 import { Download } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState } from '@wordpress/element';
 
 import LogDetailDialog from './components/LogDetailDialog';
+import PendingActions from './components/PendingActions';
 import StatusBadge from './components/StatusBadge';
 import { useLogs } from './hooks/useLogs';
 import type { LogItem, LogsFilters } from './types';
@@ -59,7 +60,7 @@ const Logs = () => {
     [view.page, view.perPage, view.status, view.search]
   );
 
-  const { data, loading } = useLogs(filters);
+  const { data, loading, refresh } = useLogs(filters);
 
   const handleView = (log: LogItem): void => {
     setActiveLog(log);
@@ -123,18 +124,23 @@ const Logs = () => {
         id: 'details',
         label: __('Details', 'texty'),
         render: ({ item }: { item: LogItem }) => (
-          <button
-            type="button"
-            onClick={() => handleView(item)}
-            className="cursor-pointer bg-transparent p-0 text-sm font-medium text-foreground underline underline-offset-4 hover:text-primary"
-          >
-            {__('View Log', 'texty')}
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => handleView(item)}
+              className="cursor-pointer bg-transparent p-0 text-sm font-medium text-foreground underline underline-offset-4 hover:text-primary"
+            >
+              {__('View Log', 'texty')}
+            </button>
+            {item.status === 'pending' && (
+              <PendingActions logId={item.id} onDone={refresh} />
+            )}
+          </div>
         ),
         getValue: () => '',
       },
     ],
-    []
+    [refresh]
   );
 
   const exportButton = (
