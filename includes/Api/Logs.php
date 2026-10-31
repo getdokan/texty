@@ -154,6 +154,44 @@ class Logs extends Base {
                 ],
             ]
         );
+
+        register_rest_route(
+            $this->namespace,
+            '/' . $this->rest_base . '/(?P<id>\d+)/send',
+            [
+                [
+                    'methods'             => WP_REST_Server::CREATABLE,
+                    'callback'            => [ $this, 'send_now' ],
+                    'permission_callback' => [ $this, 'admin_permissions_check' ],
+                    'args'                => [
+                        'id' => [
+                            'description' => __( 'Pending log entry ID.', 'texty' ),
+                            'type'        => 'integer',
+                            'required'    => true,
+                        ],
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * POST /logs/{id}/send — send a queued (pending) notification right now
+     * instead of waiting for the background worker.
+     *
+     * @param WP_REST_Request $request Request.
+     *
+     * @return WP_REST_Response|WP_Error
+     * @since 2.0.3
+     */
+    public function send_now( $request ) {
+        $result = texty()->queue()->send_now( (int) $request->get_param( 'id' ) );
+
+        if ( is_wp_error( $result ) ) {
+            return $result;
+        }
+
+        return rest_ensure_response( [ 'success' => true ] );
     }
 
     /**

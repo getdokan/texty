@@ -148,7 +148,8 @@ class SmsStatStore extends BaseDataStore {
      * Count rows per time bucket and status within a date range.
      *
      * Aggregates in SQL (served by `created_at_status_idx`) instead of
-     * loading every row, message and response included, into PHP.
+     * loading every row, message and response included, into PHP. Queued
+     * (`pending`) rows are excluded — they aren't send attempts yet.
      *
      * @param string $start       Range start, `Y-m-d H:i:s` in site time.
      * @param string $end         Range end, `Y-m-d H:i:s` in site time.
@@ -169,6 +170,7 @@ class SmsStatStore extends BaseDataStore {
                 "SELECT DATE_FORMAT(created_at, %s) AS bucket, status, COUNT(*) AS total
                 FROM {$table}
                 WHERE created_at BETWEEN %s AND %s
+                AND status <> 'pending'
                 GROUP BY bucket, status",
                 $format,
                 $start,
