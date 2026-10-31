@@ -8,9 +8,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-10T09:25:21+00:00\n"
+"POT-Creation-Date: 2026-10-31T18:08:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: texty\n"
 
 #. Plugin Name of the plugin
@@ -45,7 +45,7 @@ msgid "Dashboard"
 msgstr ""
 
 #: includes/Admin/Menu.php:123
-#: includes/Api/Logs.php:307
+#: includes/Api/Logs.php:345
 msgid "Gateway"
 msgstr ""
 
@@ -117,46 +117,51 @@ msgstr ""
 msgid "Log entry ID."
 msgstr ""
 
-#: includes/Api/Logs.php:226
-#: includes/Api/Logs.php:265
+#: includes/Api/Logs.php:160
+msgid "Pending log entry ID."
+msgstr ""
+
+#: includes/Api/Logs.php:264
+#: includes/Api/Logs.php:303
+#: includes/Queue.php:133
 msgid "Logs store unavailable."
 msgstr ""
 
-#: includes/Api/Logs.php:243
+#: includes/Api/Logs.php:281
 msgid "Log entry not found."
 msgstr ""
 
-#: includes/Api/Logs.php:304
+#: includes/Api/Logs.php:342
 msgid "ID"
 msgstr ""
 
-#: includes/Api/Logs.php:305
+#: includes/Api/Logs.php:343
 msgid "Date"
 msgstr ""
 
-#: includes/Api/Logs.php:306
+#: includes/Api/Logs.php:344
 msgid "Type"
 msgstr ""
 
-#: includes/Api/Logs.php:308
+#: includes/Api/Logs.php:346
 msgid "Recipient"
 msgstr ""
 
-#: includes/Api/Logs.php:309
+#: includes/Api/Logs.php:347
 #: src/components/NotificationItem.js:77
 #: src/components/QuickSend.js:62
 msgid "Message"
 msgstr ""
 
-#: includes/Api/Logs.php:310
+#: includes/Api/Logs.php:348
 msgid "Status"
 msgstr ""
 
-#: includes/Api/Logs.php:311
+#: includes/Api/Logs.php:349
 msgid "Reference ID"
 msgstr ""
 
-#: includes/Api/Logs.php:312
+#: includes/Api/Logs.php:350
 msgid "Response"
 msgstr ""
 
@@ -168,27 +173,27 @@ msgstr ""
 msgid "SMS data store not available."
 msgstr ""
 
-#: includes/Api/Metrics.php:115
+#: includes/Api/Metrics.php:120
 msgid "Failed to load metrics data."
 msgstr ""
 
-#: includes/Api/Metrics.php:135
+#: includes/Api/Metrics.php:140
 msgid "Last Month"
 msgstr ""
 
-#: includes/Api/Metrics.php:142
+#: includes/Api/Metrics.php:147
 msgid "Last 7 Days"
 msgstr ""
 
-#: includes/Api/Metrics.php:149
+#: includes/Api/Metrics.php:154
 msgid "Last 30 Days"
 msgstr ""
 
-#: includes/Api/Metrics.php:156
+#: includes/Api/Metrics.php:161
 msgid "This Year"
 msgstr ""
 
-#: includes/Api/Metrics.php:164
+#: includes/Api/Metrics.php:169
 msgid "This Month"
 msgstr ""
 
@@ -511,6 +516,15 @@ msgstr ""
 
 #: includes/Notifications/WP/Registration.php:18
 msgid "New User Registration"
+msgstr ""
+
+#: includes/Queue.php:147
+#: includes/Queue.php:166
+msgid "This message is no longer pending."
+msgstr ""
+
+#: includes/Queue.php:154
+msgid "The queued message could not be found."
 msgstr ""
 
 #: src/components/NotificationItem.js:34

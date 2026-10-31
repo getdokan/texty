@@ -83,6 +83,11 @@ class Metrics extends Base {
             $delivered = 0;
             $failed    = 0;
             foreach ( $items as $row ) {
+                // Queued (not yet attempted) sends aren't counted until they run.
+                if ( isset( $row->status ) && 'pending' === $row->status ) {
+                    continue;
+                }
+
                 ++$sent;
                 if ( isset( $row->status ) ) {
                     if ( 'sent' === $row->status ) {
