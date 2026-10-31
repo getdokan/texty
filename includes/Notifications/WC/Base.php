@@ -37,6 +37,8 @@ class Base extends Notification {
             return $message;
         }
 
+        $values = [];
+
         foreach ( $this->replacement_keys() as $search => $method ) {
             $value = method_exists( $this->order, $method ) ? $this->order->$method() : '';
 
@@ -58,12 +60,22 @@ class Base extends Notification {
                 $value = $this->get_items();
             }
 
-            $message = str_replace( '{' . $search . '}', (string) $value, $message );
+            $values[ $search ] = (string) $value;
         }
 
-        $message = $this->replace_global_keys( $message );
+        // Applies third-party additions / overrides / removals too.
+        return $this->render_placeholders( $message, $values );
+    }
 
-        return $message;
+    /**
+     * The order this notification is about, for placeholder callbacks.
+     *
+     * @since 2.0.3
+     *
+     * @return object|null WC_Order (or a subclass), or null when not bound.
+     */
+    public function get_order() {
+        return empty( $this->order ) ? null : $this->order;
     }
 
     /**

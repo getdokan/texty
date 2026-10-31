@@ -91,16 +91,12 @@ class OrderSms {
      * @return array<string, string>
      */
     public function tokens() {
-        $notification = new ManualOrder();
-        $keys         = array_merge(
-            array_keys( $notification->replacement_keys() ),
-            array_keys( $notification->global_replacement_keys() )
-        );
-
         $tokens = [];
 
-        foreach ( $keys as $key ) {
-            $tokens[ '{' . $key . '}' ] = ucwords( str_replace( '_', ' ', $key ) );
+        // Filtered list, so third-party additions / overrides / removals for
+        // WooCommerce notifications show in the order Send SMS box too.
+        foreach ( ( new ManualOrder() )->placeholders() as $token => $placeholder ) {
+            $tokens[ '{' . $token . '}' ] = $placeholder['label'];
         }
 
         return $tokens;
