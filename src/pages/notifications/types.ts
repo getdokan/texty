@@ -19,6 +19,8 @@ export type NotificationItem = {
   group: string;
   recipients: string[];
   replacements: string[];
+  /** Token => label, after `texty_notification_placeholders` (2.0.3+). */
+  placeholders?: Record<string, string>;
 };
 
 export type NotificationsResponse = {

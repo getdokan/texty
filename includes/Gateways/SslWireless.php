@@ -2,6 +2,7 @@
 
 namespace Texty\Gateways;
 
+use Texty\EgressIp;
 use WP_Error;
 use WP_REST_Request;
 
@@ -12,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://ismsplus.sslwireless.com/api-documentation
  */
-class SslWireless implements GatewayInterface, HasDocLink {
+class SslWireless implements GatewayInterface, HasDocLink, RequiresIpWhitelist {
 
     /**
      * Single SMS API endpoint
@@ -23,6 +24,11 @@ class SslWireless implements GatewayInterface, HasDocLink {
      * Max length of the client SMS reference (csms_id) accepted by the API
      */
     const CSMS_ID_LENGTH = 20;
+
+    /**
+     * API status code for a request from a non-whitelisted IP
+     */
+    const IP_BLACKLISTED = 4003;
 
     /**
      * Get the name
@@ -65,6 +71,18 @@ class SslWireless implements GatewayInterface, HasDocLink {
      */
     public function doc_link() {
         return 'https://ismsplus.sslwireless.com/';
+    }
+
+    /**
+     * Where IPs are whitelisted.
+     *
+     * The iSMS Plus portal lists whitelisted IPs under Management → User IP
+     * List; adding one is done by SSL Wireless support.
+     *
+     * @return string
+     */
+    public function ip_whitelist_url() {
+        return 'https://ismsplus.sslwireless.com/admin/user-ip-list';
     }
 
     /**
@@ -115,16 +133,24 @@ class SslWireless implements GatewayInterface, HasDocLink {
             'csms_id'   => $this->generate_csms_id(),
         ];
 
-        $response = wp_remote_post(
+        // SSL Wireless whitelists IPv4 addresses: force IPv4 so a dual-stack
+        // server can't leave over IPv6 and be rejected despite a whitelisted
+        // IPv4 address.
+        $response = texty()->egress_ip()->with_ipv4(
             self::ENDPOINT,
-            [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept'       => 'application/json',
-                ],
-                'body'    => wp_json_encode( $body ),
-                'timeout' => 30,
-            ]
+            static function () use ( $body ) {
+                return wp_remote_post(
+                    self::ENDPOINT,
+                    [
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                            'Accept'       => 'application/json',
+                        ],
+                        'body'    => wp_json_encode( $body ),
+                        'timeout' => 30,
+                    ]
+                );
+            }
         );
 
         if ( is_wp_error( $response ) ) {
@@ -142,6 +168,23 @@ class SslWireless implements GatewayInterface, HasDocLink {
 
         if ( ! $ok ) {
             $code = isset( $result->status_code ) ? 'sslwireless_' . $result->status_code : 'sslwireless_failed';
+
+            // 4003 "IP Blacklisted": record which server was refused (behind a
+            // load balancer only some nodes may be whitelisted) and name the
+            // exact IP to whitelist.
+            if ( isset( $result->status_code ) && self::IP_BLACKLISTED === (int) $result->status_code ) {
+                $ip = texty()->egress_ip()->report( EgressIp::RESULT_BLOCKED, 'sslwireless' );
+
+                if ( '' !== $ip ) {
+                    $error = sprintf(
+                        /* translators: %s: this server's outgoing IPv4 address */
+                        __( 'IP Blacklisted: ask SSL Wireless to whitelist %s for your iSMS Plus account.', 'texty' ),
+                        $ip
+                    );
+
+                    return new WP_Error( $code, $error, $result );
+                }
+            }
 
             if ( ! empty( $result->error_message ) ) {
                 $error = (string) $result->error_message;
@@ -168,6 +211,10 @@ class SslWireless implements GatewayInterface, HasDocLink {
 
             return new WP_Error( $code, $error, $result );
         }
+
+        // Cached IP only: never add an echo-service lookup to a successful
+        // send (OTP codes go through here and must not wait on it).
+        texty()->egress_ip()->report( EgressIp::RESULT_ALLOWED, 'sslwireless', false );
 
         return [
             'success'      => true,

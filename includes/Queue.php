@@ -229,19 +229,14 @@ class Queue {
             ? $context['message']
             : null;
 
-        // Send the message as it was rendered at queue time. Priority 0 so
-        // every other `texty_notification_message` filter still runs after it.
-        $use_snapshot = static function ( $content, $instance ) use ( $snapshot, $notification ) {
-            return ( null !== $snapshot && $instance === $notification ) ? $snapshot : $content;
-        };
-
-        add_filter( 'texty_notification_message', $use_snapshot, 0, 2 );
-
-        try {
-            $sent = $notification->send();
-        } finally {
-            remove_filter( 'texty_notification_message', $use_snapshot, 0 );
+        // Send the message as it was rendered at queue time, without rendering
+        // it again (so `{placeholder}` callbacks run once). Every
+        // `texty_notification_message*` filter still applies in send().
+        if ( null !== $snapshot ) {
+            $notification->set_prepared_message( $snapshot );
         }
+
+        $sent = $notification->send();
 
         return $sent ? self::SENT : self::NOT_SENT;
     }

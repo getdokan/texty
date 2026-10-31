@@ -55,6 +55,14 @@ EOD;
 
         $user = get_user_by( 'id', $this->user_id );
 
+        if ( ! $user ) {
+            // User deleted before the send: blank the user tokens (as before)
+            // rather than leaving `{username}` etc. in the SMS.
+            return $this->render_placeholders( $message, array_fill_keys( array_keys( $this->replacement_keys() ), '' ) );
+        }
+
+        $values = [];
+
         foreach ( $this->replacement_keys() as $search => $value ) {
             $value = isset( $user->$value ) ? $user->$value : '';
 
@@ -71,12 +79,22 @@ EOD;
                 $value = implode( ', ', $roles );
             }
 
-            $message = str_replace( '{' . $search . '}', $value, $message );
+            $values[ $search ] = (string) $value;
         }
 
-        $message = $this->replace_global_keys( $message );
+        // Applies third-party additions / overrides / removals too.
+        return $this->render_placeholders( $message, $values );
+    }
 
-        return $message;
+    /**
+     * The registered user's ID, for placeholder callbacks.
+     *
+     * @since 2.0.3
+     *
+     * @return int
+     */
+    public function get_user_id() {
+        return (int) $this->user_id;
     }
 
     /**

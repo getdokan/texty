@@ -554,6 +554,21 @@ class Logs extends Base {
         }
 
         if ( '' === $title ) {
+            /**
+             * Filter the log "Type" title for a notification id that isn't in
+             * the notifications registry (e.g. manual order SMS, or a
+             * notification removed since the row was logged).
+             *
+             * @since 2.0.3
+             *
+             * @param string $title              Title; empty falls back to the raw id.
+             * @param string $notification_id    Stored notification id.
+             * @param string $notification_group Stored group key.
+             */
+            $title = (string) apply_filters( 'texty_log_type_title', '', $notification_id, $notification_group );
+        }
+
+        if ( '' === $title ) {
             $title = $notification_id;
         }
 

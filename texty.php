@@ -211,6 +211,36 @@ final class Texty {
     }
 
     /**
+     * Access to the outgoing-IP detector used for gateway IP whitelisting.
+     *
+     * @since 2.0.3
+     *
+     * @return Texty\EgressIp
+     */
+    public function egress_ip() {
+        if ( ! isset( $this->instances['egress_ip'] ) ) {
+            $this->instances['egress_ip'] = new \Texty\EgressIp();
+        }
+
+        return $this->instances['egress_ip'];
+    }
+
+    /**
+     * Access to the manual order SMS service.
+     *
+     * @since 2.0.3
+     *
+     * @return Texty\OrderSms
+     */
+    public function order_sms() {
+        if ( ! isset( $this->instances['order_sms'] ) ) {
+            $this->instances['order_sms'] = new \Texty\OrderSms();
+        }
+
+        return $this->instances['order_sms'];
+    }
+
+    /**
      * Access to the migrations bootstrap.
      *
      * @return Texty\Migrations

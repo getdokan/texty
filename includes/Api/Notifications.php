@@ -167,10 +167,8 @@ class Notifications extends Base {
             ];
             $values[ $id . '_message' ] = $message;
 
-            $replacements = array_merge(
-                array_keys( $obj->replacement_keys() ),
-                array_keys( $obj->global_replacement_keys() )
-            );
+            // Filtered list, so third-party additions / removals show here too.
+            $replacements = array_keys( $obj->placeholders() );
 
             if ( ! empty( $replacements ) ) {
                 $tokens = array_map(
@@ -244,9 +242,14 @@ class Notifications extends Base {
                         'route'        => 'sms',
                         'group'        => $obj->get_group(),
                         'recipients'   => $obj->get_recipients_raw(),
-                        'replacements' => array_merge(
-                            array_keys( $obj->replacement_keys() ),
-                            array_keys( $obj->global_replacement_keys() )
+                        // Token keys (unchanged shape) and token => label, both
+                        // after `texty_notification_placeholders`.
+                        'replacements' => array_keys( $obj->placeholders() ),
+                        'placeholders' => array_map(
+                            static function ( $placeholder ) {
+                                return $placeholder['label'];
+                            },
+                            $obj->placeholders()
                         ),
                     ];
                 }, $notifications ), // phpcs:ignore
