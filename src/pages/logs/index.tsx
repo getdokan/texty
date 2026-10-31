@@ -9,7 +9,7 @@ import { Download } from 'lucide-react';
 import { useMemo, useState } from '@wordpress/element';
 
 import LogDetailDialog from './components/LogDetailDialog';
-import SendNowButton from './components/SendNowButton';
+import PendingActions from './components/PendingActions';
 import StatusBadge from './components/StatusBadge';
 import { useLogs } from './hooks/useLogs';
 import type { LogItem, LogsFilters } from './types';
@@ -133,7 +133,7 @@ const Logs = () => {
               {__('View Log', 'texty')}
             </button>
             {item.status === 'pending' && (
-              <SendNowButton logId={item.id} onSent={refresh} />
+              <PendingActions logId={item.id} onDone={refresh} />
             )}
           </div>
         ),

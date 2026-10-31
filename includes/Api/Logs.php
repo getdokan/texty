@@ -152,6 +152,18 @@ class Logs extends Base {
                         ],
                     ],
                 ],
+                [
+                    'methods'             => WP_REST_Server::DELETABLE,
+                    'callback'            => [ $this, 'cancel_pending' ],
+                    'permission_callback' => [ $this, 'admin_permissions_check' ],
+                    'args'                => [
+                        'id' => [
+                            'description' => __( 'Pending log entry ID.', 'texty' ),
+                            'type'        => 'integer',
+                            'required'    => true,
+                        ],
+                    ],
+                ],
             ]
         );
 
@@ -186,6 +198,25 @@ class Logs extends Base {
      */
     public function send_now( $request ) {
         $result = texty()->queue()->send_now( (int) $request->get_param( 'id' ) );
+
+        if ( is_wp_error( $result ) ) {
+            return $result;
+        }
+
+        return rest_ensure_response( [ 'success' => true ] );
+    }
+
+    /**
+     * DELETE /logs/{id} — cancel a queued (pending) notification without
+     * sending it. Only pending rows can be deleted; sent/failed history stays.
+     *
+     * @param WP_REST_Request $request Request.
+     *
+     * @return WP_REST_Response|WP_Error
+     * @since 2.0.3
+     */
+    public function cancel_pending( $request ) {
+        $result = texty()->queue()->cancel( (int) $request->get_param( 'id' ) );
 
         if ( is_wp_error( $result ) ) {
             return $result;
@@ -315,20 +346,32 @@ class Logs extends Base {
         $type   = sanitize_key( (string) $request->get_param( 'type' ) );
         $search = sanitize_text_field( (string) $request->get_param( 'search' ) );
 
-        // Streamed in pages instead of one per_page => -1 query, so a large log
-        // table never sits in memory (or in the object cache) all at once.
-        // Rows are capped at the export start time: new SMS logged mid-export
-        // would otherwise shift the DESC pages and duplicate rows.
+        // Streamed in batches instead of one per_page => -1 query, so a large
+        // log table never sits in memory (or in the object cache) all at once.
+        //
+        // Keyset pagination on the primary key (id DESC, then id < last id)
+        // instead of LIMIT/OFFSET: rows sharing a created_at second can't be
+        // skipped or repeated across batches, and rows inserted (new SMS) or
+        // deleted (claimed pending rows) mid-export can't shift later batches.
+        // Capping at the highest id at export start keeps new rows out.
+        $newest = $store->query(
+            [
+                'per_page'    => 1,
+                'orderby'     => 'id',
+                'order'       => 'DESC',
+                'no_cache'    => true,
+                'count_total' => false,
+            ]
+        );
+        $max_id = isset( $newest['items'][0] ) ? (int) ( (array) $newest['items'][0] )['id'] : 0;
+
         $args = [
             'per_page'    => self::EXPORT_BATCH_SIZE,
-            'orderby'     => 'created_at',
+            'orderby'     => 'id',
             'order'       => 'DESC',
             'no_cache'    => true,
             'count_total' => false,
-            'date_query'  => [
-                'column' => 'created_at',
-                'before' => current_time( 'mysql' ),
-            ],
+            'id__lte'     => $max_id,
         ];
         if ( '' !== $status ) {
             $args['status'] = $status;
@@ -366,10 +409,11 @@ class Logs extends Base {
             ]
         );
 
-        $page = 1;
+        $batch_count = 0;
 
-        do {
-            $result = $store->query( array_merge( $args, [ 'page' => $page ] ) );
+        // An empty table (max id 0) just writes the header row.
+        while ( $max_id > 0 ) {
+            $result = $store->query( $args );
             $items  = is_array( $result['items'] ?? null ) ? $result['items'] : [];
 
             $batch_count = count( $items );
@@ -392,8 +436,13 @@ class Logs extends Base {
                 );
             }
 
-            ++$page;
-        } while ( self::EXPORT_BATCH_SIZE === $batch_count );
+            if ( self::EXPORT_BATCH_SIZE !== $batch_count ) {
+                break;
+            }
+
+            $last          = (array) end( $items );
+            $args['id__lt'] = (int) $last['id'];
+        }
 
         fclose( $output ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
         exit;

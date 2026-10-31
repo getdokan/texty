@@ -131,7 +131,8 @@ class SslWireless implements GatewayInterface, HasDocLink {
             return $response;
         }
 
-        $result = json_decode( wp_remote_retrieve_body( $response ) );
+        $raw    = wp_remote_retrieve_body( $response );
+        $result = json_decode( $raw );
         $info   = ( $result && ! empty( $result->smsinfo ) && is_array( $result->smsinfo ) ) ? $result->smsinfo[0] : null;
 
         // Request-level status AND the per-recipient status must both be SUCCESS.
@@ -148,6 +149,21 @@ class SslWireless implements GatewayInterface, HasDocLink {
                 $error = (string) $info->status_message;
             } else {
                 $error = __( 'SSL Wireless rejected the request.', 'texty' );
+            }
+
+            // Not a JSON reply (5xx, HTML error page, WAF block): keep the HTTP
+            // status and a trimmed body so the log row says what happened.
+            if ( ! is_object( $result ) ) {
+                $http_code = (int) wp_remote_retrieve_response_code( $response );
+
+                if ( ! $http_code || 200 !== $http_code ) {
+                    $code = 'sslwireless_http_' . ( $http_code ? $http_code : 'error' );
+                }
+
+                $result = [
+                    'http_code' => $http_code,
+                    'body'      => substr( wp_strip_all_tags( (string) $raw ), 0, 500 ),
+                ];
             }
 
             return new WP_Error( $code, $error, $result );

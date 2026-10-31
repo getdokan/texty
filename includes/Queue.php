@@ -8,6 +8,7 @@ use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataLayerFactory;
 use Texty\Models\SmsStat;
 use Texty\Models\SmsStatStore;
 use Texty\Notifications\Notification;
+use Throwable;
 use WP_Error;
 
 defined( 'ABSPATH' ) || exit;
@@ -22,14 +23,18 @@ defined( 'ABSPATH' ) || exit;
  * never waits on gateway HTTP calls. Otherwise it sends immediately, as before.
  *
  * Every queued send gets a `pending` row in the SMS log (shown under
- * Logs → Pending) holding the Action Scheduler action id. Whoever runs the
- * send first — the background worker or the "Send now" button — claims the
- * row by deleting it, so a notification is sent at most once; the normal
- * send then logs its sent/failed rows. Deleting a pending row cancels it.
+ * Logs → Pending). The row stores the Action Scheduler action id in
+ * `reference_id` and the queued context in `response`, so it can be sent or
+ * cancelled from the Logs screen even if the action itself is gone. Whoever
+ * acts first — the background worker, "Send now" or "Cancel" — claims the row
+ * by deleting it, so a notification is sent at most once; the normal send
+ * then logs its sent/failed rows.
  *
- * Only ids are queued; the worker rebuilds the notification and calls its
- * normal `send()`, so idempotency (WC order meta), logging and every
- * `texty_*` send hook behave exactly as in a synchronous send.
+ * The message is rendered when the notification is queued, so tokens such as
+ * `{status}` reflect the event that triggered it rather than whatever the
+ * order looks like when the worker runs. Recipients and every `texty_*` send
+ * hook still run in the worker through the notification's normal `send()`, so
+ * idempotency (WC order meta) and logging are unchanged.
  *
  * @since 2.0.3
  */
@@ -44,6 +49,21 @@ class Queue {
      * Action Scheduler group.
      */
     const GROUP = 'texty';
+
+    /**
+     * Outcome: the pending row was already claimed by another caller.
+     */
+    const CLAIMED_ELSEWHERE = 'claimed';
+
+    /**
+     * Outcome: the notification sent to at least one recipient.
+     */
+    const SENT = 'sent';
+
+    /**
+     * Outcome: nothing was sent (disabled, already sent, no recipients, all failed).
+     */
+    const NOT_SENT = 'not_sent';
 
     /**
      * Register the worker.
@@ -68,30 +88,46 @@ class Queue {
             return;
         }
 
+        // Already sent for this order (WC\Base's `_texty_{id}` meta): don't
+        // queue a row that the worker would silently drop.
+        if ( method_exists( $notification, 'has_sent' ) && $notification->has_sent() ) {
+            return;
+        }
+
         if ( ! $this->should_queue( $notification_id, $context ) ) {
             $notification->send();
 
             return;
         }
 
-        $row_id = $this->log_pending( $notification );
+        $context['message'] = $this->render_message( $notification );
 
-        // Not `unique`: Action Scheduler's uniqueness check compares only hook
-        // and group, not args, so it would drop every other order's SMS while
-        // one is pending. Repeat sends for the same order are already stopped
-        // in the worker by WC\Base's `_texty_{id}` order meta.
-        $action_id = as_enqueue_async_action( self::HOOK, [ $notification_id, $context, $row_id ], self::GROUP );
+        $row_id    = $this->log_pending( $notification, $notification_id, $context );
+        $action_id = 0;
 
-        $store = $this->store();
+        try {
+            // Not `unique`: Action Scheduler's uniqueness check compares only
+            // hook and group, not args, so it would drop every other order's
+            // SMS while one is pending.
+            $action_id = (int) as_enqueue_async_action( self::HOOK, [ $notification_id, $context, $row_id ], self::GROUP );
+        } catch ( Throwable $e ) {
+            $action_id = 0;
+        }
 
-        if ( $row_id && $store ) {
-            if ( $action_id ) {
-                $store->update_by( [ 'id' => $row_id ], [ 'reference_id' => (string) $action_id ] );
-            } else {
-                // Couldn't queue: drop the placeholder and send inline instead.
-                $store->delete_by_id( $row_id );
-                $notification->send();
+        if ( ! $action_id ) {
+            // Nothing was queued: drop the placeholder and send inline so the
+            // notification is never lost.
+            if ( $row_id ) {
+                $this->claim( $row_id );
             }
+
+            $notification->send();
+
+            return;
+        }
+
+        if ( $row_id ) {
+            $this->update_row( $row_id, [ 'reference_id' => (string) $action_id ] );
         }
     }
 
@@ -99,24 +135,13 @@ class Queue {
      * Worker: claim the pending row, rebuild the notification and send it.
      *
      * @param string $notification_id Notification id.
-     * @param array  $context         Ids captured by push().
+     * @param array  $context         Context captured by push().
      * @param int    $row_id          Pending log row id, 0 when none was written.
      *
-     * @return bool False when another caller already claimed the row.
+     * @return void
      */
     public function run( $notification_id, $context, $row_id = 0 ) {
-        if ( $row_id && ! $this->claim( (int) $row_id ) ) {
-            // Already sent via "Send now" or the worker, or cancelled by deleting the row.
-            return false;
-        }
-
-        $notification = $this->build( (string) $notification_id, is_array( $context ) ? $context : [] );
-
-        if ( $notification ) {
-            $notification->send();
-        }
-
-        return true;
+        $this->execute( (string) $notification_id, is_array( $context ) ? $context : [], (int) $row_id );
     }
 
     /**
@@ -127,46 +152,98 @@ class Queue {
      * @return true|WP_Error
      */
     public function send_now( $row_id ) {
-        $store = $this->store();
+        $queued = $this->queued_from_row( $row_id );
 
-        if ( ! $store ) {
-            return new WP_Error( 'texty_no_store', __( 'Logs store unavailable.', 'texty' ), [ 'status' => 500 ] );
-        }
-
-        $result = $store->query(
-            [
-                'id'          => (int) $row_id,
-                'per_page'    => 1,
-                'count_total' => false,
-                'no_cache'    => true,
-            ]
-        );
-        $row    = isset( $result['items'][0] ) ? (array) $result['items'][0] : null;
-
-        if ( ! $row || 'pending' !== ( $row['status'] ?? '' ) ) {
-            return new WP_Error( 'texty_not_pending', __( 'This message is no longer pending.', 'texty' ), [ 'status' => 409 ] );
-        }
-
-        $action_id = (int) ( $row['reference_id'] ?? 0 );
-        $args      = $this->action_args( $action_id );
-
-        if ( ! $args ) {
-            return new WP_Error( 'texty_action_missing', __( 'The queued message could not be found.', 'texty' ), [ 'status' => 404 ] );
+        if ( is_wp_error( $queued ) ) {
+            return $queued;
         }
 
         // Stop the background copy; if it already started, the row claim in
-        // run() still guarantees only one of the two sends goes out.
-        try {
-            ActionScheduler::store()->cancel_action( $action_id );
-        } catch ( Exception $e ) {
-            unset( $e );
+        // execute() still guarantees only one of the two sends goes out.
+        $this->cancel_action( $queued['action_id'] );
+
+        $outcome = $this->execute( $queued['notification_id'], $queued['context'], (int) $row_id );
+
+        if ( self::CLAIMED_ELSEWHERE === $outcome ) {
+            return $this->not_pending_error();
         }
 
-        if ( ! $this->run( $args[0], $args[1], (int) $row_id ) ) {
-            return new WP_Error( 'texty_not_pending', __( 'This message is no longer pending.', 'texty' ), [ 'status' => 409 ] );
+        if ( self::NOT_SENT === $outcome ) {
+            return new WP_Error(
+                'texty_not_sent',
+                __( 'The message was not sent: it may be disabled, already sent, or have no recipients. Check the log for details.', 'texty' ),
+                [ 'status' => 422 ]
+            );
         }
 
         return true;
+    }
+
+    /**
+     * Cancel a queued notification without sending it.
+     *
+     * @param int $row_id Pending log row id.
+     *
+     * @return true|WP_Error
+     */
+    public function cancel( $row_id ) {
+        $queued = $this->queued_from_row( $row_id );
+
+        if ( is_wp_error( $queued ) && 'texty_action_missing' !== $queued->get_error_code() ) {
+            return $queued;
+        }
+
+        if ( ! $this->claim( (int) $row_id ) ) {
+            return $this->not_pending_error();
+        }
+
+        if ( ! is_wp_error( $queued ) ) {
+            $this->cancel_action( $queued['action_id'] );
+        }
+
+        return true;
+    }
+
+    /**
+     * Claim the row (if any), rebuild the notification and send it.
+     *
+     * @param string $notification_id Notification id.
+     * @param array  $context         Context captured by push().
+     * @param int    $row_id          Pending log row id, 0 when none.
+     *
+     * @return string One of the outcome constants.
+     */
+    protected function execute( $notification_id, array $context, $row_id ) {
+        if ( $row_id && ! $this->claim( $row_id ) ) {
+            // Already sent or cancelled by another caller.
+            return self::CLAIMED_ELSEWHERE;
+        }
+
+        $notification = $this->build( $notification_id, $context );
+
+        if ( ! $notification ) {
+            return self::NOT_SENT;
+        }
+
+        $snapshot = isset( $context['message'] ) && is_string( $context['message'] ) && '' !== $context['message']
+            ? $context['message']
+            : null;
+
+        // Send the message as it was rendered at queue time. Priority 0 so
+        // every other `texty_notification_message` filter still runs after it.
+        $use_snapshot = static function ( $content, $instance ) use ( $snapshot, $notification ) {
+            return ( null !== $snapshot && $instance === $notification ) ? $snapshot : $content;
+        };
+
+        add_filter( 'texty_notification_message', $use_snapshot, 0, 2 );
+
+        try {
+            $sent = $notification->send();
+        } finally {
+            remove_filter( 'texty_notification_message', $use_snapshot, 0 );
+        }
+
+        return $sent ? self::SENT : self::NOT_SENT;
     }
 
     /**
@@ -200,7 +277,11 @@ class Queue {
             $notification->set_vendor( (int) $context['vendor_id'] );
         }
 
-        if ( ! empty( $context['user_id'] ) && method_exists( $notification, 'set_user' ) ) {
+        if ( ! empty( $context['user_id'] ) ) {
+            if ( ! get_userdata( (int) $context['user_id'] ) || ! method_exists( $notification, 'set_user' ) ) {
+                return null;
+            }
+
             $notification->set_user( (int) $context['user_id'] );
         }
 
@@ -226,6 +307,7 @@ class Queue {
     protected function should_queue( $notification_id, array $context ) {
         $available = function_exists( 'as_enqueue_async_action' )
             && class_exists( ActionScheduler::class )
+            && method_exists( ActionScheduler::class, 'is_initialized' )
             && ActionScheduler::is_initialized();
 
         /**
@@ -244,23 +326,34 @@ class Queue {
     }
 
     /**
-     * Write the `pending` log row for a queued notification.
+     * Render the notification message now, for the queue-time snapshot.
      *
      * @param Notification $notification Bound notification.
      *
+     * @return string
+     */
+    protected function render_message( Notification $notification ) {
+        try {
+            return (string) $notification->get_message();
+        } catch ( Throwable $e ) {
+            return '';
+        }
+    }
+
+    /**
+     * Write the `pending` log row for a queued notification.
+     *
+     * @param Notification $notification    Bound notification.
+     * @param string       $notification_id Notification id.
+     * @param array        $context         Queued context (ids + message snapshot).
+     *
      * @return int Row id, 0 on failure.
      */
-    protected function log_pending( Notification $notification ) {
+    protected function log_pending( Notification $notification, $notification_id, array $context ) {
         $store = $this->store();
 
         if ( ! $store ) {
             return 0;
-        }
-
-        try {
-            $message = (string) $notification->get_message();
-        } catch ( Exception $e ) {
-            $message = '';
         }
 
         $gateway = texty()->gateways()->active_gateway();
@@ -274,15 +367,81 @@ class Queue {
                 'status'             => 'pending',
                 'notification_id'    => (string) $notification->get_id(),
                 'notification_group' => (string) $notification->get_group(),
-                'message'            => $message,
-                'response'           => '',
+                'message'            => isset( $context['message'] ) ? (string) $context['message'] : '',
+                'response'           => wp_json_encode(
+                    [
+                        'queued' => [
+                            'notification_id' => $notification_id,
+                            'context'         => $context,
+                        ],
+                    ]
+                ),
                 'reference_id'       => '',
                 'created_at'         => $now,
                 'updated_at'         => $now,
             ]
         );
 
-        return (int) $store->create( $sms );
+        try {
+            return (int) $store->create( $sms );
+        } catch ( Throwable $e ) {
+            return 0;
+        }
+    }
+
+    /**
+     * Load a pending row and resolve what it queued.
+     *
+     * Prefers the context stored on the row; falls back to the Action
+     * Scheduler action args for rows written before the context was stored.
+     *
+     * @param int $row_id Pending log row id.
+     *
+     * @return array{notification_id:string,context:array,action_id:int}|WP_Error
+     */
+    protected function queued_from_row( $row_id ) {
+        $store = $this->store();
+
+        if ( ! $store ) {
+            return new WP_Error( 'texty_no_store', __( 'Logs store unavailable.', 'texty' ), [ 'status' => 500 ] );
+        }
+
+        $result = $store->query(
+            [
+                'id'          => (int) $row_id,
+                'per_page'    => 1,
+                'count_total' => false,
+                'no_cache'    => true,
+            ]
+        );
+        $row    = isset( $result['items'][0] ) ? (array) $result['items'][0] : null;
+
+        if ( ! $row || 'pending' !== ( $row['status'] ?? '' ) ) {
+            return $this->not_pending_error();
+        }
+
+        $action_id = (int) ( $row['reference_id'] ?? 0 );
+        $stored    = json_decode( (string) ( $row['response'] ?? '' ), true );
+
+        if ( isset( $stored['queued']['notification_id'], $stored['queued']['context'] ) && is_array( $stored['queued']['context'] ) ) {
+            return [
+                'notification_id' => (string) $stored['queued']['notification_id'],
+                'context'         => $stored['queued']['context'],
+                'action_id'       => $action_id,
+            ];
+        }
+
+        $args = $this->action_args( $action_id );
+
+        if ( ! $args ) {
+            return new WP_Error( 'texty_action_missing', __( 'The queued message could not be found.', 'texty' ), [ 'status' => 404 ] );
+        }
+
+        return [
+            'notification_id' => (string) $args[0],
+            'context'         => $args[1],
+            'action_id'       => $action_id,
+        ];
     }
 
     /**
@@ -312,6 +471,47 @@ class Queue {
     }
 
     /**
+     * Update columns on a log row, swallowing store errors.
+     *
+     * @param int   $row_id Row id.
+     * @param array $data   Column => value.
+     *
+     * @return void
+     */
+    protected function update_row( $row_id, array $data ) {
+        $store = $this->store();
+
+        if ( ! $store ) {
+            return;
+        }
+
+        try {
+            $store->update_by( [ 'id' => $row_id ], $data );
+        } catch ( Exception $e ) {
+            unset( $e );
+        }
+    }
+
+    /**
+     * Cancel a queued Action Scheduler action, if it still exists.
+     *
+     * @param int $action_id Action Scheduler action id.
+     *
+     * @return void
+     */
+    protected function cancel_action( $action_id ) {
+        if ( ! $action_id || ! class_exists( ActionScheduler::class ) ) {
+            return;
+        }
+
+        try {
+            ActionScheduler::store()->cancel_action( $action_id );
+        } catch ( Throwable $e ) {
+            unset( $e );
+        }
+    }
+
+    /**
      * The [notification_id, context] args of a queued action.
      *
      * @param int $action_id Action Scheduler action id.
@@ -325,7 +525,7 @@ class Queue {
 
         try {
             $args = ActionScheduler::store()->fetch_action( $action_id )->get_args();
-        } catch ( Exception $e ) {
+        } catch ( Throwable $e ) {
             return null;
         }
 
@@ -334,6 +534,15 @@ class Queue {
         }
 
         return $args;
+    }
+
+    /**
+     * The "no longer pending" REST error.
+     *
+     * @return WP_Error
+     */
+    protected function not_pending_error() {
+        return new WP_Error( 'texty_not_pending', __( 'This message is no longer pending.', 'texty' ), [ 'status' => 409 ] );
     }
 
     /**
