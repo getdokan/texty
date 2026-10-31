@@ -29,6 +29,7 @@ class Api {
             Api\SettingsController::class,
             Api\Gateway::class,
             Api\Logs::class,
+            Api\OrderSms::class,
         ];
 
         add_action( 'rest_api_init', [ $this, 'init_api' ] );

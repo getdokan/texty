@@ -211,6 +211,21 @@ final class Texty {
     }
 
     /**
+     * Access to the manual order SMS service.
+     *
+     * @since 2.0.3
+     *
+     * @return Texty\OrderSms
+     */
+    public function order_sms() {
+        if ( ! isset( $this->instances['order_sms'] ) ) {
+            $this->instances['order_sms'] = new \Texty\OrderSms();
+        }
+
+        return $this->instances['order_sms'];
+    }
+
+    /**
      * Access to the migrations bootstrap.
      *
      * @return Texty\Migrations

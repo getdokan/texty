@@ -215,6 +215,7 @@ class Base extends Notification {
 
         $gateway  = texty()->gateways();
         $any_sent = false;
+        $outcomes = [];
 
         // Stash the active notification so the after-send logger can attach
         // notification_id / notification_group to each SmsStat row without
@@ -226,7 +227,10 @@ class Base extends Notification {
                 $result = $gateway->send( $number, $content );
 
                 if ( ! is_wp_error( $result ) && false !== $result ) {
-                    $any_sent = true;
+                    $any_sent            = true;
+                    $outcomes[ $number ] = true;
+                } else {
+                    $outcomes[ $number ] = is_wp_error( $result ) ? $result->get_error_message() : __( 'No SMS gateway is active.', 'texty' );
                 }
             }
         } finally {
@@ -242,6 +246,8 @@ class Base extends Notification {
          */
         do_action( 'texty_after_notification', $this, $recipients, $content );
 
+        $this->add_sms_note( $content, $outcomes );
+
         // Every recipient failed — release the claim so the next matching status
         // change can retry. A partial success keeps the flag so the recipients
         // who already received the SMS are not messaged again.
@@ -253,5 +259,62 @@ class Base extends Notification {
         }
 
         return true;
+    }
+
+    /**
+     * Add a private order note recording what was sent and to whom.
+     *
+     * One note per notification send, listing each recipient's result and
+     * the message text, so staff can trace SMS from the order screen the
+     * same way WooCommerce records emails.
+     *
+     * @since 2.0.3
+     *
+     * @param string                $content  Message that was sent.
+     * @param array<string, true|string> $outcomes Recipient => true, or the error message.
+     *
+     * @return void
+     */
+    protected function add_sms_note( $content, array $outcomes ) {
+        if ( empty( $this->order ) || ! $outcomes || ! method_exists( $this->order, 'add_order_note' ) ) {
+            return;
+        }
+
+        /**
+         * Filter whether Texty adds a private order note for each SMS
+         * notification sent about an order.
+         *
+         * @since 2.0.3
+         *
+         * @param bool   $add          Whether to add the note. Default true.
+         * @param Base   $notification The notification that was sent.
+         * @param object $order        The order.
+         */
+        if ( ! apply_filters( 'texty_add_order_sms_note', true, $this, $this->order ) ) {
+            return;
+        }
+
+        $gateway = texty()->gateways()->active_gateway();
+        $lines   = [
+            sprintf(
+                /* translators: 1: notification title, 2: gateway name */
+                __( 'SMS “%1$s” via %2$s:', 'texty' ),
+                $this->get_title() ? $this->get_title() : $this->get_id(),
+                $gateway ? $gateway->name() : __( 'no gateway', 'texty' )
+            ),
+        ];
+
+        foreach ( $outcomes as $number => $outcome ) {
+            $lines[] = true === $outcome
+                /* translators: %s: phone number */
+                ? sprintf( __( '✓ Sent to %s', 'texty' ), $number )
+                /* translators: 1: phone number, 2: error message */
+                : sprintf( __( '✗ Failed for %1$s: %2$s', 'texty' ), $number, $outcome );
+        }
+
+        /* translators: %s: SMS text */
+        $lines[] = sprintf( __( 'Message: “%s”', 'texty' ), $content );
+
+        $this->order->add_order_note( implode( "\n", $lines ) );
     }
 }

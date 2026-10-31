@@ -152,6 +152,8 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 
 = Unreleased =
 
+- **New:** Send an SMS from the WooCommerce order screen. A "Send SMS" box above Order notes suggests the order's billing, shipping and Dokan vendor numbers as you type (or enter any number), fills order details like {order_id} and {order_total}, counts characters and SMS parts (including Bangla/Unicode), and records the message as a private order note. Available to admins and shop managers.
+- **New:** Automatic order SMS (processing, completed, vendor and admin alerts) now add a private order note with the message and each recipient's result. Turn off with `add_filter( 'texty_add_order_sms_note', '__return_false' );`.
 - **New:** SSL Wireless (iSMS Plus, Bangladesh) gateway.
 - **New:** Quick Send has its own page under Texty → Quick Send, with a shortcut on the dashboard. The phone number field now starts on your store's country.
 - **New:** SMS notifications are sent in the background (using WooCommerce's Action Scheduler) instead of during checkout or order updates, so those pages no longer wait on the SMS gateway. Queued messages show as Pending in Logs, with Send now and Cancel buttons.
