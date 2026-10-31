@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-31T18:33:25+00:00\n"
+"POT-Creation-Date: 2026-10-31T19:05:45+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: texty\n"
@@ -63,6 +63,18 @@ msgstr ""
 
 #: includes/Admin/Profile.php:25
 msgid "Phone Number (Texty)"
+msgstr ""
+
+#: includes/Api/EgressIps.php:47
+msgid "IPv4 address."
+msgstr ""
+
+#: includes/Api/EgressIps.php:61
+msgid "Re-detect this server's IP instead of using the cached value."
+msgstr ""
+
+#: includes/Api/EgressIps.php:118
+msgid "Enter a valid IPv4 address, e.g. 203.0.113.7."
 msgstr ""
 
 #: includes/Api/Gateway.php:64
@@ -178,27 +190,27 @@ msgstr ""
 msgid "SMS data store not available."
 msgstr ""
 
-#: includes/Api/Metrics.php:119
+#: includes/Api/Metrics.php:126
 msgid "Failed to load metrics data."
 msgstr ""
 
-#: includes/Api/Metrics.php:139
+#: includes/Api/Metrics.php:146
 msgid "Last Month"
 msgstr ""
 
-#: includes/Api/Metrics.php:146
+#: includes/Api/Metrics.php:153
 msgid "Last 7 Days"
 msgstr ""
 
-#: includes/Api/Metrics.php:153
+#: includes/Api/Metrics.php:160
 msgid "Last 30 Days"
 msgstr ""
 
-#: includes/Api/Metrics.php:160
+#: includes/Api/Metrics.php:167
 msgid "This Year"
 msgstr ""
 
-#: includes/Api/Metrics.php:168
+#: includes/Api/Metrics.php:175
 msgid "This Month"
 msgstr ""
 
@@ -235,61 +247,69 @@ msgstr ""
 msgid "The selected gateway"
 msgstr ""
 
-#: includes/Api/SettingsController.php:217
+#: includes/Api/SettingsController.php:218
 msgid "Invalid values format."
 msgstr ""
 
-#: includes/Api/SettingsController.php:227
+#: includes/Api/SettingsController.php:228
 msgid "Invalid scope ID."
 msgstr ""
 
 #. translators: %s: field label, e.g. "Account SID"
-#: includes/Api/SettingsController.php:359
+#: includes/Api/SettingsController.php:365
 msgid "%s is required."
 msgstr ""
 
-#: includes/Api/SettingsController.php:394
+#: includes/Api/SettingsController.php:400
 msgid "Get your account"
 msgstr ""
 
 #. translators: %s: credential field label, e.g. "Account SID"
-#: includes/Api/SettingsController.php:427
+#: includes/Api/SettingsController.php:433
 msgid "Enter %s"
 msgstr ""
 
-#: includes/Api/SettingsController.php:474
-msgid "Must be a numeric value."
-msgstr ""
-
 #: includes/Api/SettingsController.php:475
-msgid "Must be \"on\" or \"off\"."
+msgid "IP whitelist"
 msgstr ""
 
 #: includes/Api/SettingsController.php:476
+msgid "This gateway only accepts requests from whitelisted server IPs."
+msgstr ""
+
+#: includes/Api/SettingsController.php:522
+msgid "Must be a numeric value."
+msgstr ""
+
+#: includes/Api/SettingsController.php:523
+msgid "Must be \"on\" or \"off\"."
+msgstr ""
+
+#: includes/Api/SettingsController.php:524
 msgid "Invalid option selected."
 msgstr ""
 
-#: includes/Api/SettingsController.php:477
+#: includes/Api/SettingsController.php:525
 msgid "Must be an array."
 msgstr ""
 
-#: includes/Api/SettingsController.php:478
+#: includes/Api/SettingsController.php:526
 msgid "Contains invalid options."
 msgstr ""
 
-#: includes/Api/SettingsController.php:479
+#: includes/Api/SettingsController.php:527
 msgid "Must be a valid hex color (e.g. #ff0000)."
 msgstr ""
 
-#: includes/Api/SettingsController.php:480
+#: includes/Api/SettingsController.php:528
 msgid "Must be an object."
 msgstr ""
 
-#: includes/Api/SettingsController.php:494
+#: includes/Api/SettingsController.php:542
 msgid "You do not have permission to update settings."
 msgstr ""
 
-#: includes/Api/SettingsController.php:495
+#: includes/Api/SettingsController.php:543
 msgid "You do not have permission to view settings."
 msgstr ""
 
@@ -356,36 +376,41 @@ msgstr ""
 msgid "Must be a valid number associated with your Plivo account"
 msgstr ""
 
-#: includes/Gateways/SslWireless.php:33
+#: includes/Gateways/SslWireless.php:39
 msgid "SSL Wireless"
 msgstr ""
 
 #. translators: URL to the SSL Wireless iSMS Plus portal
-#: includes/Gateways/SslWireless.php:44
+#: includes/Gateways/SslWireless.php:50
 msgid "Send SMS in Bangladesh with SSL Wireless iSMS Plus. Get your API token and Sender ID from the <a href=\"%1$s\" target=\"_blank\">iSMS Plus portal</a>, and whitelist your server IP there."
 msgstr ""
 
-#: includes/Gateways/SslWireless.php:80
+#: includes/Gateways/SslWireless.php:98
 msgid "API Token"
 msgstr ""
 
-#: includes/Gateways/SslWireless.php:86
+#: includes/Gateways/SslWireless.php:104
 msgid "SID"
 msgstr ""
 
-#: includes/Gateways/SslWireless.php:89
+#: includes/Gateways/SslWireless.php:107
 msgid "Stakeholder / Sender ID provided by SSL Wireless."
 msgstr ""
 
-#: includes/Gateways/SslWireless.php:106
+#: includes/Gateways/SslWireless.php:124
 msgid "SSL Wireless API token and SID are not configured."
 msgstr ""
 
-#: includes/Gateways/SslWireless.php:151
-msgid "SSL Wireless rejected the request."
+#. translators: %s: this server's outgoing IPv4 address
+#: includes/Gateways/SslWireless.php:181
+msgid "IP Blacklisted: ask SSL Wireless to whitelist %s for your iSMS Plus account."
 msgstr ""
 
 #: includes/Gateways/SslWireless.php:194
+msgid "SSL Wireless rejected the request."
+msgstr ""
+
+#: includes/Gateways/SslWireless.php:239
 msgid "SSL Wireless API token and SID are required."
 msgstr ""
 

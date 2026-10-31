@@ -27,6 +27,7 @@ namespace Texty\Api;
 
 use Texty\Gateways\GatewayInterface;
 use Texty\Gateways\HasDocLink;
+use Texty\Gateways\RequiresIpWhitelist;
 use Texty\Dependencies\WeDevs\WPKit\Settings\BaseSettingsRESTController;
 use WP_Error;
 use WP_REST_Request;
@@ -233,6 +234,11 @@ class SettingsController extends BaseSettingsRESTController {
 		$fields = $this->get_fields_for_page( $schema, $scope_id );
 		$nested = [];
 		foreach ( $fields as $field ) {
+			// Display-only fields (e.g. the IP whitelist panel) are never stored.
+			if ( isset( $field['persist'] ) && false === $field['persist'] ) {
+				continue;
+			}
+
 			$dep_key = $this->build_dependency_key( $field );
 			if ( array_key_exists( $dep_key, $values ) ) {
 				$path = $this->get_field_path( $field );
@@ -439,7 +445,49 @@ class SettingsController extends BaseSettingsRESTController {
 			$field_priority += 10;
 		}
 
+		if ( $gateway instanceof RequiresIpWhitelist ) {
+			$elements = array_merge( $elements, $this->ip_whitelist_schema( $key, $gateway ) );
+		}
+
 		return $elements;
+	}
+
+	/**
+	 * Schema for the "IP whitelist" panel on gateways that whitelist API
+	 * callers by IP. Rendered by the `ip_whitelist` field variant on the
+	 * frontend; `persist => false` keeps it out of the saved credentials.
+	 *
+	 * @param string              $key     Gateway registry key.
+	 * @param RequiresIpWhitelist $gateway Gateway instance.
+	 *
+	 * @return array[]
+	 * @since 2.0.3
+	 */
+	private function ip_whitelist_schema( string $key, RequiresIpWhitelist $gateway ): array {
+		$section_id = $key . '_ip_whitelist';
+
+		return [
+			[
+				'type'        => 'section',
+				'id'          => $section_id,
+				'page_id'     => $key,
+				'priority'    => 20,
+				'label'       => __( 'IP whitelist', 'texty' ),
+				'description' => __( 'This gateway only accepts requests from whitelisted server IPs.', 'texty' ),
+			],
+			[
+				'type'          => 'field',
+				'id'            => $key . '_ip_whitelist',
+				'page_id'       => $key,
+				'section_id'    => $section_id,
+				'variant'       => 'ip_whitelist',
+				'layout'        => 'full-width',
+				'priority'      => 10,
+				'persist'       => false,
+				'gateway'       => $key,
+				'whitelist_url' => esc_url_raw( $gateway->ip_whitelist_url() ),
+			],
+		];
 	}
 
 	/**
