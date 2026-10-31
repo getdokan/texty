@@ -10,7 +10,7 @@ use WP_REST_Request;
  *
  * @see https://www.clickatell.com/developers/api-documentation/rest-api-send-message/
  */
-class Clickatell implements GatewayInterface {
+class Clickatell implements GatewayInterface, HasDocLink {
 
     /**
      * API Endpoint
@@ -50,6 +50,15 @@ class Clickatell implements GatewayInterface {
      */
     public function logo() {
         return TEXTY_URL . '/assets/images/gateways/clickatell-logo.png';
+    }
+
+    /**
+     * Get the sign-up link
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://www.clickatell.com/sign-up/';
     }
 
     /**

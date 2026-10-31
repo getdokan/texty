@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://ismsplus.sslwireless.com/api-documentation
  */
-class SslWireless implements GatewayInterface {
+class SslWireless implements GatewayInterface, HasDocLink {
 
     /**
      * Single SMS API endpoint
@@ -56,6 +56,15 @@ class SslWireless implements GatewayInterface {
      */
     public function logo() {
         return TEXTY_URL . '/assets/images/gateways/common-sms.png';
+    }
+
+    /**
+     * Get the sign-up link
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://ismsplus.sslwireless.com/';
     }
 
     /**

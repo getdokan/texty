@@ -26,6 +26,7 @@
 namespace Texty\Api;
 
 use Texty\Gateways\GatewayInterface;
+use Texty\Gateways\HasDocLink;
 use Texty\Dependencies\WeDevs\WPKit\Settings\BaseSettingsRESTController;
 use WP_Error;
 use WP_REST_Request;
@@ -377,8 +378,6 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @since 2.0.0
 	 */
 	private function build_gateway_schema( string $key, GatewayInterface $gateway, int $priority ): array {
-		$doc_links = $this->doc_links();
-
 		$page = [
 			'type'        => 'page',
 			'id'          => $key,
@@ -388,8 +387,10 @@ class SettingsController extends BaseSettingsRESTController {
 			'priority'    => $priority,
 		];
 
-		if ( isset( $doc_links[ $key ] ) ) {
-			$page['doc_link']      = $doc_links[ $key ];
+		$doc_link = $gateway instanceof HasDocLink ? $gateway->doc_link() : '';
+
+		if ( $doc_link ) {
+			$page['doc_link']      = $doc_link;
 			$page['doc_link_text'] = __( 'Get your account', 'texty' );
 		}
 
@@ -460,22 +461,6 @@ class SettingsController extends BaseSettingsRESTController {
 		}
 
 		return 'text';
-	}
-
-	/**
-	 * Sign-up links for the built-in gateways, shown as the page's doc link.
-	 *
-	 * @return array<string, string>
-	 * @since 2.0.0
-	 */
-	private function doc_links(): array {
-		return [
-			'twilio'      => 'https://www.twilio.com/try-twilio',
-			'vonage'      => 'https://dashboard.nexmo.com/sign-up',
-			'plivo'       => 'https://console.plivo.com/accounts/register/',
-			'clickatell'  => 'https://www.clickatell.com/sign-up/',
-			'sslwireless' => 'https://ismsplus.sslwireless.com/',
-		];
 	}
 
 	/**
