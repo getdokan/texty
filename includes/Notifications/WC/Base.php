@@ -230,7 +230,7 @@ class Base extends Notification {
                     $any_sent            = true;
                     $outcomes[ $number ] = true;
                 } else {
-                    $outcomes[ $number ] = is_wp_error( $result ) ? $result->get_error_message() : __( 'No SMS gateway is active.', 'texty' );
+                    $outcomes[ $number ] = is_wp_error( $result ) ? (string) $result->get_error_code() : 'texty_no_gateway';
                 }
             }
         } finally {
@@ -271,7 +271,7 @@ class Base extends Notification {
      * @since 2.0.3
      *
      * @param string                $content  Message that was sent.
-     * @param array<string, true|string> $outcomes Recipient => true, or the error message.
+     * @param array<string, true|string> $outcomes Recipient => true, or the error code.
      *
      * @return void
      */
@@ -304,17 +304,48 @@ class Base extends Notification {
             ),
         ];
 
+        // Private notes are also shown to Dokan vendors on their orders, so:
+        // only the customer's number (already on the order) is shown in full;
+        // admin / vendor numbers are masked; failures show the error code
+        // only — the full gateway error (which can include e.g. the server
+        // IP) stays in Texty → Logs, which is admin-only.
+        $show_full = 'user' === $this->get_type();
+
         foreach ( $outcomes as $number => $outcome ) {
+            $display = $show_full ? $number : self::mask_phone( $number );
+
             $lines[] = true === $outcome
-                /* translators: %s: phone number */
-                ? sprintf( __( '✓ Sent to %s', 'texty' ), $number )
-                /* translators: 1: phone number, 2: error message */
-                : sprintf( __( '✗ Failed for %1$s: %2$s', 'texty' ), $number, $outcome );
+                /* translators: %s: phone number (masked for staff/vendor recipients) */
+                ? sprintf( __( '✓ Sent to %s', 'texty' ), $display )
+                /* translators: 1: phone number (masked for staff/vendor recipients), 2: error code */
+                : sprintf( __( '✗ Failed for %1$s (%2$s), details in Texty → Logs', 'texty' ), $display, $outcome );
         }
 
         /* translators: %s: SMS text */
         $lines[] = sprintf( __( 'Message: “%s”', 'texty' ), $content );
 
         $this->order->add_order_note( implode( "\n", $lines ) );
+    }
+
+    /**
+     * Mask a phone number for notes, keeping enough to recognise it.
+     *
+     * `+8801712345678` becomes `+880•••••••678`.
+     *
+     * @since 2.0.3
+     *
+     * @param string $number Phone number.
+     *
+     * @return string
+     */
+    public static function mask_phone( $number ) {
+        $number = (string) $number;
+        $length = strlen( $number );
+
+        if ( $length <= 7 ) {
+            return str_repeat( '•', max( 0, $length - 2 ) ) . substr( $number, -2 );
+        }
+
+        return substr( $number, 0, 4 ) . str_repeat( '•', $length - 7 ) . substr( $number, -3 );
     }
 }

@@ -163,8 +163,11 @@ class OrderSms {
                 implode(
                     "\n",
                     [
-                        /* translators: 1: phone number, 2: gateway name, 3: error message */
-                        sprintf( __( 'SMS to %1$s via %2$s failed: %3$s', 'texty' ), $to, $gateway->name(), $error ),
+                        // Error code only: private notes are visible to Dokan
+                        // vendors, and gateway errors can include e.g. the
+                        // server IP. The full error is in Texty → Logs.
+                        /* translators: 1: phone number, 2: gateway name, 3: error code */
+                        sprintf( __( 'SMS to %1$s via %2$s failed (%3$s), details in Texty → Logs', 'texty' ), $to, $gateway->name(), is_wp_error( $result ) ? $result->get_error_code() : 'texty_send_failed' ),
                         /* translators: %s: SMS text */
                         sprintf( __( 'Message: “%s”', 'texty' ), $content ),
                     ]
