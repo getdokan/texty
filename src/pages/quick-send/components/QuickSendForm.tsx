@@ -14,6 +14,9 @@ import PhoneInput from 'react-phone-input-2';
 
 const MAX_MESSAGE_LENGTH = 120;
 
+// Set by Texty\Admin\Menu::default_country() from WooCommerce / site locale.
+const DEFAULT_COUNTRY = window.texty?.default_country || 'us';
+
 type SendResponse = {
   success: boolean;
   message?: string;
@@ -23,7 +26,7 @@ type Props = {
   onSent?: () => void;
 };
 
-const QuickSendCard = ({ onSent }: Props) => {
+const QuickSendForm = ({ onSent }: Props) => {
   const [phone, setPhone] = useState<string>('');
   const [message, setMessage] = useState<string>('');
   const [sending, setSending] = useState<boolean>(false);
@@ -86,7 +89,7 @@ const QuickSendCard = ({ onSent }: Props) => {
           </FieldLabel>
           <FieldContent>
             <PhoneInput
-              country="us"
+              country={DEFAULT_COUNTRY}
               value={phone}
               onChange={(val: string) => setPhone(val)}
               disabled={sending}
@@ -134,4 +137,4 @@ const QuickSendCard = ({ onSent }: Props) => {
   );
 };
 
-export default QuickSendCard;
+export default QuickSendForm;
