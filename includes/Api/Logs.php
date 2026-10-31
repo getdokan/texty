@@ -27,8 +27,16 @@ use WP_REST_Server;
  */
 class Logs extends Base {
 
-    const DEFAULT_PER_PAGE = 10;
-    const MAX_PER_PAGE     = 100;
+    const DEFAULT_PER_PAGE  = 10;
+    const MAX_PER_PAGE      = 100;
+    const EXPORT_BATCH_SIZE = 500;
+
+    /**
+     * Type labels already built this request, keyed by "id|group".
+     *
+     * @var array<string, string>
+     */
+    private $type_labels = [];
 
     /**
      * Constructor.
@@ -269,10 +277,20 @@ class Logs extends Base {
         $type   = sanitize_key( (string) $request->get_param( 'type' ) );
         $search = sanitize_text_field( (string) $request->get_param( 'search' ) );
 
+        // Streamed in pages instead of one per_page => -1 query, so a large log
+        // table never sits in memory (or in the object cache) all at once.
+        // Rows are capped at the export start time: new SMS logged mid-export
+        // would otherwise shift the DESC pages and duplicate rows.
         $args = [
-            'per_page' => -1,
-            'orderby'  => 'created_at',
-            'order'    => 'DESC',
+            'per_page'    => self::EXPORT_BATCH_SIZE,
+            'orderby'     => 'created_at',
+            'order'       => 'DESC',
+            'no_cache'    => true,
+            'count_total' => false,
+            'date_query'  => [
+                'column' => 'created_at',
+                'before' => current_time( 'mysql' ),
+            ],
         ];
         if ( '' !== $status ) {
             $args['status'] = $status;
@@ -283,9 +301,6 @@ class Logs extends Base {
         if ( '' !== $search ) {
             $args['search'] = $search;
         }
-
-        $result = $store->query( $args );
-        $items  = is_array( $result['items'] ?? null ) ? $result['items'] : [];
 
         $filename = 'texty-sms-logs-' . gmdate( 'Y-m-d-His' ) . '.csv';
 
@@ -313,23 +328,34 @@ class Logs extends Base {
             ]
         );
 
-        foreach ( $items as $row ) {
-            $data = $this->present_row( $row );
-            fputcsv(
-                $output,
-                [
-                    $data['id'],
-                    $data['created_at'],
-                    $data['type_label'],
-                    $data['gateway'],
-                    $data['receiver'],
-                    $data['message'],
-                    $data['status'],
-                    $data['reference_id'],
-                    $data['response'],
-                ]
-            );
-        }
+        $page = 1;
+
+        do {
+            $result = $store->query( array_merge( $args, [ 'page' => $page ] ) );
+            $items  = is_array( $result['items'] ?? null ) ? $result['items'] : [];
+
+            $batch_count = count( $items );
+
+            foreach ( $items as $row ) {
+                $data = $this->present_row( $row );
+                fputcsv(
+                    $output,
+                    [
+                        $data['id'],
+                        $data['created_at'],
+                        $data['type_label'],
+                        $data['gateway'],
+                        $data['receiver'],
+                        $data['message'],
+                        $data['status'],
+                        $data['reference_id'],
+                        $data['response'],
+                    ]
+                );
+            }
+
+            ++$page;
+        } while ( self::EXPORT_BATCH_SIZE === $batch_count );
 
         fclose( $output ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
         exit;
@@ -408,6 +434,27 @@ class Logs extends Base {
             return '';
         }
 
+        // Rows repeat a handful of notification types; build each label once
+        // instead of instantiating the notification class for every row.
+        $cache_key = $notification_id . '|' . $notification_group;
+
+        if ( ! isset( $this->type_labels[ $cache_key ] ) ) {
+            $this->type_labels[ $cache_key ] = $this->resolve_type_label( $notification_id, $notification_group );
+        }
+
+        return $this->type_labels[ $cache_key ];
+    }
+
+    /**
+     * Resolve the "Type" label for one notification id/group pair.
+     *
+     * @param string $notification_id    Stored notification id.
+     * @param string $notification_group Stored group key.
+     *
+     * @return string
+     * @since 2.0.3
+     */
+    private function resolve_type_label( string $notification_id, string $notification_group ): string {
         $notifications = texty()->notifications()->all();
         $title         = '';
 
