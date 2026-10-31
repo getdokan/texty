@@ -118,19 +118,36 @@ class EgressIp {
     }
 
     /**
+     * This node's cached IPv4 address, without any lookup.
+     *
+     * @return string IPv4 address, or '' when nothing is cached.
+     */
+    public function cached() {
+        $cached = get_transient( self::CACHE_PREFIX . md5( $this->host() ) );
+
+        return is_string( $cached ) && $this->is_ipv4( $cached ) ? $cached : '';
+    }
+
+    /**
      * Record a send outcome for this node's IP.
      *
-     * Called by IP-whitelisted gateways after each send. Detection is cached,
-     * so this costs one echo-service request per node per cache period.
+     * Called by IP-whitelisted gateways after each send.
+     *
+     * Pass `$lookup = false` on paths that must stay fast (successful sends:
+     * OTP codes go straight through the gateway, and a cold lookup can take
+     * seconds if the echo services are slow). It then only uses an already
+     * cached IP and records nothing when none is cached; the IP gets cached
+     * the next time the settings panel is opened or a send is rejected.
      *
      * @param string $result  One of the RESULT_* constants.
      * @param string $gateway Gateway registry key.
+     * @param bool   $lookup  Whether a cold cache may trigger an echo-service lookup.
      *
      * @return string The node's IP, or '' when unknown.
      */
-    public function report( $result, $gateway = '' ) {
+    public function report( $result, $gateway = '', $lookup = true ) {
         try {
-            $ip = $this->detect();
+            $ip = $lookup ? $this->detect() : $this->cached();
 
             if ( '' !== $ip ) {
                 $this->record( $ip, $result, $gateway );

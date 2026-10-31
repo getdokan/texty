@@ -212,7 +212,9 @@ class SslWireless implements GatewayInterface, HasDocLink, RequiresIpWhitelist {
             return new WP_Error( $code, $error, $result );
         }
 
-        texty()->egress_ip()->report( EgressIp::RESULT_ALLOWED, 'sslwireless' );
+        // Cached IP only: never add an echo-service lookup to a successful
+        // send (OTP codes go through here and must not wait on it).
+        texty()->egress_ip()->report( EgressIp::RESULT_ALLOWED, 'sslwireless', false );
 
         return [
             'success'      => true,
