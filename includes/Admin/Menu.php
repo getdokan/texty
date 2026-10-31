@@ -119,6 +119,10 @@ class Menu {
                     'title' => __( 'Dashboard', 'texty' ),
                 ],
                 [
+                    'path'  => 'quick-send',
+                    'title' => __( 'Quick Send', 'texty' ),
+                ],
+                [
                     'path'  => 'gateway',
                     'title' => __( 'Gateway', 'texty' ),
                 ],
@@ -253,16 +257,56 @@ class Menu {
      */
     public function localize_script() {
         $i18n = [
-            'asset_url' => trailingslashit( TEXTY_URL ) . 'assets/',
-            'site_name' => get_bloginfo( 'name' ),
-            'rest_url'  => esc_url_raw( rest_url() ),
-            'ajax_url'  => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
-            'nonce'     => wp_create_nonce( 'wp_rest' ),
-            'version'   => [
+            'asset_url'       => trailingslashit( TEXTY_URL ) . 'assets/',
+            'site_name'       => get_bloginfo( 'name' ),
+            'rest_url'        => esc_url_raw( rest_url() ),
+            'ajax_url'        => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+            'nonce'           => wp_create_nonce( 'wp_rest' ),
+            'version'         => [
                 'lite' => TEXTY_VERSION,
             ],
+            'default_country' => $this->default_country(),
         ];
 
         return apply_filters( 'texty_localize_script', $i18n );
+    }
+
+    /**
+     * Default country for phone inputs, as a lowercase ISO 3166-1 alpha-2 code.
+     *
+     * Uses the WooCommerce store country when WooCommerce is active, otherwise
+     * the region of the site language (e.g. `bn_BD` → `bd`). Empty when
+     * neither yields a country.
+     *
+     * @since 2.0.3
+     *
+     * @return string
+     */
+    public function default_country() {
+        $country = '';
+
+        if ( function_exists( 'WC' ) && WC()->countries ) {
+            $country = WC()->countries->get_base_country();
+        }
+
+        if ( ! $country ) {
+            $parts   = explode( '_', get_locale() );
+            $country = isset( $parts[1] ) ? $parts[1] : '';
+        }
+
+        $country = strtolower( (string) $country );
+
+        if ( ! preg_match( '/^[a-z]{2}$/', $country ) ) {
+            $country = '';
+        }
+
+        /**
+         * Filter the default country used by Texty phone inputs.
+         *
+         * @since 2.0.3
+         *
+         * @param string $country Lowercase ISO 3166-1 alpha-2 code, or ''.
+         */
+        return apply_filters( 'texty_default_country', $country );
     }
 }

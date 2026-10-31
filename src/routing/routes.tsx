@@ -6,6 +6,9 @@ import type { TextyRoute } from './index';
 const Dashboard = lazy(
   () => import(/* webpackChunkName: "dashboard" */ '../pages/dashboard')
 );
+const QuickSend = lazy(
+  () => import(/* webpackChunkName: "quick-send" */ '../pages/quick-send')
+);
 const Notifications = lazy(
   () => import(/* webpackChunkName: "notifications" */ '../pages/notifications')
 );
@@ -38,6 +41,12 @@ const routes: TextyRoute[] = [
     title: __('Dashboard', 'texty'),
     path: '/dashboard',
     element: withSuspense(Dashboard),
+  },
+  {
+    id: 'texty-quick-send',
+    title: __('Quick Send', 'texty'),
+    path: '/quick-send',
+    element: withSuspense(QuickSend),
   },
   {
     id: 'texty-notifications',

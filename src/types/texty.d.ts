@@ -10,6 +10,8 @@ export interface TextyGlobal {
   rest_url?: string;
   ajax_url?: string;
   nonce?: string;
+  /** Lowercase ISO 3166-1 alpha-2 code from WooCommerce / site locale, or ''. */
+  default_country?: string;
 }
 
 declare global {
