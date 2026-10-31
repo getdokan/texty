@@ -10,7 +10,7 @@ use WP_REST_Request;
  *
  * @see https://www.plivo.com/docs/sms/api/message#send-a-message
  */
-class Plivo implements GatewayInterface {
+class Plivo implements GatewayInterface, HasDocLink {
 
     /**
      * API Endpoint
@@ -50,6 +50,15 @@ class Plivo implements GatewayInterface {
      */
     public function logo() {
         return TEXTY_URL . '/assets/images/gateways/plivo-logo.png';
+    }
+
+    /**
+     * Get the sign-up link
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://console.plivo.com/accounts/register/';
     }
 
     /**

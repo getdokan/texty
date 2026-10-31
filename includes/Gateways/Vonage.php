@@ -10,7 +10,7 @@ use WP_REST_Request;
  *
  * @see https://developer.nexmo.com/api/sms
  */
-class Vonage implements GatewayInterface {
+class Vonage implements GatewayInterface, HasDocLink {
 
     /**
      * API Endpoint
@@ -33,6 +33,15 @@ class Vonage implements GatewayInterface {
      */
     public function logo() {
         return TEXTY_URL . '/assets/images/gateways/vonage-logo.png';
+    }
+
+    /**
+     * Get the sign-up link
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://dashboard.nexmo.com/sign-up';
     }
 
     /**
