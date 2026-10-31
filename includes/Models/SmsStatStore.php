@@ -91,4 +91,54 @@ class SmsStatStore extends BaseDataStore {
     public function get_date_format_for_field( string $field ): string {
         return 'Y-m-d H:i:s';
     }
+
+    /**
+     * Count rows per time bucket and status within a date range.
+     *
+     * Aggregates in SQL (served by `created_at_status_idx`) instead of
+     * loading every row, message and response included, into PHP.
+     *
+     * @param string $start       Range start, `Y-m-d H:i:s` in site time.
+     * @param string $end         Range end, `Y-m-d H:i:s` in site time.
+     * @param string $granularity `day` or `month`.
+     *
+     * @return array<int, array{bucket:string,status:string,total:int}>
+     * @since 2.0.3
+     */
+    public function count_by_bucket_and_status( string $start, string $end, string $granularity = 'day' ): array {
+        global $wpdb;
+
+        $table  = $this->get_table_name_with_prefix();
+        $format = 'month' === $granularity ? '%Y-%m' : '%Y-%m-%d';
+
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table is the store's own table name.
+        $rows = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT DATE_FORMAT(created_at, %s) AS bucket, status, COUNT(*) AS total
+                FROM {$table}
+                WHERE created_at BETWEEN %s AND %s
+                GROUP BY bucket, status",
+                $format,
+                $start,
+                $end
+            ),
+            ARRAY_A
+        );
+        // phpcs:enable
+
+        if ( ! is_array( $rows ) ) {
+            return [];
+        }
+
+        return array_map(
+            static function ( $row ) {
+                return [
+                    'bucket' => (string) $row['bucket'],
+                    'status' => (string) $row['status'],
+                    'total'  => (int) $row['total'],
+                ];
+            },
+            $rows
+        );
+    }
 }

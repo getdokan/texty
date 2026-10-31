@@ -70,31 +70,35 @@ class Metrics extends Base {
         try {
             $store = DataLayerFactory::make_store( SmsStat::class );
 
-            if ( null === $store ) {
+            if ( ! $store instanceof SmsStatStore ) {
                 return new WP_Error( 'store_error', __( 'SMS data store not available.', 'texty' ), [ 'status' => 503 ] );
             }
 
             $period = $request->get_param( 'period' );
             $range  = $this->resolve_range( $period );
 
-            $items = $this->fetch_items( $range['start'], $range['end'] );
+            $counts = $store->count_by_bucket_and_status(
+                $range['start']->format( 'Y-m-d H:i:s' ),
+                $range['end']->format( 'Y-m-d H:i:s' ),
+                $range['granularity']
+            );
 
+            // "SMS Sent" counts every attempt; delivered/failed split it by status.
             $sent      = 0;
             $delivered = 0;
             $failed    = 0;
-            foreach ( $items as $row ) {
-                ++$sent;
-                if ( isset( $row->status ) ) {
-                    if ( 'sent' === $row->status ) {
-                        ++$delivered;
-                    } elseif ( 'failed' === $row->status ) {
-                        ++$failed;
-                    }
+            foreach ( $counts as $row ) {
+                $sent += $row['total'];
+
+                if ( 'sent' === $row['status'] ) {
+                    $delivered += $row['total'];
+                } elseif ( 'failed' === $row['status'] ) {
+                    $failed += $row['total'];
                 }
             }
 
             $delivery_rate = $sent > 0 ? round( ( $delivered / $sent ) * 100, 1 ) : 0;
-            $volume_chart  = $this->build_volume_chart( $items, $range );
+            $volume_chart  = $this->build_volume_chart( $counts, $range );
 
             $gateway_name = texty()->settings()->gateway();
 
@@ -175,28 +179,6 @@ class Metrics extends Base {
     }
 
     /**
-     * Fetch SMS records in the given range.
-     *
-     * @param DateTimeImmutable $start
-     * @param DateTimeImmutable $end
-     *
-     * @return array
-     * @since 2.0.0
-     */
-    private function fetch_items( $start, $end ) {
-        $result = SmsStat::get_sent_sms_between_dates(
-            $start->format( 'Y-m-d' ),
-            $end->format( 'Y-m-d' )
-        );
-
-        if ( empty( $result['items'] ) || ! is_array( $result['items'] ) ) {
-            return [];
-        }
-
-        return $result['items'];
-    }
-
-    /**
      * Build a series of buckets across the resolved range.
      *
      * Each bucket has:
@@ -205,14 +187,13 @@ class Metrics extends Base {
      *  - `date`   long label shown in the tooltip (16 January 2025)
      *  - `count`  number of SMS dispatched in that bucket
      *
-     * @param array $items
+     * @param array $counts Rows from SmsStatStore::count_by_bucket_and_status().
      * @param array $range
      *
      * @return array
      * @since 2.0.0
      */
-    private function build_volume_chart( $items, $range ) {
-        $tz       = wp_timezone();
+    private function build_volume_chart( $counts, $range ) {
         $start    = $range['start'];
         $end      = $range['end'];
         $is_month = 'month' === $range['granularity'];
@@ -232,21 +213,10 @@ class Metrics extends Base {
             $cursor = $cursor->modify( $is_month ? '+1 month' : '+1 day' );
         }
 
-        foreach ( $items as $row ) {
-            if ( empty( $row->created_at ) ) {
-                continue;
-            }
-
-            try {
-                $created = new DateTimeImmutable( $row->created_at, $tz );
-            } catch ( Exception $e ) {
-                continue;
-            }
-
-            $key = $is_month ? $created->format( 'Y-m' ) : $created->format( 'Y-m-d' );
-
-            if ( isset( $buckets[ $key ] ) && isset( $row->status ) && 'sent' === $row->status ) {
-                ++$buckets[ $key ]['count'];
+        // Buckets use the same Y-m / Y-m-d keys the SQL DATE_FORMAT produces.
+        foreach ( $counts as $row ) {
+            if ( 'sent' === $row['status'] && isset( $buckets[ $row['bucket'] ] ) ) {
+                $buckets[ $row['bucket'] ]['count'] += $row['total'];
             }
         }
 
