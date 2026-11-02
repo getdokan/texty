@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://developer.nexmo.com/api/sms
  */
-class Vonage extends AbstractGateway {
+class Vonage extends AbstractGateway implements HasDocLink {
 
     /**
      * API Endpoint
@@ -62,6 +62,15 @@ class Vonage extends AbstractGateway {
      */
     public function logo() {
         return TEXTY_URL . '/assets/images/gateways/vonage-logo.png';
+    }
+
+    /**
+     * Get the sign-up link
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://dashboard.nexmo.com/sign-up';
     }
 
     /**

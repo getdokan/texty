@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://www.clickatell.com/developers/api-documentation/rest-api-send-message/
  */
-class Clickatell extends AbstractGateway {
+class Clickatell extends AbstractGateway implements HasDocLink {
 
     /**
      * API Endpoint
@@ -75,6 +75,15 @@ class Clickatell extends AbstractGateway {
      */
     public function logo() {
         return TEXTY_URL . '/assets/images/gateways/clickatell-logo.png';
+    }
+
+    /**
+     * Get the sign-up link
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://www.clickatell.com/sign-up/';
     }
 
     /**

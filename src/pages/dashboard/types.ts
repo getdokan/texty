@@ -15,7 +15,10 @@ export type VolumePoint = {
 export type DashboardMetrics = {
   period: DashboardPeriod;
   gateway_status: boolean;
+  /** Active gateway's registry key, e.g. `sslwireless`. */
   gateway_name: string;
+  /** Active gateway's display name, e.g. "SSL Wireless". Optional for older API responses. */
+  gateway_label?: string;
   sms_sent: number;
   delivered: number;
   failed: number;

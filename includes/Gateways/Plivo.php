@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://www.plivo.com/docs/sms/api/message#send-a-message
  */
-class Plivo extends AbstractGateway {
+class Plivo extends AbstractGateway implements HasDocLink {
 
     /**
      * API Endpoint
@@ -79,6 +79,15 @@ class Plivo extends AbstractGateway {
      */
     public function logo() {
         return TEXTY_URL . '/assets/images/gateways/plivo-logo.png';
+    }
+
+    /**
+     * Get the sign-up link
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://console.plivo.com/accounts/register/';
     }
 
     /**

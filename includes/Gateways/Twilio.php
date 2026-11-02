@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://www.twilio.com/docs/sms/api/message
  */
-class Twilio extends AbstractGateway {
+class Twilio extends AbstractGateway implements HasDocLink {
 
     /**
      * API Endpoint
@@ -84,6 +84,15 @@ class Twilio extends AbstractGateway {
      */
     public function logo() {
         return TEXTY_URL . '/assets/images/gateways/twilio-logo.png';
+    }
+
+    /**
+     * Get the sign-up link
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://www.twilio.com/try-twilio';
     }
 
     /**

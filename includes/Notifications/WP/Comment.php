@@ -57,8 +57,10 @@ EOD;
         // (deleted, trashed, or spam). Bail to the global-key pass instead of
         // dereferencing null and rendering an empty-bodied message.
         if ( ! $comment instanceof WP_Comment ) {
-            return $this->replace_global_keys( $message );
+            return $this->render_placeholders( $message );
         }
+
+        $values = [];
 
         foreach ( $this->replacement_keys() as $search => $value ) {
             // `post_url` has no comment property; everything else reads off the
@@ -69,12 +71,22 @@ EOD;
                 ? (string) get_permalink( $comment->comment_post_ID )
                 : (string) ( $comment->$value ?? '' );
 
-            $message = str_replace( '{' . $search . '}', $replacement, $message );
+            $values[ $search ] = $replacement;
         }
 
-        $message = $this->replace_global_keys( $message );
+        // Applies third-party additions / overrides / removals too.
+        return $this->render_placeholders( $message, $values );
+    }
 
-        return $message;
+    /**
+     * The comment's ID, for placeholder callbacks.
+     *
+     * @since 2.0.3
+     *
+     * @return int
+     */
+    public function get_comment_id() {
+        return (int) $this->comment_id;
     }
 
     /**

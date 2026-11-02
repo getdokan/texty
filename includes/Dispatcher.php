@@ -63,11 +63,7 @@ class Dispatcher {
      * @return void
      */
     public function user_register( $user_id ) {
-        $class    = texty()->notifications()->get( 'registration' );
-        $notifier = new $class();
-
-        $notifier->set_user( $user_id );
-        $notifier->send();
+        texty()->queue()->push( 'registration', [ 'user_id' => (int) $user_id ] );
     }
 
     /**
@@ -86,11 +82,7 @@ class Dispatcher {
             return;
         }
 
-        $class    = texty()->notifications()->get( 'comment' );
-        $notifier = new $class();
-
-        $notifier->set_comment( $comment_id );
-        $notifier->send();
+        texty()->queue()->push( 'comment', [ 'comment_id' => (int) $comment_id ] );
     }
 
     /**

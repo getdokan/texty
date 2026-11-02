@@ -119,11 +119,12 @@ class Dokan {
      * @return void
      */
     private function send( $event, $order, $vendor_id ) {
-        $class        = texty()->notifications()->get( $event );
-        $notification = new $class();
-
-        $notification->set_order( $order );
-        $notification->set_vendor( $vendor_id );
-        $notification->send();
+        texty()->queue()->push(
+            $event,
+            [
+                'order_id'  => $order->get_id(),
+                'vendor_id' => (int) $vendor_id,
+            ]
+        );
     }
 }

@@ -91,6 +91,10 @@ final class Texty {
         new Texty\Dispatcher();
         new Texty\Compliance();
 
+        // Registers the background-send worker on every request, including
+        // the Action Scheduler runner that executes queued sends.
+        $this->queue();
+
         /**
          * Fires after the Texty plugin is fully initialized.
          *
@@ -189,6 +193,51 @@ final class Texty {
         }
 
         return $this->instances['notification'];
+    }
+
+    /**
+     * Access to the background notification queue.
+     *
+     * @since 2.0.3
+     *
+     * @return Texty\Queue
+     */
+    public function queue() {
+        if ( ! isset( $this->instances['queue'] ) ) {
+            $this->instances['queue'] = new \Texty\Queue();
+        }
+
+        return $this->instances['queue'];
+    }
+
+    /**
+     * Access to the outgoing-IP detector used for gateway IP whitelisting.
+     *
+     * @since 2.0.3
+     *
+     * @return Texty\EgressIp
+     */
+    public function egress_ip() {
+        if ( ! isset( $this->instances['egress_ip'] ) ) {
+            $this->instances['egress_ip'] = new \Texty\EgressIp();
+        }
+
+        return $this->instances['egress_ip'];
+    }
+
+    /**
+     * Access to the manual order SMS service.
+     *
+     * @since 2.0.3
+     *
+     * @return Texty\OrderSms
+     */
+    public function order_sms() {
+        if ( ! isset( $this->instances['order_sms'] ) ) {
+            $this->instances['order_sms'] = new \Texty\OrderSms();
+        }
+
+        return $this->instances['order_sms'];
     }
 
     /**

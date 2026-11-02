@@ -222,6 +222,7 @@ class Gateways {
                 'infobip'    => __NAMESPACE__ . '\Gateways\Infobip',
                 'telnyx'     => __NAMESPACE__ . '\Gateways\Telnyx',
                 'bird'       => __NAMESPACE__ . '\Gateways\Bird',
+                'sslwireless' => __NAMESPACE__ . '\Gateways\SslWireless',
             ];
 
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {

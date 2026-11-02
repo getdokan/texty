@@ -15,6 +15,7 @@ import type { ReactElement } from 'react';
 import GatewayStatus from '@/components/GatewayStatus';
 
 import PhoneField from '@/components/PhoneField';
+import IpWhitelistField from './components/IpWhitelistField';
 import DetailPane from './DetailPane';
 import Sidebar from './Sidebar';
 
@@ -29,6 +30,17 @@ addFilter(
   (defaultElement: ReactElement<FieldComponentProps>) => {
     if (!isValidElement(defaultElement)) return defaultElement;
     return cloneElement(<PhoneField {...defaultElement.props} />);
+  }
+);
+
+// `ip_whitelist` variant: the outgoing-IP panel shown on gateways that only
+// accept whitelisted server IPs (`texty_settings_ip_whitelist_field`).
+addFilter(
+  'texty_settings_ip_whitelist_field',
+  'texty/gateway/ip-whitelist-field',
+  (defaultElement: ReactElement<FieldComponentProps>) => {
+    if (!isValidElement(defaultElement)) return defaultElement;
+    return cloneElement(<IpWhitelistField {...defaultElement.props} />);
   }
 );
 

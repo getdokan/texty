@@ -1,16 +1,17 @@
+import { cn } from '@wedevs/plugin-ui';
 import { __ } from '@wordpress/i18n';
 
 import GatewayStatus from '@/components/GatewayStatus';
 
 import DashboardSkeleton from './components/DashboardSkeleton';
-import QuickSendCard from './components/QuickSendCard';
+import QuickSendCta from './components/QuickSendCta';
 import StatCards from './components/StatCards';
 import VolumeAnalytics from './components/VolumeAnalytics';
 import WelcomeBanner from './components/WelcomeBanner';
 import { useDashboardMetrics } from './hooks/useDashboardMetrics';
 
 const Dashboard = () => {
-  const { period, setPeriod, metrics, loading, hasLoaded, error, refresh } =
+  const { period, setPeriod, metrics, loading, hasLoaded, error } =
     useDashboardMetrics();
 
   if (!hasLoaded) {
@@ -26,8 +27,14 @@ const Dashboard = () => {
               <p className="m-0 text-sm text-muted-foreground">
                 {__('Gateway Status', 'texty')}
               </p>
-              <p className="m-0 mt-1 text-xl font-bold text-foreground capitalize">
-                {metrics.gateway_name}
+              <p
+                className={cn(
+                  'm-0 mt-1 text-xl font-bold text-foreground',
+                  // The raw key is only a fallback; the label is already a proper name.
+                  !metrics.gateway_label && 'capitalize'
+                )}
+              >
+                {metrics.gateway_label || metrics.gateway_name}
               </p>
             </div>
             <GatewayStatus status="active" />
@@ -43,6 +50,8 @@ const Dashboard = () => {
         </div>
       )}
 
+      {metrics.gateway_status && <QuickSendCta />}
+
       <StatCards
         loading={loading}
         smsSent={metrics.sms_sent}
@@ -57,8 +66,6 @@ const Dashboard = () => {
         onPeriodChange={setPeriod}
         loading={loading}
       />
-
-      {metrics.gateway_status && <QuickSendCard onSent={refresh} />}
     </div>
   );
 };

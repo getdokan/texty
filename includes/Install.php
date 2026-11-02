@@ -46,21 +46,31 @@ class Install {
         $charset_collate = $wpdb->get_charset_collate();
         $table_name      = $wpdb->prefix . 'texty_sms_stat';
 
-        $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
-            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            receiver VARCHAR(20) NOT NULL,
-            gateway VARCHAR(50) NOT NULL,
-            status VARCHAR(20) DEFAULT NULL,
-            notification_id VARCHAR(64) DEFAULT NULL, 
-            notification_group VARCHAR(32) DEFAULT NULL,
-            message TEXT NULL,
-            response LONGTEXT NULL,
-            created_at DATETIME NOT NULL,
-            updated_at DATETIME NOT NULL,
-            reference_id VARCHAR(100) DEFAULT NULL,
-            KEY created_at_idx (created_at),
-            KEY notification_id_idx (notification_id),
-            KEY status_idx (status)
+        // dbDelta() format: no "IF NOT EXISTS" (its CREATE TABLE regex would
+        // read the table name as "IF" and never diff the real table), one
+        // definition per line, and "PRIMARY KEY  (id)" with two spaces.
+        //
+        // Indexes follow the read paths:
+        // - created_at_status_idx       dashboard metrics (range on created_at, count by status)
+        //                               and the Logs "All" tab (ORDER BY created_at)
+        // - status_created_at_idx       Logs status tabs (WHERE status ORDER BY created_at)
+        // - notification_id_created_idx Logs type filter (WHERE notification_id ORDER BY created_at)
+        $sql = "CREATE TABLE {$table_name} (
+            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            receiver varchar(20) NOT NULL,
+            gateway varchar(50) NOT NULL,
+            status varchar(20) DEFAULT NULL,
+            notification_id varchar(64) DEFAULT NULL,
+            notification_group varchar(32) DEFAULT NULL,
+            message text NULL,
+            response longtext NULL,
+            created_at datetime NOT NULL,
+            updated_at datetime NOT NULL,
+            reference_id varchar(100) DEFAULT NULL,
+            PRIMARY KEY  (id),
+            KEY created_at_status_idx (created_at,status),
+            KEY status_created_at_idx (status,created_at),
+            KEY notification_id_created_idx (notification_id,created_at)
         ) {$charset_collate};";
 
         dbDelta( $sql );

@@ -26,7 +26,9 @@
 namespace Texty\Api;
 
 use Texty\Gateways\GatewayInterface;
+use Texty\Gateways\HasDocLink;
 use Texty\Gateways\Metadata;
+use Texty\Gateways\RequiresIpWhitelist;
 use Texty\Gateways\Secrets;
 use Texty\Dependencies\WeDevs\WPKit\Settings\BaseSettingsRESTController;
 use WP_Error;
@@ -271,6 +273,11 @@ class SettingsController extends BaseSettingsRESTController {
 		$fields = $this->get_fields_for_page( $schema, $scope_id );
 		$nested = [];
 		foreach ( $fields as $field ) {
+			// Display-only fields (e.g. the IP whitelist panel) are never stored.
+			if ( isset( $field['persist'] ) && false === $field['persist'] ) {
+				continue;
+			}
+
 			$dep_key = $this->build_dependency_key( $field );
 			if ( array_key_exists( $dep_key, $values ) ) {
 				$path = $this->get_field_path( $field );
@@ -414,8 +421,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @since 2.0.0
 	 */
 	private function build_gateway_schema( string $key, GatewayInterface $gateway, int $priority ): array {
-		$doc_links = $this->doc_links();
-		$meta      = Metadata::for_gateway( $gateway );
+		$meta = Metadata::for_gateway( $gateway );
 
 		$page = [
 			'type'        => 'page',
@@ -427,10 +433,10 @@ class SettingsController extends BaseSettingsRESTController {
 			'meta'        => $meta,
 		];
 
-		$signup = isset( $doc_links[ $key ] ) ? $doc_links[ $key ] : $meta['signup_url'];
+		$doc_link = $gateway instanceof HasDocLink ? $gateway->doc_link() : $meta['signup_url'];
 
-		if ( '' !== $signup ) {
-			$page['doc_link']      = $signup;
+		if ( $doc_link ) {
+			$page['doc_link']      = $doc_link;
 			$page['doc_link_text'] = __( 'Get your account', 'texty' );
 		}
 
@@ -493,7 +499,49 @@ class SettingsController extends BaseSettingsRESTController {
 			$field_priority += 10;
 		}
 
+		if ( $gateway instanceof RequiresIpWhitelist ) {
+			$elements = array_merge( $elements, $this->ip_whitelist_schema( $key, $gateway ) );
+		}
+
 		return $elements;
+	}
+
+	/**
+	 * Schema for the "IP whitelist" panel on gateways that whitelist API
+	 * callers by IP. Rendered by the `ip_whitelist` field variant on the
+	 * frontend; `persist => false` keeps it out of the saved credentials.
+	 *
+	 * @param string              $key     Gateway registry key.
+	 * @param RequiresIpWhitelist $gateway Gateway instance.
+	 *
+	 * @return array[]
+	 * @since 2.0.3
+	 */
+	private function ip_whitelist_schema( string $key, RequiresIpWhitelist $gateway ): array {
+		$section_id = $key . '_ip_whitelist';
+
+		return [
+			[
+				'type'        => 'section',
+				'id'          => $section_id,
+				'page_id'     => $key,
+				'priority'    => 20,
+				'label'       => __( 'IP whitelist', 'texty' ),
+				'description' => __( 'This gateway only accepts requests from whitelisted server IPs.', 'texty' ),
+			],
+			[
+				'type'          => 'field',
+				'id'            => $key . '_ip_whitelist',
+				'page_id'       => $key,
+				'section_id'    => $section_id,
+				'variant'       => 'ip_whitelist',
+				'layout'        => 'full-width',
+				'priority'      => 10,
+				'persist'       => false,
+				'gateway'       => $key,
+				'whitelist_url' => esc_url_raw( $gateway->ip_whitelist_url() ),
+			],
+		];
 	}
 
 	/**
@@ -548,21 +596,6 @@ class SettingsController extends BaseSettingsRESTController {
 		}
 
 		return $list;
-	}
-
-	/**
-	 * Sign-up links for the built-in gateways, shown as the page's doc link.
-	 *
-	 * @return array<string, string>
-	 * @since 2.0.0
-	 */
-	private function doc_links(): array {
-		return [
-			'twilio'     => 'https://www.twilio.com/try-twilio',
-			'vonage'     => 'https://dashboard.nexmo.com/sign-up',
-			'plivo'      => 'https://console.plivo.com/accounts/register/',
-			'clickatell' => 'https://www.clickatell.com/sign-up/',
-		];
 	}
 
 	/**

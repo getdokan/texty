@@ -2,6 +2,8 @@
 
 namespace Texty\Integrations;
 
+use Texty\Notifications\WC\ManualOrder;
+
 /**
  * WooCommerce Integration Class
  */
@@ -13,6 +15,7 @@ class WooCommerce {
     public function __construct() {
         add_action( 'woocommerce_order_status_changed', [ $this, 'order_status_changed' ], 10, 4 );
         add_action( 'texty_register_notifications', [ $this, 'register_notifications' ] );
+        add_filter( 'texty_log_type_title', [ $this, 'log_type_title' ], 10, 2 );
     }
 
     /**
@@ -106,10 +109,24 @@ class WooCommerce {
      * @return void
      */
     private function send( $event, $order ) {
-        $class        = texty()->notifications()->get( $event );
-        $notification = new $class();
+        texty()->queue()->push( $event, [ 'order_id' => $order->get_id() ] );
+    }
 
-        $notification->set_order( $order );
-        $notification->send();
+    /**
+     * Log "Type" title for manual SMS sent from the order screen.
+     *
+     * @since 2.0.3
+     *
+     * @param string $title           Current title.
+     * @param string $notification_id Stored notification id.
+     *
+     * @return string
+     */
+    public function log_type_title( $title, $notification_id ) {
+        if ( '' === $title && ManualOrder::ID === $notification_id ) {
+            return ( new ManualOrder() )->get_title();
+        }
+
+        return $title;
     }
 }
