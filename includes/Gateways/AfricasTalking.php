@@ -58,14 +58,14 @@ class AfricasTalking extends AbstractGateway implements HasDocLink {
     private $accepted_codes = [ 100, 101, 102 ];
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://account.africastalking.com/auth/register';
+        return 'https://developers.africastalking.com/docs/sms/overview';
     }
 
     /**
@@ -77,8 +77,8 @@ class AfricasTalking extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://developers.africastalking.com/docs/sms/overview',            'regions'           => [ 'KE', 'UG', 'TZ', 'RW', 'MW', 'ZM', 'NG', 'ET', 'CI', 'ZA', 'GH' ],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [ 'KE', 'UG', 'TZ', 'RW', 'MW', 'ZM', 'NG', 'ET', 'CI', 'ZA', 'GH' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

@@ -329,7 +329,7 @@ class BulkSMSTest extends GatewayTestCase {
     public function test_metadata() {
         $meta = ( new BulkSMS() )->metadata();
 
-        $this->assertSame( 'beta', $meta['status'] );
+        $this->assertSame( 'stable', $meta['status'] );
         $this->assertSame( 'live', $meta['validation'] );
         $this->assertSame( [], $meta['regions'] );
         $this->assertTrue( $meta['features']['unicode'] );

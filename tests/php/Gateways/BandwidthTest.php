@@ -514,7 +514,7 @@ class BandwidthTest extends GatewayTestCase {
     public function test_metadata() {
         $meta = ( new Bandwidth() )->metadata();
 
-        $this->assertSame( Metadata::STATUS_BETA, $meta['status'] );
+        $this->assertSame( Metadata::STATUS_STABLE, $meta['status'] );
         $this->assertSame( 'live', $meta['validation'] );
         $this->assertSame( [ 'US', 'CA' ], $meta['regions'] );
         $this->assertTrue( $meta['features']['unicode'] );

@@ -28,8 +28,7 @@ class Metadata {
      * Default metadata
      *
      * - `status`            stable|beta
-     * - `docs_url`          Provider API docs
-     * - `signup_url`        Provider sign-up page; defaults to `HasDocLink::doc_link()`
+     * - `docs_url`          Provider API documentation; defaults to `HasDocLink::doc_link()`
      * - `regions`           ISO country codes or region names; empty = global
      * - `features`          unicode, sender_id, template, balance_check (bool each)
      * - `validation`        live|format_only — whether validate() calls the provider
@@ -44,7 +43,6 @@ class Metadata {
         return [
             'status'            => self::STATUS_STABLE,
             'docs_url'          => '',
-            'signup_url'        => '',
             'regions'           => [],
             'features'          => [
                 'unicode'       => false,
@@ -77,7 +75,6 @@ class Metadata {
 
         $meta['status']            = self::STATUS_BETA === $meta['status'] ? self::STATUS_BETA : self::STATUS_STABLE;
         $meta['docs_url']          = esc_url_raw( (string) $meta['docs_url'] );
-        $meta['signup_url']        = esc_url_raw( (string) $meta['signup_url'] );
         $meta['regions']           = array_values( array_map( 'strval', (array) $meta['regions'] ) );
         $meta['validation']        = 'format_only' === $meta['validation'] ? 'format_only' : 'live';
         $meta['template_required'] = (bool) $meta['template_required'];
@@ -99,8 +96,8 @@ class Metadata {
     public static function for_gateway( GatewayInterface $gateway ) {
         $meta = method_exists( $gateway, 'metadata' ) ? $gateway->metadata() : [];
 
-        if ( $gateway instanceof HasDocLink && empty( $meta['signup_url'] ) ) {
-            $meta['signup_url'] = $gateway->doc_link();
+        if ( $gateway instanceof HasDocLink && empty( $meta['docs_url'] ) ) {
+            $meta['docs_url'] = $gateway->doc_link();
         }
 
         /**

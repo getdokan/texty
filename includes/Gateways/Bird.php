@@ -48,14 +48,14 @@ class Bird extends AbstractGateway implements HasDocLink {
     protected $key = 'bird';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://bird.com/dashboard/w/api-keys';
+        return 'https://bird.com/docs/guides/sms/sending-sms';
     }
 
     /**
@@ -67,8 +67,8 @@ class Bird extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://bird.com/docs/guides/sms/sending-sms',            'regions'           => [],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

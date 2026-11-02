@@ -244,7 +244,7 @@ class D7NetworksTest extends GatewayTestCase {
     public function test_metadata() {
         $meta = ( new D7Networks() )->metadata();
 
-        $this->assertSame( 'beta', $meta['status'] );
+        $this->assertSame( 'stable', $meta['status'] );
         $this->assertSame( 'live', $meta['validation'] );
         $this->assertSame( [], $meta['regions'] );
         $this->assertTrue( $meta['features']['balance_check'] );

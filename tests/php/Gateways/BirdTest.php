@@ -408,7 +408,7 @@ class BirdTest extends GatewayTestCase {
     public function test_metadata() {
         $meta = ( new Bird() )->metadata();
 
-        $this->assertSame( Metadata::STATUS_BETA, $meta['status'] );
+        $this->assertSame( Metadata::STATUS_STABLE, $meta['status'] );
         $this->assertSame( 'live', $meta['validation'] );
         $this->assertSame( [], $meta['regions'] );
         $this->assertTrue( $meta['features']['unicode'] );

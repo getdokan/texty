@@ -61,14 +61,14 @@ class AwsSms extends AbstractGateway implements HasDocLink {
     private $clock = null;
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://aws.amazon.com/end-user-messaging/';
+        return 'https://docs.aws.amazon.com/sms-voice/latest/userguide/what-is-sms-mms.html';
     }
 
     /**
@@ -80,8 +80,8 @@ class AwsSms extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://docs.aws.amazon.com/sms-voice/latest/userguide/what-is-sms-mms.html',            'regions'           => [],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

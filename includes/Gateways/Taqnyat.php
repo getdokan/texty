@@ -33,14 +33,14 @@ class Taqnyat extends AbstractGateway implements HasDocLink {
     protected $key = 'taqnyat';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://portal.taqnyat.sa';
+        return 'https://dev.taqnyat.sa/en/doc/sms/';
     }
 
     /**
@@ -52,8 +52,8 @@ class Taqnyat extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://dev.taqnyat.sa/en/doc/sms/',            'regions'           => [ 'SA' ],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [ 'SA' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

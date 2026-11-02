@@ -42,14 +42,14 @@ class Fast2SMS extends AbstractGateway implements HasDocLink {
     protected $key = 'fast2sms';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://www.fast2sms.com/';
+        return 'https://docs.fast2sms.com/';
     }
 
     /**
@@ -62,7 +62,7 @@ class Fast2SMS extends AbstractGateway implements HasDocLink {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://docs.fast2sms.com/',            'regions'           => [ 'IN' ],
+            'regions'           => [ 'IN' ],
             'features'          => [
                 'unicode'       => false,
                 'sender_id'     => true,

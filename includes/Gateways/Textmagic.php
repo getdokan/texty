@@ -28,14 +28,14 @@ class Textmagic extends AbstractGateway implements HasDocLink {
     protected $key = 'textmagic';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://my.textmagic.com/register/';
+        return 'https://docs.textmagic.com/';
     }
 
     /**
@@ -47,8 +47,8 @@ class Textmagic extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://docs.textmagic.com/',            'regions'           => [],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

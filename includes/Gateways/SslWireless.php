@@ -65,12 +65,12 @@ class SslWireless implements GatewayInterface, HasDocLink, RequiresIpWhitelist {
     }
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://ismsplus.sslwireless.com/';
+        return 'https://ismsplus.sslwireless.com/api-documentation';
     }
 
     /**

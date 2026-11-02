@@ -5,7 +5,6 @@
 export type GatewayMeta = {
   status: 'stable' | 'beta';
   docs_url: string;
-  signup_url: string;
   regions: string[];
   features: {
     unicode: boolean;

@@ -393,7 +393,7 @@ class SMSGlobalTest extends GatewayTestCase {
         $this->assertSame( 'password', $settings['api_secret']['type'] );
         $this->assertSame( 'text', $settings['origin']['type'] );
         $this->assertFalse( $settings['origin']['required'] );
-        $this->assertSame( Metadata::STATUS_BETA, $meta['status'] );
+        $this->assertSame( Metadata::STATUS_STABLE, $meta['status'] );
         $this->assertSame( [], $meta['regions'] );
         $this->assertSame( 'live', $meta['validation'] );
         $this->assertTrue( $meta['features']['balance_check'] );

@@ -49,14 +49,14 @@ class Infobip extends AbstractGateway implements HasDocLink {
     protected $key = 'infobip';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://www.infobip.com/signup';
+        return 'https://www.infobip.com/docs/api/channels/sms/outbound-sms/send-message/send-sms-messages';
     }
 
     /**
@@ -68,8 +68,8 @@ class Infobip extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://www.infobip.com/docs/api/channels/sms/outbound-sms/send-message/send-sms-messages',            'regions'           => [],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

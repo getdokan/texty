@@ -433,11 +433,11 @@ class SettingsController extends BaseSettingsRESTController {
 		];
 
 		// Resolved from HasDocLink::doc_link() by Metadata::for_gateway().
-		$doc_link = $meta['signup_url'];
+		$doc_link = $meta['docs_url'];
 
 		if ( $doc_link ) {
 			$page['doc_link']      = $doc_link;
-			$page['doc_link_text'] = __( 'Get your account', 'texty' );
+			$page['doc_link_text'] = __( 'View documentation', 'texty' );
 		}
 
 		$elements = [ $page ];

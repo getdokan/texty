@@ -48,14 +48,14 @@ class Octopush extends AbstractGateway implements HasDocLink {
     protected $key = 'octopush';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://client.octopush.com/';
+        return 'https://dev.octopush.com/en/sms-gateway-api-documentation/send-sms/';
     }
 
     /**
@@ -67,8 +67,8 @@ class Octopush extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://dev.octopush.com/en/sms-gateway-api-documentation/send-sms/',            'regions'           => [ 'FR', 'EU' ],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [ 'FR', 'EU' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

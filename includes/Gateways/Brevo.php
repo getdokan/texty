@@ -48,14 +48,14 @@ class Brevo extends AbstractGateway implements HasDocLink {
     protected $key = 'brevo';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://onboarding.brevo.com/account/register';
+        return 'https://developers.brevo.com/docs/transactional-sms-endpoints';
     }
 
     /**
@@ -67,8 +67,8 @@ class Brevo extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://developers.brevo.com/docs/transactional-sms-endpoints',            'regions'           => [],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

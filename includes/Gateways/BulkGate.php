@@ -53,14 +53,14 @@ class BulkGate extends AbstractGateway implements HasDocLink {
     protected $key = 'bulkgate';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://portal.bulkgate.com/sign/up';
+        return 'https://www.bulkgate.com/en/docs/simple-api/simple-transactional/';
     }
 
     /**
@@ -72,8 +72,8 @@ class BulkGate extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://www.bulkgate.com/en/docs/simple-api/simple-transactional/',            'regions'           => [],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

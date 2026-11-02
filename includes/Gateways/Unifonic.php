@@ -51,14 +51,14 @@ class Unifonic extends AbstractGateway implements HasDocLink {
     protected $key = 'unifonic';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://cloud.unifonic.com/';
+        return 'https://docs.unifonic.com/articles/products-documentation/sms-03-sending-api';
     }
 
     /**
@@ -70,8 +70,8 @@ class Unifonic extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://docs.unifonic.com/articles/products-documentation/sms-03-sending-api',            'regions'           => [ 'SA', 'AE', 'KW', 'QA', 'OM', 'BH' ],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [ 'SA', 'AE', 'KW', 'QA', 'OM', 'BH' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

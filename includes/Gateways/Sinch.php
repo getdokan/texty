@@ -43,14 +43,14 @@ class Sinch extends AbstractGateway implements HasDocLink {
     protected $key = 'sinch';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://dashboard.sinch.com/signup';
+        return 'https://developers.sinch.com/docs/sms/api-reference';
     }
 
     /**
@@ -62,8 +62,8 @@ class Sinch extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://developers.sinch.com/docs/sms/api-reference',            'regions'           => array_keys( $this->regions() ),
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => array_keys( $this->regions() ),
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

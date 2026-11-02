@@ -455,7 +455,7 @@ class TelnyxTest extends GatewayTestCase {
     public function test_metadata() {
         $meta = ( new Telnyx() )->metadata();
 
-        $this->assertSame( 'beta', $meta['status'] );
+        $this->assertSame( 'stable', $meta['status'] );
         $this->assertSame( [], $meta['regions'] );
         $this->assertSame( 'live', $meta['validation'] );
         $this->assertTrue( $meta['features']['unicode'] );

@@ -36,7 +36,7 @@ class Clickatell extends AbstractGateway implements HasDocLink {
     protected function meta() {
         return [
             'status'     => Metadata::STATUS_STABLE,
-            'docs_url'   => 'https://docs.clickatell.com/channels/sms-channels/sms-api-reference/',            'validation' => 'format_only',
+            'validation' => 'format_only',
         ];
     }
 
@@ -76,12 +76,12 @@ class Clickatell extends AbstractGateway implements HasDocLink {
     }
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://www.clickatell.com/sign-up/';
+        return 'https://docs.clickatell.com/channels/sms-channels/sms-api-reference/';
     }
 
     /**

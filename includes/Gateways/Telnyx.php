@@ -45,14 +45,14 @@ class Telnyx extends AbstractGateway implements HasDocLink {
     protected $key = 'telnyx';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://telnyx.com/sign-up';
+        return 'https://developers.telnyx.com/api/messaging/send-message';
     }
 
     /**
@@ -64,8 +64,8 @@ class Telnyx extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://developers.telnyx.com/api/messaging/send-message',            'regions'           => [],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

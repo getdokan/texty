@@ -296,7 +296,7 @@ class UnifonicTest extends GatewayTestCase {
     public function test_metadata() {
         $meta = ( new Unifonic() )->metadata();
 
-        $this->assertSame( Metadata::STATUS_BETA, $meta['status'] );
+        $this->assertSame( Metadata::STATUS_STABLE, $meta['status'] );
         $this->assertSame( 'live', $meta['validation'] );
         $this->assertSame( [ 'SA', 'AE', 'KW', 'QA', 'OM', 'BH' ], $meta['regions'] );
         $this->assertTrue( $meta['features']['unicode'] );

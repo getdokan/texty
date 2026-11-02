@@ -55,14 +55,14 @@ class Bandwidth extends AbstractGateway implements HasDocLink {
     protected $key = 'bandwidth';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://www.bandwidth.com/free-trial/';
+        return 'https://dev.bandwidth.com/apis/messaging/';
     }
 
     /**
@@ -74,8 +74,8 @@ class Bandwidth extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://dev.bandwidth.com/apis/messaging/',            'regions'           => [ 'US', 'CA' ],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [ 'US', 'CA' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

@@ -40,14 +40,14 @@ class ClickSend extends AbstractGateway implements HasDocLink {
     protected $key = 'clicksend';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://dashboard.clicksend.com/#/signup/step1/';
+        return 'https://developers.clicksend.com/docs/';
     }
 
     /**
@@ -59,8 +59,8 @@ class ClickSend extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://developers.clicksend.com/docs/',            'regions'           => [],
+            'status'            => Metadata::STATUS_STABLE,
+            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

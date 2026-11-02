@@ -347,7 +347,7 @@ class SinchTest extends GatewayTestCase {
         $meta = ( new Sinch() )->metadata();
 
         $this->assertSame( [ 'us', 'eu', 'au', 'br', 'ca' ], $meta['regions'] );
-        $this->assertSame( 'beta', $meta['status'] );
+        $this->assertSame( 'stable', $meta['status'] );
         $this->assertSame( 'live', $meta['validation'] );
     }
 }

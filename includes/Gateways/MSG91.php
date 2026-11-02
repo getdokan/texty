@@ -49,14 +49,14 @@ class MSG91 extends AbstractGateway implements HasDocLink {
     protected $key = 'msg91';
 
     /**
-     * Get the sign-up link
+     * Get the API documentation link
      *
      * @since 2.1.0
      *
      * @return string
      */
     public function doc_link() {
-        return 'https://control.msg91.com/signup/';
+        return 'https://docs.msg91.com/sms/send-sms';
     }
 
     /**
@@ -69,7 +69,7 @@ class MSG91 extends AbstractGateway implements HasDocLink {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://docs.msg91.com/sms/send-sms',            'regions'           => [ 'IN' ],
+            'regions'           => [ 'IN' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,
