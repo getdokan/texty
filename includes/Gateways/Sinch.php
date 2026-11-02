@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://developers.sinch.com/docs/sms/api-reference/sms/batches/sendsms
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class Sinch extends AbstractGateway implements HasDocLink {
 
@@ -45,7 +45,7 @@ class Sinch extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -56,7 +56,7 @@ class Sinch extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */

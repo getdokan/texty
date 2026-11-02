@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) || exit;
  * hook still run in the worker through the notification's normal `send()`, so
  * idempotency (WC order meta) and logging are unchanged.
  *
- * @since 2.0.3
+ * @since 2.2.0
  */
 class Queue {
 
@@ -309,9 +309,9 @@ class Queue {
          * Filter whether a notification is sent in the background.
          *
          * Return false to send inline during the triggering request (the
-         * pre-2.0.3 behaviour). Ignored when Action Scheduler isn't loaded.
+         * pre-2.2.0 behaviour). Ignored when Action Scheduler isn't loaded.
          *
-         * @since 2.0.3
+         * @since 2.2.0
          *
          * @param bool   $async           Whether to queue the send. Default true.
          * @param string $notification_id Notification id.

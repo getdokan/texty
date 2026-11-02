@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  * (`https://<id>.api.infobip.com`). The base URL is user-supplied, so it is
  * checked against a host allowlist before the API key is ever sent to it.
  *
- * @since 2.1.0
+ * @since 2.2.0
  *
  * @see https://www.infobip.com/docs/api/channels/sms/outbound-sms/send-message/send-sms-messages
  */
@@ -51,7 +51,7 @@ class Infobip extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -62,7 +62,7 @@ class Infobip extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -307,7 +307,7 @@ class Infobip extends AbstractGateway implements HasDocLink {
      * trailing slash, and rejects non-https schemes, credentials in the URL,
      * non-default ports and hosts outside `*.api.infobip.com`.
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $url
      *
@@ -365,7 +365,7 @@ class Infobip extends AbstractGateway implements HasDocLink {
          * By default only `api.infobip.com` and `<subdomain>.api.infobip.com`
          * are accepted, so the API key can't be sent to an arbitrary host.
          *
-         * @since 2.1.0
+         * @since 2.2.0
          *
          * @param string[] $hosts Exact host names to allow, e.g. `sms.example-infobip-host.com`
          * @param string   $host  Host being checked

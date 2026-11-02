@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/create-signed-request.html
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class SigV4 {
 
@@ -64,7 +64,7 @@ class SigV4 {
     /**
      * Constructor
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string            $access_key_id     Access key ID
      * @param string            $secret_access_key Secret access key
@@ -88,7 +88,7 @@ class SigV4 {
      * signed from the URL (or a passed `Host` header) but not added to the
      * returned headers, since the HTTP transport sets it from the URL.
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $method  HTTP method
      * @param string $url     Absolute request URL
@@ -130,7 +130,7 @@ class SigV4 {
     /**
      * Build the canonical request
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $method       HTTP method
      * @param string $url          Absolute request URL
@@ -162,7 +162,7 @@ class SigV4 {
     /**
      * Build the string to sign
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $amz_date          ISO 8601 basic timestamp, e.g. 20150830T123600Z
      * @param string $credential_scope  See `credential_scope()`
@@ -185,7 +185,7 @@ class SigV4 {
     /**
      * Credential scope for a date
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $date_stamp Date as Ymd
      *
@@ -198,7 +198,7 @@ class SigV4 {
     /**
      * Derive the signing key for a date
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $date_stamp Date as Ymd
      *
@@ -215,7 +215,7 @@ class SigV4 {
     /**
      * Current Unix timestamp from the injected clock
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return int
      */

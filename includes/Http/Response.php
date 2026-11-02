@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * returns on a transport failure) so gateways read status, headers and
  * body the same way regardless of content type.
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class Response {
 
@@ -55,7 +55,7 @@ class Response {
     /**
      * Build from the return value of `wp_remote_request()`
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param array|WP_Error $raw
      *
@@ -91,7 +91,7 @@ class Response {
     /**
      * Build a response that represents a request which was never sent
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param WP_Error $error
      *
@@ -104,7 +104,7 @@ class Response {
     /**
      * Whether the request failed before a response was received
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return bool
      */
@@ -115,7 +115,7 @@ class Response {
     /**
      * Get the transport error
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return WP_Error|null
      */
@@ -126,7 +126,7 @@ class Response {
     /**
      * Get the HTTP status code
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return int
      */
@@ -137,7 +137,7 @@ class Response {
     /**
      * Whether the status code is 2xx
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return bool
      */
@@ -148,7 +148,7 @@ class Response {
     /**
      * Get the raw body
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -159,7 +159,7 @@ class Response {
     /**
      * Get a response header
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $name Case-insensitive header name
      *
@@ -178,7 +178,7 @@ class Response {
      * big integers (provider message ids) are kept as strings so they don't
      * lose precision.
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array|null Null when the body is empty or not JSON
      */
@@ -194,19 +194,19 @@ class Response {
     /**
      * Read a value from the decoded JSON body by dot path
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
-     * @param string $path    Dot path, e.g. `messages.0.id`
-     * @param mixed  $default Returned when the path doesn't exist
+     * @param string $path     Dot path, e.g. `messages.0.id`
+     * @param mixed  $fallback Returned when the path doesn't exist
      *
      * @return mixed
      */
-    public function get( $path, $default = null ) {
+    public function get( $path, $fallback = null ) {
         $value = $this->json();
 
         foreach ( explode( '.', $path ) as $segment ) {
             if ( ! is_array( $value ) || ! array_key_exists( $segment, $value ) ) {
-                return $default;
+                return $fallback;
             }
 
             $value = $value[ $segment ];
@@ -219,7 +219,7 @@ class Response {
      * The body in the form it should be logged: decoded JSON when possible,
      * otherwise the raw string
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array|string
      */

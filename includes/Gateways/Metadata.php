@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
  * Describes a gateway for the UI and the send pipeline without any
  * per-gateway frontend code.
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class Metadata {
 
@@ -35,7 +35,7 @@ class Metadata {
      * - `template_required` bool — sends fail without a template ID
      * - `sandbox`           bool — gateway offers a sandbox/test mode
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -59,7 +59,7 @@ class Metadata {
     /**
      * Merge metadata over the defaults and coerce types
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param mixed $meta
      *
@@ -87,7 +87,7 @@ class Metadata {
      * Get metadata for any gateway, including ones that don't extend
      * `AbstractGateway`
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param GatewayInterface $gateway
      *
@@ -103,7 +103,7 @@ class Metadata {
         /**
          * Filter a gateway's metadata.
          *
-         * @since 2.1.0
+         * @since 2.2.0
          *
          * @param array            $meta    Normalized metadata
          * @param GatewayInterface $gateway Gateway instance

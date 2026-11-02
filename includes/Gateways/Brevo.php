@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://developers.brevo.com/reference/send-transac-sms
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class Brevo extends AbstractGateway implements HasDocLink {
 
@@ -50,7 +50,7 @@ class Brevo extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -61,7 +61,7 @@ class Brevo extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */

@@ -55,7 +55,7 @@ class BulkGate extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -66,7 +66,7 @@ class BulkGate extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */

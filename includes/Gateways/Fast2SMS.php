@@ -44,7 +44,7 @@ class Fast2SMS extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -55,7 +55,7 @@ class Fast2SMS extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -401,7 +401,7 @@ class Fast2SMS extends AbstractGateway implements HasDocLink {
     /**
      * Whether a `return` value means success
      *
-     * bulkV2 documents a boolean, the wallet endpoint a string.
+     * The bulkV2 endpoint documents a boolean, the wallet endpoint a string.
      *
      * @param mixed $value
      *

@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
  * metadata defaults. Implementing `GatewayInterface` directly still works;
  * this class is optional for third-party gateways.
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 abstract class AbstractGateway implements GatewayInterface {
 
@@ -37,7 +37,7 @@ abstract class AbstractGateway implements GatewayInterface {
     /**
      * Send a message and return the normalized result
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $to
      * @param string $message
@@ -54,7 +54,7 @@ abstract class AbstractGateway implements GatewayInterface {
      * for anyone calling a gateway directly; use `send_result()` for the
      * typed result.
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $to
      * @param string $message
@@ -75,7 +75,7 @@ abstract class AbstractGateway implements GatewayInterface {
     /**
      * Get the registry key
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -86,7 +86,7 @@ abstract class AbstractGateway implements GatewayInterface {
     /**
      * Get the gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * `docs_url` falls back to `doc_link()` when the gateway implements
      * `HasDocLink`, so the link is declared in one place.
@@ -106,7 +106,7 @@ abstract class AbstractGateway implements GatewayInterface {
     /**
      * Gateway-specific metadata, merged over the defaults
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -117,7 +117,7 @@ abstract class AbstractGateway implements GatewayInterface {
     /**
      * Get the shared HTTP client
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return Client
      */
@@ -132,7 +132,7 @@ abstract class AbstractGateway implements GatewayInterface {
     /**
      * Get the saved credentials
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -145,7 +145,7 @@ abstract class AbstractGateway implements GatewayInterface {
     /**
      * Read one credential as a trimmed string
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param array  $creds
      * @param string $key
@@ -159,7 +159,7 @@ abstract class AbstractGateway implements GatewayInterface {
     /**
      * Read the submitted credentials from a validate() request
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param WP_REST_Request $request
      *
@@ -174,7 +174,7 @@ abstract class AbstractGateway implements GatewayInterface {
     /**
      * Resolve a provider base URL, allowing it to be overridden
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $url   Default base URL
      * @param array  $creds Credentials in use (region/env selectors live here)
@@ -185,7 +185,7 @@ abstract class AbstractGateway implements GatewayInterface {
         /**
          * Filter a gateway's API base URL, e.g. for dedicated or regional hosts.
          *
-         * @since 2.1.0
+         * @since 2.2.0
          *
          * @param string $url   Base URL
          * @param string $key   Gateway registry key
@@ -199,7 +199,7 @@ abstract class AbstractGateway implements GatewayInterface {
     /**
      * Turn a transport failure into a result, or null if a response arrived
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param Response $response
      *

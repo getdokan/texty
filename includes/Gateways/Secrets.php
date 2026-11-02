@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
  * secret: it is shown to the browser as a fixed mask, restored from storage
  * when the mask comes back unchanged on save, and scrubbed from logs.
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class Secrets {
 
@@ -34,7 +34,7 @@ class Secrets {
     /**
      * Get the keys of a gateway's secret fields
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param GatewayInterface $gateway
      *
@@ -60,7 +60,7 @@ class Secrets {
     /**
      * Mask a single stored value
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param mixed $value
      *
@@ -73,7 +73,7 @@ class Secrets {
     /**
      * Mask the secret fields of a stored credentials array
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param GatewayInterface $gateway
      * @param mixed            $creds
@@ -97,7 +97,7 @@ class Secrets {
     /**
      * Mask the `value` of every secret field in a `get_settings()` array
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param array $settings
      *
@@ -123,7 +123,7 @@ class Secrets {
      * An empty submitted value is kept as-is, so clearing a field removes
      * the stored secret.
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param GatewayInterface $gateway
      * @param mixed            $submitted Credentials from the request
@@ -147,7 +147,7 @@ class Secrets {
     /**
      * Get the saved secret values for a gateway
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param GatewayInterface $gateway
      *
@@ -182,7 +182,7 @@ class Secrets {
      * Walks arrays and objects recursively, so secrets echoed anywhere in a
      * provider response (or inside a WP_Error's data) are scrubbed.
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param mixed    $payload
      * @param string[] $secrets

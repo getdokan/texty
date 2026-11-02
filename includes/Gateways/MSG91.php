@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://api.msg91.com/apidoc/textsms/send-sms-flow.php
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class MSG91 extends AbstractGateway implements HasDocLink {
 
@@ -51,7 +51,7 @@ class MSG91 extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -62,7 +62,7 @@ class MSG91 extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -312,7 +312,7 @@ class MSG91 extends AbstractGateway implements HasDocLink {
          * Filter the phone number sent to MSG91, e.g. to prefix a country
          * code to local numbers.
          *
-         * @since 2.1.0
+         * @since 2.2.0
          *
          * @param string $number   Number without `+`, spaces or dashes
          * @param string $original Number as passed to the gateway

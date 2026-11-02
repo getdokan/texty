@@ -6,7 +6,7 @@
  *   POST /texty/v1/orders/{id}/sms — send `message` to `to` for order {id}.
  *
  * @package Texty\Api
- * @since   2.0.3
+ * @since   2.2.0
  */
 
 namespace Texty\Api;
@@ -27,7 +27,7 @@ class OrderSms extends Base {
     /**
      * Constructor.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function __construct() {
         $this->namespace = 'texty/v1';
@@ -38,7 +38,7 @@ class OrderSms extends Base {
      * Register routes.
      *
      * @return void
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function register_routes() {
         register_rest_route(
@@ -82,7 +82,7 @@ class OrderSms extends Base {
      * @param WP_REST_Request $request Request.
      *
      * @return true|WP_Error
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function order_permissions_check( $request ) {
         if ( ! function_exists( 'wc_get_order' ) ) {
@@ -105,7 +105,7 @@ class OrderSms extends Base {
      * @param WP_REST_Request $request Request.
      *
      * @return WP_REST_Response|WP_Error
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function send( $request ) {
         $order = wc_get_order( (int) $request->get_param( 'id' ) );

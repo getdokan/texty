@@ -7,7 +7,7 @@ interface GatewayInterface {
     /**
      * Send a text
      *
-     * Since 2.1.0 `Gateways::send()` passes per-message options (see
+     * Since 2.2.0 `Gateways::send()` passes per-message options (see
      * `SendOptions`) as a third argument. It can't be part of this
      * signature without breaking existing implementations, so declare
      * `$options = []` in your class to receive it. Return an array on

@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  * @see https://github.com/AfricasTalkingLtd/africastalking-php
  * @see https://help.africastalking.com/en/articles/742491-why-did-my-messages-fail
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class AfricasTalking extends AbstractGateway implements HasDocLink {
 
@@ -60,7 +60,7 @@ class AfricasTalking extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -71,7 +71,7 @@ class AfricasTalking extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */

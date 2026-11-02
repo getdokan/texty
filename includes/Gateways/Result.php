@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  * before firing hooks, so existing `texty_after_send_sms` consumers keep
  * working unchanged.
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class Result {
 
@@ -66,7 +66,7 @@ class Result {
     /**
      * Successful send
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string|int|null $reference_id Provider message id
      * @param Response|null   $response     Provider response
@@ -94,7 +94,7 @@ class Result {
     /**
      * Failed send
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string|int    $code     Error code
      * @param string        $message  Error message
@@ -113,7 +113,7 @@ class Result {
     /**
      * Failed send caused by a transport error (no response received)
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param Response $response
      *
@@ -150,7 +150,7 @@ class Result {
     /**
      * Whether the send succeeded
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return bool
      */
@@ -161,7 +161,7 @@ class Result {
     /**
      * Get the provider message id
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string|null
      */
@@ -172,7 +172,7 @@ class Result {
     /**
      * Get the error code
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -183,7 +183,7 @@ class Result {
     /**
      * Get the error message
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -194,7 +194,7 @@ class Result {
     /**
      * Get the HTTP status
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return int
      */
@@ -205,7 +205,7 @@ class Result {
     /**
      * Get the provider response body
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array|string|null
      */
@@ -216,7 +216,7 @@ class Result {
     /**
      * Array form
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -234,7 +234,7 @@ class Result {
     /**
      * WP_Error form, with the full result array as error data
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return WP_Error
      */
@@ -245,7 +245,7 @@ class Result {
     /**
      * Legacy send return shape: array on success, WP_Error on failure
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array|WP_Error
      */

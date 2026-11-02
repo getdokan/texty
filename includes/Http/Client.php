@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  * - `body`    string Raw body (used as-is)
  * - `timeout` int    Overrides the default timeout for this request
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class Client {
 
@@ -38,7 +38,7 @@ class Client {
     /**
      * Constructor
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $gateway Gateway registry key
      */
@@ -49,7 +49,7 @@ class Client {
     /**
      * Send a GET request
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $url
      * @param array  $args
@@ -63,7 +63,7 @@ class Client {
     /**
      * Send a POST request
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $url
      * @param array  $args
@@ -77,7 +77,7 @@ class Client {
     /**
      * Send a request
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $method HTTP method
      * @param string $url    Absolute https URL
@@ -117,7 +117,7 @@ class Client {
         /**
          * Filter the timeout for gateway HTTP requests.
          *
-         * @since 2.1.0
+         * @since 2.2.0
          *
          * @param int    $timeout Timeout in seconds
          * @param string $gateway Gateway registry key
@@ -140,7 +140,7 @@ class Client {
          *
          * TLS verification is always enforced after this filter runs.
          *
-         * @since 2.1.0
+         * @since 2.2.0
          *
          * @param array  $request Request arguments
          * @param string $url     Request URL

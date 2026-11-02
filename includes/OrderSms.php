@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  * pause switch, every `texty_*` hook and the SMS log all apply. Each attempt
  * adds a private order note, like WooCommerce does for emails.
  *
- * @since 2.0.3
+ * @since 2.2.0
  */
 class OrderSms {
 
@@ -58,7 +58,7 @@ class OrderSms {
         /**
          * Filter the receiver suggestions shown in the order "Send SMS" box.
          *
-         * @since 2.0.3
+         * @since 2.2.0
          *
          * @param array    $candidates Items of [ 'type' => string, 'label' => string, 'phone' => string ].
          * @param WC_Order $order      The order.
@@ -306,7 +306,7 @@ class OrderSms {
     /**
      * Capability required to send manual SMS from the order screen.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @return string
      */
@@ -317,7 +317,7 @@ class OrderSms {
          * (administrators and shop managers; not Dokan vendors, who only
          * have `edit_shop_orders`). Use `manage_options` to limit it to admins.
          *
-         * @since 2.0.3
+         * @since 2.2.0
          *
          * @param string $capability Capability.
          */
@@ -331,7 +331,7 @@ class OrderSms {
      * sequences ("20%Cashback") and `<` as typed, and only removes invalid
      * UTF-8 and control characters (newlines and tabs are kept).
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @param mixed $message Raw message.
      *

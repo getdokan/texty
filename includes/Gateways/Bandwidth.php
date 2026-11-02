@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  * @see https://dev.bandwidth.com/spec/messaging.yml
  * @see https://dev.bandwidth.com/docs/account/credentials/management
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class Bandwidth extends AbstractGateway implements HasDocLink {
 
@@ -57,7 +57,7 @@ class Bandwidth extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -68,7 +68,7 @@ class Bandwidth extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */

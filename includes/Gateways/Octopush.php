@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://dev.octopush.com/en/sms-gateway-api-documentation/send-sms/
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class Octopush extends AbstractGateway implements HasDocLink {
 
@@ -50,7 +50,7 @@ class Octopush extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -61,7 +61,7 @@ class Octopush extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -203,7 +203,7 @@ class Octopush extends AbstractGateway implements HasDocLink {
          * Filter the Octopush send request body, e.g. to switch `type` to
          * `sms_low_cost` or `purpose` to `wholesale`.
          *
-         * @since 2.1.0
+         * @since 2.2.0
          *
          * @param array  $body    JSON request body
          * @param string $to      Recipient as passed to the gateway

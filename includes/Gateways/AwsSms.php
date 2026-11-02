@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://docs.aws.amazon.com/pinpoint/latest/apireference_smsvoicev2/API_SendTextMessage.html
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class AwsSms extends AbstractGateway implements HasDocLink {
 
@@ -63,7 +63,7 @@ class AwsSms extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -74,7 +74,7 @@ class AwsSms extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -174,7 +174,7 @@ class AwsSms extends AbstractGateway implements HasDocLink {
     /**
      * Use a fixed clock for request signing (tests)
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param callable|int|null $clock Unix timestamp, callable returning one, or null for `time()`
      *
@@ -342,7 +342,7 @@ class AwsSms extends AbstractGateway implements HasDocLink {
     /**
      * Regions the gateway can send from
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string[]
      */
@@ -387,7 +387,7 @@ class AwsSms extends AbstractGateway implements HasDocLink {
          * GovCloud and China partitions are excluded by default because they
          * need separate partition credentials.
          *
-         * @since 2.1.0
+         * @since 2.2.0
          *
          * @param string[] $regions AWS region codes
          */

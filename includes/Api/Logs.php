@@ -194,7 +194,7 @@ class Logs extends Base {
      * @param WP_REST_Request $request Request.
      *
      * @return WP_REST_Response|WP_Error
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function send_now( $request ) {
         $result = texty()->queue()->send_now( (int) $request->get_param( 'id' ) );
@@ -213,7 +213,7 @@ class Logs extends Base {
      * @param WP_REST_Request $request Request.
      *
      * @return WP_REST_Response|WP_Error
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function cancel_pending( $request ) {
         $result = texty()->queue()->cancel( (int) $request->get_param( 'id' ) );
@@ -539,7 +539,7 @@ class Logs extends Base {
      * @param string $notification_group Stored group key.
      *
      * @return string
-     * @since 2.0.3
+     * @since 2.2.0
      */
     private function resolve_type_label( string $notification_id, string $notification_group ): string {
         $notifications = texty()->notifications()->all();
@@ -559,7 +559,7 @@ class Logs extends Base {
              * the notifications registry (e.g. manual order SMS, or a
              * notification removed since the row was logged).
              *
-             * @since 2.0.3
+             * @since 2.2.0
              *
              * @param string $title              Title; empty falls back to the raw id.
              * @param string $notification_id    Stored notification id.

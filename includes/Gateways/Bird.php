@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  * Sends through Bird API v1 (`https://{region}.platform.bird.com/v1`), not
  * the legacy workspace/channel API on `api.bird.com`.
  *
- * @since 2.1.0
+ * @since 2.2.0
  *
  * @see https://bird.com/docs/api/reference/create-sms-message
  */
@@ -50,7 +50,7 @@ class Bird extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -61,7 +61,7 @@ class Bird extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -84,7 +84,7 @@ class Bird extends AbstractGateway implements HasDocLink {
     /**
      * Get the name
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -95,7 +95,7 @@ class Bird extends AbstractGateway implements HasDocLink {
     /**
      * Get the description
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -114,7 +114,7 @@ class Bird extends AbstractGateway implements HasDocLink {
     /**
      * Get the logo
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -125,7 +125,7 @@ class Bird extends AbstractGateway implements HasDocLink {
     /**
      * Get the settings
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -174,7 +174,7 @@ class Bird extends AbstractGateway implements HasDocLink {
     /**
      * Send SMS
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $to
      * @param string $message
@@ -243,7 +243,7 @@ class Bird extends AbstractGateway implements HasDocLink {
      * Lists one message, which needs only the sms scope a send already
      * needs and has no side effects.
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param WP_REST_Request $request
      *

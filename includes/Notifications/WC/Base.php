@@ -70,7 +70,7 @@ class Base extends Notification {
     /**
      * The order this notification is about, for placeholder callbacks.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @return object|null WC_Order (or a subclass), or null when not bound.
      */
@@ -144,7 +144,7 @@ class Base extends Notification {
      * Reads the `_texty_{id}` order meta that send() uses as its
      * at-most-once flag.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @return bool
      */
@@ -280,7 +280,7 @@ class Base extends Notification {
      * the message text, so staff can trace SMS from the order screen the
      * same way WooCommerce records emails.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @param string                $content  Message that was sent.
      * @param array<string, true|string> $outcomes Recipient => true, or the error code.
@@ -296,7 +296,7 @@ class Base extends Notification {
          * Filter whether Texty adds a private order note for each SMS
          * notification sent about an order.
          *
-         * @since 2.0.3
+         * @since 2.2.0
          *
          * @param bool   $add          Whether to add the note. Default true.
          * @param Base   $notification The notification that was sent.
@@ -344,7 +344,7 @@ class Base extends Notification {
      *
      * `+8801712345678` becomes `+880•••••••678`.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @param string $number Phone number.
      *

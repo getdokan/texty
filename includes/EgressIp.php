@@ -25,7 +25,7 @@ defined( 'ABSPATH' ) || exit;
  * Lookups are IPv4-only (the providers whitelist IPv4) and cached per node,
  * so the echo service is contacted at most once per node per cache period.
  *
- * @since 2.0.3
+ * @since 2.2.0
  */
 class EgressIp {
 
@@ -366,7 +366,7 @@ class EgressIp {
          * Return an empty array to disable detection (admins can still add
          * IPs by hand).
          *
-         * @since 2.0.3
+         * @since 2.2.0
          *
          * @param string[] $services Service URLs, tried in order.
          */

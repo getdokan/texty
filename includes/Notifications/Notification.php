@@ -124,7 +124,7 @@ abstract class Notification {
      * get_message() again, so `{placeholder}` callbacks run once.
      * `texty_notification_message*` filters still apply in send().
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @param string|null $message Rendered message, or null to render normally.
      *
@@ -139,7 +139,7 @@ abstract class Notification {
     /**
      * The message send() will use: the prepared one if set, else get_message().
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @return string
      */
@@ -194,7 +194,7 @@ abstract class Notification {
      * string is always literal text (so `'time'` means the text "time", never
      * a call to time()).
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @return array<string, array{label:string, value:callable|null}>
      */
@@ -223,7 +223,7 @@ abstract class Notification {
          * Add, override (set `value`) or remove (`unset`) entries. Changes are
          * reflected both in the UI token lists and in message replacement.
          *
-         * @since 2.0.3
+         * @since 2.2.0
          *
          * @param array        $placeholders `token => [ 'label' => string, 'value' => callable|null ]`.
          * @param Notification $notification The notification.
@@ -234,7 +234,7 @@ abstract class Notification {
          * Filter the placeholders of one notification, by id
          * (e.g. `texty_notification_placeholders_order_customer_processing`).
          *
-         * @since 2.0.3
+         * @since 2.2.0
          *
          * @param array        $placeholders Placeholders after the general filter.
          * @param Notification $notification The notification.
@@ -251,7 +251,7 @@ abstract class Notification {
      * (a third-party addition or override) wins; otherwise the built-in value
      * from `$values` is used. Removed placeholders are left untouched.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @param string               $message Message template.
      * @param array<string, mixed> $values  Built-in token => value for the bound object.

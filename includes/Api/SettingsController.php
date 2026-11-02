@@ -131,7 +131,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 *
 	 * @return array<string, array>
 	 * @since 2.0.0
-	 * @since 2.1.0 Masks secret fields.
+	 * @since 2.2.0 Masks secret fields.
 	 */
 	protected function load_values( array $schema ): array {
 		return $this->masked_page_values( $schema, $this->load_stored_settings() );
@@ -144,7 +144,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $stored Stored `texty_settings` option.
 	 *
 	 * @return array<string, array>
-	 * @since 2.1.0
+	 * @since 2.2.0
 	 */
 	private function masked_page_values( array $schema, array $stored ): array {
 		$values = [];
@@ -169,7 +169,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param string $key Gateway registry key.
 	 *
 	 * @return GatewayInterface|null
-	 * @since 2.1.0
+	 * @since 2.2.0
 	 */
 	private function get_gateway( string $key ) {
 		$registered = texty()->gateways()->all();
@@ -515,7 +515,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param RequiresIpWhitelist $gateway Gateway instance.
 	 *
 	 * @return array[]
-	 * @since 2.0.3
+	 * @since 2.2.0
 	 */
 	private function ip_whitelist_schema( string $key, RequiresIpWhitelist $gateway ): array {
 		$section_id = $key . '_ip_whitelist';
@@ -548,7 +548,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * Map a gateway settings field to a plugin-ui field variant.
 	 *
 	 * Besides `name`, `type`, `value` and `help`, a gateway setting may
-	 * declare (since 2.1.0):
+	 * declare (since 2.2.0):
 	 * - `options`      value => label map, used with `'type' => 'select'`
 	 * - `required`     false to make the field optional (default true)
 	 * - `alphanumeric` true on a `from` field that accepts a sender name,
@@ -583,7 +583,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param array $options Value => label map.
 	 *
 	 * @return array[]
-	 * @since 2.1.0
+	 * @since 2.2.0
 	 */
 	private function select_options( array $options ): array {
 		$list = [];

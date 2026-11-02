@@ -30,7 +30,7 @@ class Textmagic extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -41,7 +41,7 @@ class Textmagic extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -123,7 +123,7 @@ class Textmagic extends AbstractGateway implements HasDocLink {
                 'value'        => $this->cred( $creds, 'from' ),
                 'required'     => false,
                 'alphanumeric' => true,
-                'help'         =>__( 'Optional. An approved alphanumeric Sender ID or one of your Textmagic numbers. Leave empty to use the account\'s default sender settings. If the Sender ID is not allowed for a destination, Textmagic silently uses your default sender instead.', 'texty' ),
+                'help'         => __( 'Optional. An approved alphanumeric Sender ID or one of your Textmagic numbers. Leave empty to use the account\'s default sender settings. If the Sender ID is not allowed for a destination, Textmagic silently uses your default sender instead.', 'texty' ),
             ],
         ];
     }

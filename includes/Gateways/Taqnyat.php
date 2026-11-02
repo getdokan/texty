@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  * Saudi Arabian SMS provider. Sends one message per call through the JSON
  * REST API with a Bearer token.
  *
- * @since 2.1.0
+ * @since 2.2.0
  *
  * @see https://dev.taqnyat.sa/en/doc/sms/
  */
@@ -35,7 +35,7 @@ class Taqnyat extends AbstractGateway implements HasDocLink {
     /**
      * Get the API documentation link
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */
@@ -46,7 +46,7 @@ class Taqnyat extends AbstractGateway implements HasDocLink {
     /**
      * Gateway metadata
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -128,7 +128,7 @@ class Taqnyat extends AbstractGateway implements HasDocLink {
     /**
      * Send SMS
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $to
      * @param string $message

@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
  * working unchanged; implement it to show a "View documentation" link on the
  * gateway's settings page.
  *
- * @since 2.0.3
+ * @since 2.2.0
  */
 interface HasDocLink {
 

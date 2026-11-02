@@ -115,7 +115,7 @@ class WooCommerce {
     /**
      * Log "Type" title for manual SMS sent from the order screen.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @param string $title           Current title.
      * @param string $notification_id Stored notification id.

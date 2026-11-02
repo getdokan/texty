@@ -45,7 +45,7 @@ class Gateways {
      * array / WP_Error shape before any hook fires, so hook consumers and
      * callers always see `array|WP_Error`.
      *
-     * @since 2.1.0 Added `$options`.
+     * @since 2.2.0 Added `$options`.
      *
      * @param string $to      The TO phone number
      * @param string $message The message to send
@@ -65,7 +65,7 @@ class Gateways {
         /**
          * Filter the recipient phone number.
          *
-         * @since 2.1.0 Added `$options`.
+         * @since 2.2.0 Added `$options`.
          *
          * @param string           $to      The recipient phone number
          * @param string           $message The message body
@@ -89,7 +89,7 @@ class Gateways {
         /**
          * Filter the SMS message body.
          *
-         * @since 2.1.0 Added `$options`.
+         * @since 2.2.0 Added `$options`.
          *
          * @param string           $message The message body
          * @param string           $to      The recipient phone number
@@ -101,7 +101,7 @@ class Gateways {
         /**
          * Short-circuit SMS sending. Return non-null to skip sending.
          *
-         * @since 2.1.0 Added `$options`.
+         * @since 2.2.0 Added `$options`.
          *
          * @param null|mixed       $pre_send Return non-null to short-circuit
          * @param string           $to       The recipient phone number
@@ -118,7 +118,7 @@ class Gateways {
         /**
          * Fires before each SMS is sent.
          *
-         * @since 2.1.0 Added `$options`.
+         * @since 2.2.0 Added `$options`.
          *
          * @param string           $to      The recipient phone number
          * @param string           $message The message body
@@ -138,7 +138,7 @@ class Gateways {
         /**
          * Fires after each SMS is sent.
          *
-         * @since 2.1.0 Added `$options`.
+         * @since 2.2.0 Added `$options`.
          *
          * @param array|bool|WP_Error $result  The send result
          * @param string              $to      The recipient phone number
@@ -152,7 +152,7 @@ class Gateways {
             /**
              * Fires when SMS sending fails.
              *
-             * @since 2.1.0 Added `$options`.
+             * @since 2.2.0 Added `$options`.
              *
              * @param WP_Error         $result  The error object
              * @param string           $to      The recipient phone number

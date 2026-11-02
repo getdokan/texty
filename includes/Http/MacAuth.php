@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  * empty. Timestamp and nonce are generated fresh for every header unless
  * fixed through the constructor (for tests).
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class MacAuth {
 
@@ -59,7 +59,7 @@ class MacAuth {
     /**
      * Constructor
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string      $id        API key
      * @param string      $secret    API secret
@@ -76,7 +76,7 @@ class MacAuth {
     /**
      * Build the Authorization header value for a request
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $method HTTP method
      * @param string $url    Absolute request URL, exactly as it will be sent
@@ -99,7 +99,7 @@ class MacAuth {
     /**
      * Compute the MAC for a request
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $method    HTTP method
      * @param string $url       Absolute request URL
@@ -115,7 +115,7 @@ class MacAuth {
     /**
      * Build the normalized request string that gets signed
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param string $method    HTTP method
      * @param string $url       Absolute request URL
@@ -152,7 +152,7 @@ class MacAuth {
     /**
      * Generate a random nonce of at most 32 characters
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return string
      */

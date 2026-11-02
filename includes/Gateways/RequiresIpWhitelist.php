@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * also report each send's outcome through `texty()->egress_ip()->report()`
  * so blocked servers behind a load balancer show up in that list.
  *
- * @since 2.0.3
+ * @since 2.2.0
  */
 interface RequiresIpWhitelist {
 

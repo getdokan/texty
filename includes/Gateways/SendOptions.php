@@ -15,14 +15,14 @@ defined( 'ABSPATH' ) || exit;
  * - `template_id` string Provider template / DLT ID
  * - `variables`   array  Template variables, keyed by provider variable name
  *
- * @since 2.1.0
+ * @since 2.2.0
  */
 class SendOptions {
 
     /**
      * Default option values
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @return array
      */
@@ -40,7 +40,7 @@ class SendOptions {
      *
      * Unknown keys are kept so extensions can pass their own options.
      *
-     * @since 2.1.0
+     * @since 2.2.0
      *
      * @param mixed $options
      *

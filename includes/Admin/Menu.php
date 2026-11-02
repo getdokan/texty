@@ -278,7 +278,7 @@ class Menu {
      * the region of the site language (e.g. `bn_BD` → `bd`). Empty when
      * neither yields a country.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @return string
      */
@@ -303,7 +303,7 @@ class Menu {
         /**
          * Filter the default country used by Texty phone inputs.
          *
-         * @since 2.0.3
+         * @since 2.2.0
          *
          * @param string $country Lowercase ISO 3166-1 alpha-2 code, or ''.
          */
