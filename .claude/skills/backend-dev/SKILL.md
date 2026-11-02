@@ -525,9 +525,9 @@ If a class is only needed by an admin screen, don't include it on every front-en
 ## Documentation
 
 - **PHPDoc on every public/protected method.** `@param` and `@return` types required.
-- **`@since` tag** on new public/protected methods and on hook docs that the pro plugin will rely on.
+- **`@since` tag** on new public/protected methods and on hook docs that the pro plugin will rely on. **Write `@since TEXTY_VERSION`, not a version number** — `npm run version` (`bin/version-replace.sh`) replaces the placeholder with the `package.json` version at release. Leave existing numbered tags alone.
 - **Hook docs:** every `apply_filters` and `do_action` gets a docblock describing each param. Example in `includes/Gateways.php`.
-- **`@deprecated` tag** on any method/hook scheduled for removal — note the version it became deprecated and the replacement.
+- **`@deprecated` tag** on any method/hook scheduled for removal — `@deprecated TEXTY_VERSION` plus the replacement. The script only rewrites docblock tags, so string version arguments to `_deprecated_function()` / `apply_filters_deprecated()` still need the real release number.
 
 ## Mozart-prefixed dependencies
 

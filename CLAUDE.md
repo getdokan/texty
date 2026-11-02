@@ -26,6 +26,7 @@ npm run typecheck        # tsc --noEmit (strict mode, src/** only)
 npm run build            # production build
 npm run makepot          # regenerate languages/texty.pot
 npm run pot2json         # POT → JSON for JS i18n
+npm run version          # release only: replace `@since TEXTY_VERSION` placeholders with package.json "version"
 
 # PHP
 composer install         # also runs Mozart in dev mode (post-install-cmd)
@@ -89,6 +90,7 @@ Only Appsero packages are namespaced into `Texty\Dependencies\` via Mozart (`com
 - `phpcs.xml` disables many WordPress-Core strictness rules (Yoda, escape-output, file-name) but **enforces strict comparisons** (`Universal.Operators.StrictComparisons`, `WordPress.PHP.StrictInArray.MissingTrueStrict`) as errors. Use `===` and pass `true` to `in_array`.
 - TypeScript runs in strict mode; JS files in `src/` are accepted (`allowJs: true`) but not type-checked (`checkJs: false`).
 - Text domain is `texty` (enforced by phpcs).
+- **Version placeholder for new code:** tag new classes, methods, hooks and docblocks with `@since TEXTY_VERSION` (also `@deprecated TEXTY_VERSION`) — never a guessed number like `2.3.0`. The next release number isn't known while developing; `npm run version` (`bin/version-replace.sh`) swaps the placeholder for the `package.json` version at release time. It only touches `@since` / `@deprecated` / `@version` tags in `.php`, `.js`, `.jsx`, `.ts`, `.tsx`, `.css`, `.scss`, so the live `TEXTY_VERSION` constant in code is safe. Don't rewrite existing numbered `@since` tags.
 
 ## Adding features
 

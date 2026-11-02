@@ -66,6 +66,7 @@ These will fail `composer phpcs`:
 
 - **Missing PHPDoc** on public/protected methods.
 - **Missing `@since`** on new public/protected methods or new hooks the pro plugin may rely on.
+- **Hardcoded version in new `@since` / `@deprecated`** — new code must use the `TEXTY_VERSION` placeholder (`@since TEXTY_VERSION`); `npm run version` fills it in at release. A guessed number (`@since 2.3.0`) goes stale when the release number changes.
 - **Missing hook docblock** above `apply_filters()` / `do_action()` calls — consumers need to know each param.
 - **Missing `@deprecated`** on a method/hook scheduled for removal — must note the version it became deprecated and the replacement.
 
