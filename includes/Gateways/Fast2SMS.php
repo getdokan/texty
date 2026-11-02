@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://docs.fast2sms.com/
  */
-class Fast2SMS extends AbstractGateway {
+class Fast2SMS extends AbstractGateway implements HasDocLink {
 
     /**
      * Default API base URL
@@ -42,6 +42,17 @@ class Fast2SMS extends AbstractGateway {
     protected $key = 'fast2sms';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://www.fast2sms.com/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -51,9 +62,7 @@ class Fast2SMS extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://docs.fast2sms.com/',
-            'signup_url'        => 'https://www.fast2sms.com/',
-            'regions'           => [ 'IN' ],
+            'docs_url'          => 'https://docs.fast2sms.com/',            'regions'           => [ 'IN' ],
             'features'          => [
                 'unicode'       => false,
                 'sender_id'     => true,

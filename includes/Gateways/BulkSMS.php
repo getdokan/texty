@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.1.0
  */
-class BulkSMS extends AbstractGateway {
+class BulkSMS extends AbstractGateway implements HasDocLink {
 
     /**
      * API base URL
@@ -44,6 +44,17 @@ class BulkSMS extends AbstractGateway {
     protected $key = 'bulksms';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://www.bulksms.com/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -53,9 +64,7 @@ class BulkSMS extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://www.bulksms.com/developer/json/v1/',
-            'signup_url'        => 'https://www.bulksms.com/',
-            'regions'           => [],
+            'docs_url'          => 'https://www.bulksms.com/developer/json/v1/',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

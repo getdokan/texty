@@ -36,10 +36,9 @@ class Plivo extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'     => Metadata::STATUS_STABLE,
-            'docs_url'   => 'https://www.plivo.com/docs/messaging/api/message',
-            'signup_url' => 'https://console.plivo.com/accounts/register/',
-            'features'   => [
+            'status'   => Metadata::STATUS_STABLE,
+            'docs_url' => 'https://www.plivo.com/docs/messaging/api/message',
+            'features' => [
                 'unicode'   => true,
                 'sender_id' => true,
             ],

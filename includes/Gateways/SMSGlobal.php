@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  * @see https://www.smsglobal.com/us/rest-api/
  * @see https://api.smsglobal.com/v2/doc
  */
-class SMSGlobal extends AbstractGateway {
+class SMSGlobal extends AbstractGateway implements HasDocLink {
 
     /**
      * API base URL
@@ -43,6 +43,17 @@ class SMSGlobal extends AbstractGateway {
     protected $key = 'smsglobal';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://www.smsglobal.com/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -52,9 +63,7 @@ class SMSGlobal extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://www.smsglobal.com/us/rest-api/',
-            'signup_url'        => 'https://www.smsglobal.com/',
-            'regions'           => [],
+            'docs_url'          => 'https://www.smsglobal.com/us/rest-api/',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

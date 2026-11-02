@@ -26,7 +26,6 @@
 namespace Texty\Api;
 
 use Texty\Gateways\GatewayInterface;
-use Texty\Gateways\HasDocLink;
 use Texty\Gateways\Metadata;
 use Texty\Gateways\RequiresIpWhitelist;
 use Texty\Gateways\Secrets;
@@ -433,7 +432,8 @@ class SettingsController extends BaseSettingsRESTController {
 			'meta'        => $meta,
 		];
 
-		$doc_link = $gateway instanceof HasDocLink ? $gateway->doc_link() : $meta['signup_url'];
+		// Resolved from HasDocLink::doc_link() by Metadata::for_gateway().
+		$doc_link = $meta['signup_url'];
 
 		if ( $doc_link ) {
 			$page['doc_link']      = $doc_link;

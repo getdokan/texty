@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://bird.com/docs/api/reference/create-sms-message
  */
-class Bird extends AbstractGateway {
+class Bird extends AbstractGateway implements HasDocLink {
 
     /**
      * Base URL template, `{region}` is the data region (us1, eu1)
@@ -48,6 +48,17 @@ class Bird extends AbstractGateway {
     protected $key = 'bird';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://bird.com/dashboard/w/api-keys';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -57,9 +68,7 @@ class Bird extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://bird.com/docs/guides/sms/sending-sms',
-            'signup_url'        => 'https://bird.com/dashboard/w/api-keys',
-            'regions'           => [],
+            'docs_url'          => 'https://bird.com/docs/guides/sms/sending-sms',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

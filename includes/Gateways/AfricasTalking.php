@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.1.0
  */
-class AfricasTalking extends AbstractGateway {
+class AfricasTalking extends AbstractGateway implements HasDocLink {
 
     /**
      * Live API base URL
@@ -58,6 +58,17 @@ class AfricasTalking extends AbstractGateway {
     private $accepted_codes = [ 100, 101, 102 ];
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://account.africastalking.com/auth/register';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -67,9 +78,7 @@ class AfricasTalking extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://developers.africastalking.com/docs/sms/overview',
-            'signup_url'        => 'https://account.africastalking.com/auth/register',
-            'regions'           => [ 'KE', 'UG', 'TZ', 'RW', 'MW', 'ZM', 'NG', 'ET', 'CI', 'ZA', 'GH' ],
+            'docs_url'          => 'https://developers.africastalking.com/docs/sms/overview',            'regions'           => [ 'KE', 'UG', 'TZ', 'RW', 'MW', 'ZM', 'NG', 'ET', 'CI', 'ZA', 'GH' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

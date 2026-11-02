@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.1.0
  */
-class Brevo extends AbstractGateway {
+class Brevo extends AbstractGateway implements HasDocLink {
 
     /**
      * API base URL
@@ -48,6 +48,17 @@ class Brevo extends AbstractGateway {
     protected $key = 'brevo';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://onboarding.brevo.com/account/register';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -57,9 +68,7 @@ class Brevo extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://developers.brevo.com/docs/transactional-sms-endpoints',
-            'signup_url'        => 'https://onboarding.brevo.com/account/register',
-            'regions'           => [],
+            'docs_url'          => 'https://developers.brevo.com/docs/transactional-sms-endpoints',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

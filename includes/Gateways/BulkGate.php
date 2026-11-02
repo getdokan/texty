@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  * @see https://www.bulkgate.com/en/docs/simple-api/simple-transactional/
  * @see https://www.bulkgate.com/en/docs/simple-api/simple-check-credit-balance/
  */
-class BulkGate extends AbstractGateway {
+class BulkGate extends AbstractGateway implements HasDocLink {
 
     /**
      * API base URL
@@ -53,6 +53,17 @@ class BulkGate extends AbstractGateway {
     protected $key = 'bulkgate';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://portal.bulkgate.com/sign/up';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -62,9 +73,7 @@ class BulkGate extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://www.bulkgate.com/en/docs/simple-api/simple-transactional/',
-            'signup_url'        => 'https://portal.bulkgate.com/sign/up',
-            'regions'           => [],
+            'docs_url'          => 'https://www.bulkgate.com/en/docs/simple-api/simple-transactional/',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

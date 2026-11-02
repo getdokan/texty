@@ -35,10 +35,9 @@ class Vonage extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'     => Metadata::STATUS_STABLE,
-            'docs_url'   => 'https://developer.vonage.com/en/api/sms',
-            'signup_url' => 'https://dashboard.nexmo.com/sign-up',
-            'features'   => [
+            'status'   => Metadata::STATUS_STABLE,
+            'docs_url' => 'https://developer.vonage.com/en/api/sms',
+            'features' => [
                 'unicode'       => true,
                 'sender_id'     => true,
                 'balance_check' => true,

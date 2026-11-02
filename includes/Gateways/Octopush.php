@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.1.0
  */
-class Octopush extends AbstractGateway {
+class Octopush extends AbstractGateway implements HasDocLink {
 
     /**
      * API base URL
@@ -48,6 +48,17 @@ class Octopush extends AbstractGateway {
     protected $key = 'octopush';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://client.octopush.com/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -57,9 +68,7 @@ class Octopush extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://dev.octopush.com/en/sms-gateway-api-documentation/send-sms/',
-            'signup_url'        => 'https://client.octopush.com/',
-            'regions'           => [ 'FR', 'EU' ],
+            'docs_url'          => 'https://dev.octopush.com/en/sms-gateway-api-documentation/send-sms/',            'regions'           => [ 'FR', 'EU' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

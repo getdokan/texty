@@ -40,10 +40,9 @@ class Twilio extends AbstractGateway implements HasDocLink {
      */
     protected function meta() {
         return [
-            'status'     => Metadata::STATUS_STABLE,
-            'docs_url'   => 'https://www.twilio.com/docs/sms/api/message-resource',
-            'signup_url' => 'https://www.twilio.com/try-twilio',
-            'features'   => [
+            'status'   => Metadata::STATUS_STABLE,
+            'docs_url' => 'https://www.twilio.com/docs/sms/api/message-resource',
+            'features' => [
                 'unicode'       => true,
                 'sender_id'     => true,
                 'balance_check' => true,

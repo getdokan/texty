@@ -29,7 +29,7 @@ class Metadata {
      *
      * - `status`            stable|beta
      * - `docs_url`          Provider API docs
-     * - `signup_url`        Provider sign-up page
+     * - `signup_url`        Provider sign-up page; defaults to `HasDocLink::doc_link()`
      * - `regions`           ISO country codes or region names; empty = global
      * - `features`          unicode, sender_id, template, balance_check (bool each)
      * - `validation`        live|format_only — whether validate() calls the provider
@@ -98,6 +98,10 @@ class Metadata {
      */
     public static function for_gateway( GatewayInterface $gateway ) {
         $meta = method_exists( $gateway, 'metadata' ) ? $gateway->metadata() : [];
+
+        if ( $gateway instanceof HasDocLink && empty( $meta['signup_url'] ) ) {
+            $meta['signup_url'] = $gateway->doc_link();
+        }
 
         /**
          * Filter a gateway's metadata.

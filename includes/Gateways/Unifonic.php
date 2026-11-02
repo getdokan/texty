@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://docs.unifonic.com/articles/products-documentation/sms-03-sending-api
  */
-class Unifonic extends AbstractGateway {
+class Unifonic extends AbstractGateway implements HasDocLink {
 
     /**
      * API base URL
@@ -51,6 +51,17 @@ class Unifonic extends AbstractGateway {
     protected $key = 'unifonic';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://cloud.unifonic.com/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -60,9 +71,7 @@ class Unifonic extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://docs.unifonic.com/articles/products-documentation/sms-03-sending-api',
-            'signup_url'        => 'https://cloud.unifonic.com/',
-            'regions'           => [ 'SA', 'AE', 'KW', 'QA', 'OM', 'BH' ],
+            'docs_url'          => 'https://docs.unifonic.com/articles/products-documentation/sms-03-sending-api',            'regions'           => [ 'SA', 'AE', 'KW', 'QA', 'OM', 'BH' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

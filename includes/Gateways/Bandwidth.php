@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.1.0
  */
-class Bandwidth extends AbstractGateway {
+class Bandwidth extends AbstractGateway implements HasDocLink {
 
     /**
      * Messaging API base URL
@@ -55,6 +55,17 @@ class Bandwidth extends AbstractGateway {
     protected $key = 'bandwidth';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://www.bandwidth.com/free-trial/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -64,9 +75,7 @@ class Bandwidth extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://dev.bandwidth.com/apis/messaging/',
-            'signup_url'        => 'https://www.bandwidth.com/free-trial/',
-            'regions'           => [ 'US', 'CA' ],
+            'docs_url'          => 'https://dev.bandwidth.com/apis/messaging/',            'regions'           => [ 'US', 'CA' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

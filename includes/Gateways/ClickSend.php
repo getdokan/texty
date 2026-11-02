@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://developers.clicksend.com/docs/
  */
-class ClickSend extends AbstractGateway {
+class ClickSend extends AbstractGateway implements HasDocLink {
 
     /**
      * Default API base URL
@@ -40,6 +40,17 @@ class ClickSend extends AbstractGateway {
     protected $key = 'clicksend';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://dashboard.clicksend.com/#/signup/step1/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -49,9 +60,7 @@ class ClickSend extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://developers.clicksend.com/docs/',
-            'signup_url'        => 'https://dashboard.clicksend.com/#/signup/step1/',
-            'regions'           => [],
+            'docs_url'          => 'https://developers.clicksend.com/docs/',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

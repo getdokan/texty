@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.1.0
  */
-class AwsSms extends AbstractGateway {
+class AwsSms extends AbstractGateway implements HasDocLink {
 
     /**
      * Default API host, `%s` is the region
@@ -61,6 +61,17 @@ class AwsSms extends AbstractGateway {
     private $clock = null;
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://aws.amazon.com/end-user-messaging/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -70,9 +81,7 @@ class AwsSms extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://docs.aws.amazon.com/sms-voice/latest/userguide/what-is-sms-mms.html',
-            'signup_url'        => 'https://aws.amazon.com/end-user-messaging/',
-            'regions'           => [],
+            'docs_url'          => 'https://docs.aws.amazon.com/sms-voice/latest/userguide/what-is-sms-mms.html',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

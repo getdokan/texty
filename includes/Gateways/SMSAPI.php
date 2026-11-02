@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.1.0
  */
-class SMSAPI extends AbstractGateway {
+class SMSAPI extends AbstractGateway implements HasDocLink {
 
     /**
      * Default region
@@ -42,6 +42,17 @@ class SMSAPI extends AbstractGateway {
     protected $key = 'smsapi';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://www.smsapi.com/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -51,9 +62,7 @@ class SMSAPI extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://www.smsapi.com/docs/',
-            'signup_url'        => 'https://www.smsapi.com/',
-            'regions'           => [],
+            'docs_url'          => 'https://www.smsapi.com/docs/',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

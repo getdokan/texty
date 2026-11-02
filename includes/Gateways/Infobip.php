@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://www.infobip.com/docs/api/channels/sms/outbound-sms/send-message/send-sms-messages
  */
-class Infobip extends AbstractGateway {
+class Infobip extends AbstractGateway implements HasDocLink {
 
     /**
      * Send endpoint path, relative to the account base URL
@@ -49,6 +49,17 @@ class Infobip extends AbstractGateway {
     protected $key = 'infobip';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://www.infobip.com/signup';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -58,9 +69,7 @@ class Infobip extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://www.infobip.com/docs/api/channels/sms/outbound-sms/send-message/send-sms-messages',
-            'signup_url'        => 'https://www.infobip.com/signup',
-            'regions'           => [],
+            'docs_url'          => 'https://www.infobip.com/docs/api/channels/sms/outbound-sms/send-message/send-sms-messages',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

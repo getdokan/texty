@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://d7networks.com/docs/sms/send-sms/
  */
-class D7Networks extends AbstractGateway {
+class D7Networks extends AbstractGateway implements HasDocLink {
 
     /**
      * Default API base URL
@@ -38,6 +38,17 @@ class D7Networks extends AbstractGateway {
     protected $key = 'd7networks';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://app.d7networks.com';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -47,9 +58,7 @@ class D7Networks extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://d7networks.com/docs/sms/send-sms/',
-            'signup_url'        => 'https://app.d7networks.com',
-            'regions'           => [],
+            'docs_url'          => 'https://d7networks.com/docs/sms/send-sms/',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

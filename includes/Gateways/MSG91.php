@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.1.0
  */
-class MSG91 extends AbstractGateway {
+class MSG91 extends AbstractGateway implements HasDocLink {
 
     /**
      * Default API base URL
@@ -49,6 +49,17 @@ class MSG91 extends AbstractGateway {
     protected $key = 'msg91';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://control.msg91.com/signup/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -58,9 +69,7 @@ class MSG91 extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://docs.msg91.com/sms/send-sms',
-            'signup_url'        => 'https://control.msg91.com/signup/',
-            'regions'           => [ 'IN' ],
+            'docs_url'          => 'https://docs.msg91.com/sms/send-sms',            'regions'           => [ 'IN' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

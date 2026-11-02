@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://dev.taqnyat.sa/en/doc/sms/
  */
-class Taqnyat extends AbstractGateway {
+class Taqnyat extends AbstractGateway implements HasDocLink {
 
     /**
      * Default API base URL
@@ -33,6 +33,17 @@ class Taqnyat extends AbstractGateway {
     protected $key = 'taqnyat';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://portal.taqnyat.sa';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -42,9 +53,7 @@ class Taqnyat extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://dev.taqnyat.sa/en/doc/sms/',
-            'signup_url'        => 'https://portal.taqnyat.sa',
-            'regions'           => [ 'SA' ],
+            'docs_url'          => 'https://dev.taqnyat.sa/en/doc/sms/',            'regions'           => [ 'SA' ],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

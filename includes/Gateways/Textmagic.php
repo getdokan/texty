@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see https://docs.textmagic.com/#tag/Outbound-Messages
  */
-class Textmagic extends AbstractGateway {
+class Textmagic extends AbstractGateway implements HasDocLink {
 
     /**
      * API base URL
@@ -28,6 +28,17 @@ class Textmagic extends AbstractGateway {
     protected $key = 'textmagic';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://my.textmagic.com/register/';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -37,9 +48,7 @@ class Textmagic extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://docs.textmagic.com/',
-            'signup_url'        => 'https://my.textmagic.com/register/',
-            'regions'           => [],
+            'docs_url'          => 'https://docs.textmagic.com/',            'regions'           => [],
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

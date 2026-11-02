@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.1.0
  */
-class Sinch extends AbstractGateway {
+class Sinch extends AbstractGateway implements HasDocLink {
 
     /**
      * Base URL pattern, `{region}` is one of `regions()`
@@ -43,6 +43,17 @@ class Sinch extends AbstractGateway {
     protected $key = 'sinch';
 
     /**
+     * Get the sign-up link
+     *
+     * @since 2.1.0
+     *
+     * @return string
+     */
+    public function doc_link() {
+        return 'https://dashboard.sinch.com/signup';
+    }
+
+    /**
      * Gateway metadata
      *
      * @since 2.1.0
@@ -52,9 +63,7 @@ class Sinch extends AbstractGateway {
     protected function meta() {
         return [
             'status'            => Metadata::STATUS_BETA,
-            'docs_url'          => 'https://developers.sinch.com/docs/sms/api-reference',
-            'signup_url'        => 'https://dashboard.sinch.com/signup',
-            'regions'           => array_keys( $this->regions() ),
+            'docs_url'          => 'https://developers.sinch.com/docs/sms/api-reference',            'regions'           => array_keys( $this->regions() ),
             'features'          => [
                 'unicode'       => true,
                 'sender_id'     => true,

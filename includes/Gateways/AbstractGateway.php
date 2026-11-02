@@ -88,10 +88,19 @@ abstract class AbstractGateway implements GatewayInterface {
      *
      * @since 2.1.0
      *
+     * `signup_url` falls back to `doc_link()` when the gateway implements
+     * `HasDocLink`, so the sign-up URL is declared in one place.
+     *
      * @return array See `Metadata::defaults()`
      */
     public function metadata() {
-        return Metadata::normalize( $this->meta() );
+        $meta = $this->meta();
+
+        if ( $this instanceof HasDocLink && empty( $meta['signup_url'] ) ) {
+            $meta['signup_url'] = $this->doc_link();
+        }
+
+        return Metadata::normalize( $meta );
     }
 
     /**
