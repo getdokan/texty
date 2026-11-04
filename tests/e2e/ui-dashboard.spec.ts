@@ -28,28 +28,19 @@ test.describe('Dashboard UI interactions', () => {
         expect(res.url()).toContain('period=last_7_days');
     });
 
-    test('quick-send button is gated on both phone and message', async ({ page }) => {
+    // The Quick Send form lives on its own page (#/quick-send); the dashboard
+    // only shows a shortcut card (rendered when a gateway is active). Form
+    // behavior is covered in ui-quick-send.spec.ts.
+    test('quick-send shortcut navigates to the Quick Send page', async ({ page }) => {
         await gotoTextyHash(page, '/dashboard');
         await page.waitForLoadState('networkidle');
 
-        const sendBtn = page.getByRole('button', { name: /Send Message/i });
-        await expect(sendBtn).toBeDisabled();
+        const cta = page.getByRole('button', { name: /Send a Message/i });
+        test.skip((await cta.count()) === 0, 'No active gateway — dashboard hides the Quick Send shortcut');
 
-        // Typing only a message keeps it disabled (no phone yet).
-        await page.getByPlaceholder(/Write here/i).fill('Hello from QA');
-        await expect(sendBtn).toBeDisabled();
-
-        // Add a phone number — now it should enable.
-        await page.locator('input[name="phone"]').fill('15555550123');
-        await expect(sendBtn).toBeEnabled();
-    });
-
-    test('message character counter reflects typed length', async ({ page }) => {
-        await gotoTextyHash(page, '/dashboard');
-        await page.waitForLoadState('networkidle');
-
-        await page.getByPlaceholder(/Write here/i).fill('12345');
-        await expect(page.getByText(/^5\//)).toBeVisible();
+        await cta.click();
+        await expect(page).toHaveURL(/#\/quick-send$/);
+        await expect(page.getByRole('button', { name: /Send Message/i })).toBeVisible();
     });
 
     test('volume analytics renders the recharts line chart with axis ticks', async ({ page }) => {

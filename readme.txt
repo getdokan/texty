@@ -5,7 +5,7 @@ Tags: sms, notification, twilio, woocommerce, dokan
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,7 +164,7 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 
 == Changelog ==
 
-= Unreleased =
+= v2.0.3 (4 Nov, 2026) =
 
 - **New:** Developers can add, override or remove message placeholders (like `{order_id}`) with the `texty_notification_placeholders` filter. Custom placeholders show up in the "Available variables" lists and the order "Send SMS" box, and are filled in when messages are sent.
 - **New:** Gateways that require IP whitelisting (SSL Wireless) show your server's outgoing IP on their settings page, with copy buttons. On sites with several servers or a load balancer, every server's IP is listed as it sends, marked Allowed or Blocked, and you can add your host's fixed outgoing IP by hand. A blocked send's error now names the exact IP to whitelist, and SSL Wireless requests always use IPv4.

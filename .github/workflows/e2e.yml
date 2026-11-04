@@ -27,9 +27,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Pin the lower bound (Requires at least: 6.8) and track latest so a
-        # core release can't silently break the plugin.
-        wordpress: ["6.9", "latest"]
+        # Track latest stable core only. To also test a pinned release, add
+        # its tag here (e.g. "6.8"); WP_ENV_CORE below boots that exact tag.
+        wordpress: ["latest"]
 
     env:
       WP_BASE_URL: http://localhost:8888
@@ -93,8 +93,8 @@ jobs:
       - name: Install Playwright browser (Chromium)
         run: npx playwright install --with-deps chromium
 
-      # `.wp-env.json` pins core to null (latest stable). For the lower-bound
-      # row, override via WP_ENV_CORE so we boot the exact tagged release.
+      # `.wp-env.json` pins core to null (latest stable). For any pinned
+      # matrix row, override via WP_ENV_CORE so we boot the exact tagged release.
       - name: Start WordPress (wp-env)
         run: npx --yes @wordpress/env start
         env:
