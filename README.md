@@ -205,6 +205,8 @@ add_filter( 'texty_sms_message', function ( $message, $to, $gateway ) {
 
 Short-circuit SMS sending. Return a non-null value to skip the gateway call entirely.
 
+Return a `WP_Error` to refuse the send: it is treated as a failed attempt, so `texty_after_send_sms` and `texty_send_sms_failed` fire and it shows in Texty → Logs as Failed (this is how "Pause All Notifications" works). Any other non-null value means your filter handled the message itself; it is returned as is and nothing is logged.
+
 ```php
 add_filter( 'texty_pre_send_sms', function ( $pre_send, $to, $message, $gateway ) {
     // Block SMS to specific numbers
@@ -243,7 +245,7 @@ add_action( 'texty_before_send_sms', function ( $to, $message, $gateway ) {
 
 #### `texty_after_send_sms` (action)
 
-Fires after each SMS is sent, with the result.
+Fires after each SMS is sent, with the result. It also fires, with a `WP_Error`, when the send is refused before it reaches the gateway: a `WP_Error` returned from `texty_pre_send_sms`, or no recipient number (`texty_missing_recipient`). Texty logs every one of these in Texty → Logs.
 
 ```php
 add_action( 'texty_after_send_sms', function ( $result, $to, $message, $gateway ) {
@@ -279,6 +281,23 @@ add_action( 'texty_send_sms_failed', function ( $error, $to, $message, $gateway 
 - `$to` _(string)_ — The recipient phone number
 - `$message` _(string)_ — The message body
 - `$gateway` _(GatewayInterface)_ — The active gateway instance
+
+#### `texty_send_sms_no_gateway` (action)
+
+Fires when a message can't be sent because no gateway is active. `texty_after_send_sms` and `texty_send_sms_failed` don't fire in this case (there is no gateway instance to pass), and `Gateways::send()` returns `false`. Texty logs the message as Failed with the `texty_no_gateway` reason.
+
+```php
+add_action( 'texty_send_sms_no_gateway', function ( $error, $to, $message ) {
+    error_log( 'Texty: no active gateway, SMS to ' . $to . ' was not sent' );
+}, 10, 3 );
+```
+
+**Parameters:**
+
+- `$error` _(WP_Error)_ — The `texty_no_gateway` error
+- `$to` _(string)_ — The recipient phone number
+- `$message` _(string)_ — The message body
+- `$options` _(array)_ — Per-message options
 
 ---
 
@@ -754,6 +773,7 @@ $notifier->send();
 | `texty_before_send_sms`            | action | `Gateways::send()`           | Before each SMS                   |
 | `texty_after_send_sms`             | action | `Gateways::send()`           | After each SMS with result        |
 | `texty_send_sms_failed`            | action | `Gateways::send()`           | On send failure                   |
+| `texty_send_sms_no_gateway`        | action | `Gateways::send()`           | No active gateway to send with    |
 | `texty_register_gateways`          | action | `Gateways::all()`            | Register custom gateways          |
 | `texty_gateway_instance`           | filter | `Gateways::active_gateway()` | Modify gateway instance           |
 | `texty_available_gateways`         | filter | `Gateways::all()`            | Filter gateway list (legacy)      |

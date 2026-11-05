@@ -9,6 +9,7 @@ use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataLayerFactory;
 use Texty\Gateways\GatewayInterface;
 use Texty\Gateways\Secrets;
 use WP_Comment;
+use WP_Error;
 
 /**
  * Dispatcher Class
@@ -26,6 +27,7 @@ class Dispatcher {
 
         // SMS Logging via gateway hooks
         add_action( 'texty_after_send_sms', [ $this, 'log_sms' ], 10, 4 );
+        add_action( 'texty_send_sms_no_gateway', [ $this, 'log_no_gateway' ], 10, 3 );
 
         // Load integrations
         $this->register_integrations();
@@ -141,6 +143,24 @@ class Dispatcher {
         );
 
         $store->create( $sms );
+    }
+
+    /**
+     * Log a message that couldn't be sent because no gateway is active.
+     *
+     * Written as a failed row (with the `texty_no_gateway` reason), so the
+     * order note's "details in Texty → Logs" has an entry to point to.
+     *
+     * @since TEXTY_VERSION
+     *
+     * @param WP_Error $error   The `texty_no_gateway` error
+     * @param string   $to      Recipient phone number
+     * @param string   $message The message body
+     *
+     * @return void
+     */
+    public function log_no_gateway( $error, $to, $message ) {
+        $this->log_sms( $error, $to, $message, false );
     }
 
     /**

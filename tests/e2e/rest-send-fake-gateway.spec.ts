@@ -288,6 +288,12 @@ test.describe('REST: send via the fake gateway', () => {
             // Nothing was sent: no "sent" row for this token.
             const rows = await ourRows(page.request, token);
             expect(rows.every((r: { status?: string }) => r.status !== 'sent')).toBe(true);
+
+            // The refusal is still recorded (#160): one Failed row carrying the
+            // paused reason, so "details in Texty → Logs" has an entry to show.
+            expect(rows.length).toBe(1);
+            expect(rows[0].status).toBe('failed');
+            expect(rows[0].response ?? '').toContain('texty_paused');
         } finally {
             await writeSettings(page, {
                 global_sender_id: orig.global_sender_id,

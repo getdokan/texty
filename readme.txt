@@ -178,6 +178,7 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 - **New:** SMS notifications are sent in the background (using WooCommerce's Action Scheduler) instead of during checkout or order updates, so those pages no longer wait on the SMS gateway. Queued messages show as Pending in Logs, with Send now and Cancel buttons.
 - **Changed:** Because notifications are sent in the background, they go out shortly after the event (usually within a minute) rather than instantly. Code that filters Texty messages now runs in that background request, without the shopper's session. To keep the previous immediate sending, add `add_filter( 'texty_send_async', '__return_false' );`. Sites without WooCommerce keep sending immediately.
 - **Fix:** Logs → All and the dashboard counters no longer show stale or empty data on sites with a persistent object cache.
+- **Fix:** SMS that are not sent because Pause All Notifications is on, no gateway is active or the recipient number is missing now show in Logs as Failed instead of leaving no record, so the order note's "details in Texty → Logs" has an entry to point to.
 - **Update:** Faster Logs, CSV export and dashboard on sites with many messages.
 
 = v2.0.2 (10 Aug, 2026) =
