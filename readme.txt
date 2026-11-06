@@ -164,7 +164,7 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 
 == Changelog ==
 
-= v2.2.0 (2 Nov, 2026) =
+= v2.2.0 (6 Nov, 2026) =
 
 - **New:** 20 new SMS gateways: Africa's Talking, AWS End User Messaging, Bandwidth, Bird, Brevo, BulkGate, BulkSMS, ClickSend, D7 Networks, Fast2SMS, Infobip, MSG91, Octopush, SMSAPI, SMSGlobal, Sinch, Taqnyat, Telnyx, Textmagic and Unifonic. MSG91 and Fast2SMS are marked Beta.
 - **New:** Each gateway's settings page links to the provider's API documentation.
