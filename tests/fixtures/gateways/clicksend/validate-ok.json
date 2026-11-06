@@ -1,0 +1,33 @@
+{
+    "_source": "https://api.apis.guru/v2/specs/clicksend.com/1.0.0/openapi.json",
+    "_note": "From docs: paths./account.get.responses.200 example, trimmed; values are the docs' fake ones.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "http_code": 200,
+        "response_code": "SUCCESS",
+        "response_msg": "Here's your account",
+        "data": {
+            "user_id": 3819,
+            "username": "ULXHP",
+            "user_email": "PNUMB@VAPXX.com",
+            "active": 1,
+            "banned": 0,
+            "balance": "1117.461060",
+            "country": "AU",
+            "default_country_sms": "AU",
+            "_subaccount": {
+                "subaccount_id": 1716,
+                "api_username": "KCIHOYEYGM",
+                "api_key": "IJVEGTCF-VOHU-GSVF-KNKK-XHTARJXMQTXK",
+                "email": "ICMGR@VBSPT.com"
+            },
+            "_currency": {
+                "currency_name_short": "AUD",
+                "currency_prefix_d": "$",
+                "currency_prefix_c": "c",
+                "currency_name_long": "Australian Dollars"
+            }
+        }
+    }
+}

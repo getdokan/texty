@@ -1,0 +1,12 @@
+{
+    "_source": "https://smithy.io/2.0/aws/protocols/aws-json-1_0-protocol.html",
+    "_note": "Inferred: error identified only by the X-Amzn-Errortype header (allowed by the awsJson1_0 protocol), with a URI suffix to strip. ThrottlingException name from API_SendTextMessage.html.",
+    "status": 400,
+    "headers": {
+        "content-type": "application/x-amz-json-1.0",
+        "x-amzn-errortype": "ThrottlingException:http://internal.amazon.com/coral/com.amazon.coral.availability/"
+    },
+    "body": {
+        "message": "Rate exceeded"
+    }
+}

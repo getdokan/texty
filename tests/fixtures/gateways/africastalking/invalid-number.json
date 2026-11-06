@@ -1,0 +1,20 @@
+{
+    "_source": "https://raw.githubusercontent.com/AI-ML-Community/africastalking-api-skills/main/sms.md",
+    "_note": "inferred: status code 403 InvalidPhoneNumber from the community status-code table; messageId \"None\" and cost values are guesses.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "SMSMessageData": {
+            "Message": "Sent to 0/1 Total Cost: 0",
+            "Recipients": [
+                {
+                    "statusCode": 403,
+                    "number": "+2547",
+                    "cost": "0",
+                    "status": "InvalidPhoneNumber",
+                    "messageId": "None"
+                }
+            ]
+        }
+    }
+}

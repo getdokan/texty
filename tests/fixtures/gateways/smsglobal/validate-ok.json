@@ -1,0 +1,7 @@
+{
+    "_source": "https://api.smsglobal.com/v2/doc#get--v2-user-credit-balance",
+    "_note": "From SDK test mock (smsglobal-php tests/Resource/UserTest.php); field names match the docs return table.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body_raw": "{\"balance\":100.00,\"currency\":\"USD\"}"
+}

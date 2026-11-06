@@ -1,0 +1,7 @@
+{
+    "_source": "https://api.smsglobal.com/v2/doc#get--v2-user-credit-balance",
+    "_note": "Status from docs ('Returned when the user is Post-Paid user'); body inferred from a live 404 probe on an unknown path.",
+    "status": 404,
+    "headers": { "content-type": "application/json" },
+    "body": { "code": 404, "message": "Not Found" }
+}

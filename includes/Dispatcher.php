@@ -7,7 +7,9 @@ use Texty\Integrations\WooCommerce;
 use Texty\Models\SmsStat;
 use Texty\Dependencies\WeDevs\WPKit\DataLayer\DataLayerFactory;
 use Texty\Gateways\GatewayInterface;
+use Texty\Gateways\Secrets;
 use WP_Comment;
+use WP_Error;
 
 /**
  * Dispatcher Class
@@ -25,6 +27,7 @@ class Dispatcher {
 
         // SMS Logging via gateway hooks
         add_action( 'texty_after_send_sms', [ $this, 'log_sms' ], 10, 4 );
+        add_action( 'texty_send_sms_no_gateway', [ $this, 'log_no_gateway' ], 10, 3 );
 
         // Load integrations
         $this->register_integrations();
@@ -132,7 +135,7 @@ class Dispatcher {
                 'notification_id'    => $notification_id,
                 'notification_group' => $notification_group,
                 'message'            => is_string( $message ) ? $message : '',
-                'response'           => $this->encode_response( $result ),
+                'response'           => $this->encode_response( $result, $gateway ),
                 'reference_id'       => is_scalar( $reference_id ) ? (string) $reference_id : '',
                 'created_at'         => current_time( 'mysql' ),
                 'updated_at'         => current_time( 'mysql' ),
@@ -143,22 +146,48 @@ class Dispatcher {
     }
 
     /**
+     * Log a message that couldn't be sent because no gateway is active.
+     *
+     * Written as a failed row (with the `texty_no_gateway` reason), so the
+     * order note's "details in Texty → Logs" has an entry to point to.
+     *
+     * @since TEXTY_VERSION
+     *
+     * @param WP_Error $error   The `texty_no_gateway` error
+     * @param string   $to      Recipient phone number
+     * @param string   $message The message body
+     *
+     * @return void
+     */
+    public function log_no_gateway( $error, $to, $message ) {
+        $this->log_sms( $error, $to, $message, false );
+    }
+
+    /**
      * Normalize the gateway result into a JSON-friendly payload for the
      * `response` column. WP_Error gets unpacked into code/message/data so
      * the failure is human-readable; arrays/objects are passed through;
      * scalars are JSON-encoded as-is.
      *
-     * @param mixed $result The send result (bool, array, or WP_Error).
+     * The gateway's saved secrets (its `password` fields) are scrubbed from
+     * the payload, since some providers echo credentials back in responses.
+     *
+     * @param mixed                  $result  The send result (bool, array, or WP_Error).
+     * @param GatewayInterface|false $gateway The gateway that sent it.
      *
      * @return array|string|null
      */
-    private function encode_response( $result ) {
+    private function encode_response( $result, $gateway ) {
         if ( is_wp_error( $result ) ) {
-            return [
+            $result = [
                 'code'    => $result->get_error_code(),
                 'message' => $result->get_error_message(),
                 'data'    => $result->get_error_data(),
             ];
+        }
+
+        if ( $gateway instanceof GatewayInterface ) {
+            $result = Secrets::redact( $result, Secrets::values( $gateway ) );
         }
 
         return $result;

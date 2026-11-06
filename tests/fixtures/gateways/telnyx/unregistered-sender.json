@@ -1,0 +1,16 @@
+{
+    "_source": "https://developers.telnyx.com/docs/messaging/messages/error-codes",
+    "_note": "inferred: code 40010 from the error-codes page wrapped in the generic error envelope; HTTP status and texts are inferred.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "errors": [
+            {
+                "code": "40010",
+                "title": "Not 10DLC registered",
+                "detail": "The 'from' number is not registered to a 10DLC campaign.",
+                "source": { "pointer": "/from" }
+            }
+        ]
+    }
+}

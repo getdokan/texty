@@ -1,0 +1,7 @@
+{
+    "_source": "https://dev.octopush.com/en/sms-gateway-api-documentation/return-codes/",
+    "_note": "Inferred: code 181 (phone number invalid) from the return-codes page; shape from the send-sms failure example; message paraphrased.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": { "code": 181, "message": "Phone number invalid." }
+}

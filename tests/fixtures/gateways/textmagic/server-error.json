@@ -1,0 +1,7 @@
+{
+    "_source": "https://docs.textmagic.com/#tag/Response-Codes",
+    "_note": "Inferred: docs say 4xx-5xx use the common error shape; message text is a placeholder.",
+    "status": 500,
+    "headers": { "content-type": "application/json" },
+    "body": { "code": 500, "message": "Internal server error." }
+}

@@ -1,0 +1,10 @@
+{
+    "_source": "https://dev.bandwidth.com/docs/messaging/errors",
+    "_note": "from docs: 429 queue-full error body",
+    "status": 429,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "type": "max-message-queue-size-exceeded",
+        "description": "The SMS queue for your account is full and cannot accept more messages right now."
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "_source": "https://docs.aws.amazon.com/pinpoint/latest/apireference_smsvoicev2/API_SendTextMessage.html",
+    "_note": "Error name InternalServerException, HTTP 500 and RequestId field from docs; body and message inferred.",
+    "status": 500,
+    "headers": {
+        "content-type": "application/x-amz-json-1.0"
+    },
+    "body": {
+        "__type": "InternalServerException",
+        "message": "An internal error occurred.",
+        "RequestId": "7a62c49f-347e-4fc4-9331-6e8eEXAMPLE3"
+    }
+}

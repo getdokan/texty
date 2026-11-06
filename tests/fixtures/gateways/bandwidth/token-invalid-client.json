@@ -1,0 +1,11 @@
+{
+    "_source": "https://dev.bandwidth.com/docs/account/credentials/management",
+    "_note": "inferred: captured from a live probe of POST https://api.bandwidth.com/api/v1/oauth2/token with dummy credentials (not shown on a docs page); shape follows RFC 6749 section 5.2",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "error": "invalid_client",
+        "error_description": "Provided client credentials are invalid",
+        "error_uri": "https://tools.ietf.org/html/rfc6749#section-5.2"
+    }
+}

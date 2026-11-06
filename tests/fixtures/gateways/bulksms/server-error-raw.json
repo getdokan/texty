@@ -1,0 +1,7 @@
+{
+    "_source": "https://www.bulksms.com/developer/json/v1/errors/",
+    "_note": "inferred: non-JSON 503 from a proxy in front of the API.",
+    "status": 503,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><body><h1>503 Service Unavailable</h1></body></html>"
+}

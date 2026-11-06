@@ -11,7 +11,7 @@ import {
 import { RawHTML, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { CircleCheck, Search } from 'lucide-react';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 
 type Props = {
   connectedGateways: string[];
@@ -41,7 +41,14 @@ const Sidebar = ({ connectedGateways }: Props) => {
           {__('Available Gateways', 'texty')}
         </h2>
       </div>
-      <div className="px-3 pt-3 pb-2">
+      {/* Own <form>: browsers pair the nearest text input with the
+          gateway's password field and autofill saved logins into it. */}
+      <form
+        role="search"
+        autoComplete="off"
+        className="px-3 pt-3 pb-2"
+        onSubmit={(e: FormEvent<HTMLFormElement>) => e.preventDefault()}
+      >
         <InputGroup className="h-8">
           <InputGroupAddon>
             <Search className="size-4 text-muted-foreground" />
@@ -64,9 +71,12 @@ const Sidebar = ({ connectedGateways }: Props) => {
             data-form-type="other"
           />
         </InputGroup>
-      </div>
+      </form>
       <ScrollArea className="flex-1">
-        <nav className="flex flex-col gap-0.5 px-2 pb-3">
+        {/* ScrollArea content is min-width: fit-content, so the widest label
+            would set the width of every row; inline-size containment stops
+            labels from widening the list so they truncate instead. */}
+        <nav className="flex min-w-0 flex-col gap-0.5 px-2 pb-3 [contain:inline-size]">
           {filtered.map((page: SettingsElement) => {
             const active: boolean = activePage === page.id;
             const connected: boolean = connectedGateways.includes(page.id);
@@ -77,13 +87,15 @@ const Sidebar = ({ connectedGateways }: Props) => {
                 onClick={() => setActivePage(page.id)}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'w-full justify-between font-normal text-foreground/80',
+                  'w-full min-w-0 shrink justify-between gap-2 font-normal text-foreground/80',
                   active &&
                     'bg-muted font-semibold text-foreground hover:bg-muted'
                 )}
+                title={page.label ?? page.id}
               >
-                <span className="truncate">
-                  <RawHTML>{page.label ?? page.id}</RawHTML>
+                {/* min-w-0 lets long labels truncate instead of widening the row. */}
+                <span className="min-w-0 flex-1 text-left">
+                  <RawHTML className="truncate">{page.label ?? page.id}</RawHTML>
                 </span>
                 {connected && (
                   <CircleCheck

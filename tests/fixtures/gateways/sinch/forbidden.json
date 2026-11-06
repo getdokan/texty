@@ -1,0 +1,7 @@
+{
+    "_source": "https://developers.sinch.com/docs/sms/api-reference/status-codes",
+    "_note": "From docs: 403 errorResponseObj example (also in the OpenAPI spec on POST /batches).",
+    "status": 403,
+    "headers": { "content-type": "application/json" },
+    "body": { "code": "missing_callback_url", "text": "Requesting delivery report without any callback URL." }
+}

@@ -1,0 +1,7 @@
+{
+    "_source": "https://dev.octopush.com/en/sms-gateway-api-documentation/check-sms-balance/",
+    "_note": "From docs: documented 200 balance response.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": { "amount": 12.54, "unit": "euros" }
+}

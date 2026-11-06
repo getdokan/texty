@@ -1,0 +1,10 @@
+{
+    "_source": "https://dev.taqnyat.sa/en/doc/sms/",
+    "_note": "inferred: message text from the docs error table and the OpenAPI errorSMSResponseObj-400 example; envelope assumed the same as the documented 400 example.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "statusCode": 400,
+        "message": "Sender Name not active"
+    }
+}

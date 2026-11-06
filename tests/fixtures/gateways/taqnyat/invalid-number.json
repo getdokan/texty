@@ -1,0 +1,10 @@
+{
+    "_source": "https://dev.taqnyat.sa/en/doc/sms/",
+    "_note": "from docs: 'Send a Message' 400 tab, verbatim.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "statusCode": 400,
+        "message": "Mobile(s) number(s) is not specified or incorrect"
+    }
+}

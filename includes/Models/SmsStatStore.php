@@ -25,7 +25,7 @@ class SmsStatStore extends BaseDataStore {
      * @param ModelInterface $model Model to persist.
      *
      * @return int Inserted ID.
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function create( ModelInterface &$model ) {
         $inserted_id = parent::create( $model );
@@ -41,7 +41,7 @@ class SmsStatStore extends BaseDataStore {
      * @param ModelInterface $model Model to persist.
      *
      * @return int|false Rows affected, or false on failure.
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function update( ModelInterface &$model ) {
         $result = parent::update( $model );
@@ -55,7 +55,7 @@ class SmsStatStore extends BaseDataStore {
      * Flush this store's cache group, which holds the `query_*` results.
      *
      * @return void
-     * @since 2.0.3
+     * @since 2.2.0
      */
     protected function flush_query_cache() {
         $cache = $this->get_cache();
@@ -156,7 +156,7 @@ class SmsStatStore extends BaseDataStore {
      * @param string $granularity `day` or `month`.
      *
      * @return array<int, array{bucket:string,status:string,total:int}>
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function count_by_bucket_and_status( string $start, string $end, string $granularity = 'day' ): array {
         global $wpdb;

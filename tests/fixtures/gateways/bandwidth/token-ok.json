@@ -1,0 +1,12 @@
+{
+    "_source": "https://dev.bandwidth.com/docs/account/credentials/management",
+    "_note": "from docs: example client credentials token response",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "access_token": "eyJhbGciOiJIUzI1NiIs...",
+        "access_token_id": "a5xA3xMKEggGwvpSLtk2lRb",
+        "token_type": "Bearer",
+        "expires_in": 3600
+    }
+}

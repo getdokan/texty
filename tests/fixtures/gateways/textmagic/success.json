@@ -1,0 +1,16 @@
+{
+    "_source": "https://docs.textmagic.com/#tag/Outbound-Messages",
+    "_note": "From docs: values from the single-message tutorial table, plus chatId (nullable, required by the SendMessageResponse schema, https://docs.textmagic.com/#operation/sendMessage).",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "id": 49576009,
+        "href": "/api/v2/messages/49576009",
+        "type": "message",
+        "sessionId": 34436600,
+        "bulkId": null,
+        "messageId": 49576009,
+        "scheduleId": null,
+        "chatId": null
+    }
+}

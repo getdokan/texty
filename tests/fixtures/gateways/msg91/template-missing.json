@@ -1,0 +1,11 @@
+{
+    "_source": "https://msg91.com/help/MSG91/dlt-debugging-checklist",
+    "_note": "inferred: code 211 from the DLT checklist / official error table, envelope from the third-party mirror.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "type": "error",
+        "message": "DLT Template Id Missing",
+        "code": "211"
+    }
+}

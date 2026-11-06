@@ -1,0 +1,13 @@
+{
+    "_source": "https://www.infobip.com/docs/api/channels/sms/outbound-sms/send-message/send-sms-messages",
+    "_note": "from docs: OpenAPI (https://api.infobip.com/platform/1/openapi/sms) components.responses.ApiError500 example.",
+    "status": 500,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "errorCode": "E500",
+        "description": "Something went wrong.",
+        "action": "Contact the support.",
+        "violations": [],
+        "resources": []
+    }
+}

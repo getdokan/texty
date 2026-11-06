@@ -1,0 +1,24 @@
+{
+    "_source": "https://github.com/team-telnyx/openapi (openapi/spec3.json messaging_MessagingProfile)",
+    "_note": "from docs: messaging_MessagingProfile example wrapped in data; v1_secret replaced with a dummy value.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "data": {
+            "record_type": "messaging_profile",
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "name": "Profile for Messages",
+            "webhook_url": "https://www.example.com/hooks",
+            "webhook_failover_url": "https://backup.example.com/hooks",
+            "enabled": true,
+            "webhook_api_version": "2",
+            "whitelisted_destinations": [ "US" ],
+            "created_at": "2019-01-23T18:10:02.574Z",
+            "updated_at": "2019-01-23T18:10:02.574Z",
+            "v1_secret": "dummy-v1-secret",
+            "daily_spend_limit": "100.00",
+            "daily_spend_limit_enabled": false,
+            "mobile_only": false
+        }
+    }
+}

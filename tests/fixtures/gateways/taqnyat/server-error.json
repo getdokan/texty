@@ -1,0 +1,7 @@
+{
+    "_source": "https://dev.taqnyat.sa/en/doc/sms/",
+    "_note": "inferred: 5xx responses are not documented; modelled as a 503 with a non-JSON body.",
+    "status": 503,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><body>Service Unavailable</body></html>"
+}

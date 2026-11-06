@@ -1,0 +1,16 @@
+{
+    "_source": "https://dev.taqnyat.sa/en/doc/sms/",
+    "_note": "inferred: field names from the docs 201 example, values made up. The docs show no rejection example.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "statusCode": 201,
+        "messageId": 5452899971,
+        "cost": 0,
+        "currency": "SAR",
+        "totalCount": 0,
+        "msgLength": 1,
+        "accepted": "[]",
+        "rejected": "[966500000000,]"
+    }
+}

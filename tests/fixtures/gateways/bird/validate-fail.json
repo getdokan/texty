@@ -1,0 +1,16 @@
+{
+    "_source": "https://bird.com/docs/api/errors.md",
+    "_note": "Inferred: same 401 E02072 / InvalidAPIKey body as invalid-credentials, from a live probe of GET /v1/sms/messages with a bogus key (2026-10-20); no docs page shows it.",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "error": {
+            "type": "auth_error",
+            "code": "E02072",
+            "name": "InvalidAPIKey",
+            "message": "This API key is not valid.",
+            "doc_url": "https://bird.com/docs/api/errors/E02072",
+            "request_id": "req_01krdgf3333333333333333333"
+        }
+    }
+}

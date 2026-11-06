@@ -1,0 +1,16 @@
+{
+    "_source": "https://dev.taqnyat.sa/en/doc/sms/",
+    "_note": "from docs: 'Send a Message' 201 tab, verbatim.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "statusCode": 201,
+        "messageId": 5452899970,
+        "cost": 0.026,
+        "currency": "SAR",
+        "totalCount": 1,
+        "msgLength": 1,
+        "accepted": "[966500000000,]",
+        "rejected": "[]"
+    }
+}

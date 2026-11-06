@@ -1,0 +1,12 @@
+{
+    "_source": "https://docs.aws.amazon.com/pinpoint/latest/apireference_smsvoicev2/CommonErrors.html",
+    "_note": "Inferred: standard AWS JSON InvalidSignatureException (wrong secret); not listed on the CommonErrors page, which lists IncompleteSignature.",
+    "status": 403,
+    "headers": {
+        "content-type": "application/x-amz-json-1.0"
+    },
+    "body": {
+        "__type": "InvalidSignatureException",
+        "message": "The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method."
+    }
+}

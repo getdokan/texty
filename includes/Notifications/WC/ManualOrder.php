@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * notification id (`order_manual`). Its send() is never used — the
  * `_texty_{id}` once-per-order guard in Base doesn't apply to manual SMS.
  *
- * @since 2.0.3
+ * @since 2.2.0
  */
 class ManualOrder extends Base {
 

@@ -1,0 +1,12 @@
+{
+    "_source": "https://docs.aws.amazon.com/pinpoint/latest/apireference_smsvoicev2/API_DescribeAccountAttributes.html",
+    "_note": "Error name AccessDeniedException from docs (400 on the operation page, 403 on CommonErrors); body and message inferred.",
+    "status": 400,
+    "headers": {
+        "content-type": "application/x-amz-json-1.0"
+    },
+    "body": {
+        "__type": "AccessDeniedException",
+        "Message": "User: arn:aws:iam::123456789012:user/texty is not authorized to perform: sms-voice:DescribeAccountAttributes"
+    }
+}

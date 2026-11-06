@@ -1,0 +1,10 @@
+{
+    "_source": "https://dev.taqnyat.sa/en/doc/sms/",
+    "_note": "from docs: 'Sender names' 401 tab; also confirmed by a live probe with a fake token.",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "statusCode": 401,
+        "message": "invalid credentials information"
+    }
+}

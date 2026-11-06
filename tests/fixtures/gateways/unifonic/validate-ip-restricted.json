@@ -1,0 +1,11 @@
+{
+    "_source": "https://docs.unifonic.com/articles/products-documentation/sending-your-first-sms-via-unifonic-api",
+    "_note": "inferred: HTTP 403 \"Invalid IP address\" is documented (AppSid restricted to other IPs) but its body is not shown. Body reuses the documented ER-04 envelope without an errorCode.",
+    "status": 403,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "success": false,
+        "message": "Invalid IP address",
+        "data": {}
+    }
+}

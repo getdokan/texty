@@ -1,0 +1,11 @@
+{
+    "_source": "https://msg91.com/help/api/what-are-the-reason-for-error-codes-received-under-the-api-failed",
+    "_note": "inferred: code/message from the official error table, envelope from the third-party mirror.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "type": "error",
+        "message": "Invalid mobile number",
+        "code": "202"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "_source": "https://www.bulkgate.com/en/docs/api-administration-tokens/api-error-types/",
+    "_note": "inferred. The type name and message come from the error-types table; the HTTP status 400 and the detail value are guesses.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "type": "invalid_sender",
+        "code": 400,
+        "error": "Own sender not validated",
+        "detail": "420777777777"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "_source": "https://developers.brevo.com/reference/send-transac-sms",
+    "_note": "inferred: 402 meaning (not enough credit) from send-transac-sms; code not_enough_credits from the 400 enum. Message text is a placeholder.",
+    "status": 402,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "code": "not_enough_credits",
+        "message": "You don't have enough credit to send your SMS (placeholder)"
+    }
+}

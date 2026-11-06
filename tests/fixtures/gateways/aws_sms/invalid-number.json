@@ -1,0 +1,19 @@
+{
+    "_source": "https://docs.aws.amazon.com/pinpoint/latest/apireference_smsvoicev2/API_SendTextMessage.html",
+    "_note": "ValidationException with Reason and Fields from docs (Errors section); namespaced __type form from the Smithy awsJson1_0 page; Reason value and Fields entries inferred.",
+    "status": 400,
+    "headers": {
+        "content-type": "application/x-amz-json-1.0"
+    },
+    "body": {
+        "__type": "com.amazonaws.pinpointsmsvoicev2#ValidationException",
+        "message": "Invalid destination phone number.",
+        "Reason": "INVALID_PARAMETER",
+        "Fields": [
+            {
+                "Name": "DestinationPhoneNumber",
+                "Message": "Value does not match E.164 format."
+            }
+        ]
+    }
+}

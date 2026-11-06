@@ -1,0 +1,19 @@
+{
+    "_source": "https://www.twilio.com/docs/iam/api/account#read-multiple-account-resources",
+    "_note": "Trimmed to a single account; shape follows the documented Account list response.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "accounts": [
+            {
+                "sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                "friendly_name": "Texty test account",
+                "status": "active",
+                "type": "Full"
+            }
+        ],
+        "first_page_uri": "/2010-04-01/Accounts.json?PageSize=50&Page=0",
+        "page": 0,
+        "page_size": 50
+    }
+}

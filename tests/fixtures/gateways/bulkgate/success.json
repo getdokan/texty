@@ -1,0 +1,18 @@
+{
+    "_source": "https://www.bulkgate.com/en/docs/simple-api/simple-transactional/",
+    "_note": "from docs (response example). HTTP 200 is inferred; the docs do not state the status code.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "data": {
+            "status": "accepted",
+            "sms_id": "tmpde1bcd4b1d1",
+            "part_id": [
+                "tmpde1bcd4b1d1_1",
+                "tmpde1bcd4b1d1_2",
+                "tmpde1bcd4b1d1"
+            ],
+            "number": "447700900000"
+        }
+    }
+}

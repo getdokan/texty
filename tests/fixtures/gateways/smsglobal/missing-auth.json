@@ -1,0 +1,7 @@
+{
+    "_source": "https://www.smsglobal.com/us/rest-api/",
+    "_note": "Inferred from a live probe of api.smsglobal.com with no Authorization header (2026-10-20); not in docs.",
+    "status": 403,
+    "headers": { "content-type": "text/plain; charset=UTF-8" },
+    "body_raw": "Authorization header is empty or format is incorrect."
+}

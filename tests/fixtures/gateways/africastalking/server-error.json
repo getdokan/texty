@@ -1,0 +1,7 @@
+{
+    "_source": "https://help.africastalking.com/en/articles/742491-why-did-my-messages-fail",
+    "_note": "inferred: no documented 5xx body; a plain-text body is assumed.",
+    "status": 500,
+    "headers": { "content-type": "text/plain" },
+    "body_raw": "Internal Server Error"
+}

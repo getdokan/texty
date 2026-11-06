@@ -1,0 +1,7 @@
+{
+    "_source": "https://api.smsglobal.com/v2/doc#post--v2-sms",
+    "_note": "Inferred: 402 'account is out of credits' from docs; body pattern copied from the observed 400/404 bodies.",
+    "status": 402,
+    "headers": { "content-type": "application/json" },
+    "body": { "code": 402, "message": "Payment Required" }
+}

@@ -89,7 +89,7 @@ EOD;
     /**
      * The registered user's ID, for placeholder callbacks.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @return int
      */

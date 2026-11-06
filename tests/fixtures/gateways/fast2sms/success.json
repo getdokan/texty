@@ -1,0 +1,11 @@
+{
+    "_source": "https://docs.fast2sms.com/reference/quick-sms-post.md",
+    "_note": "from docs: OpenAPI schema defaults on quick-sms-post.md and dlt-sms-single.md (not a captured live response).",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "return": true,
+        "request_id": "lwdtp7cjyqxvfe9",
+        "message": [ "Message sent successfully" ]
+    }
+}

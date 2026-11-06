@@ -1,0 +1,16 @@
+{
+    "_source": "https://github.com/taqnyat/OpenAPI/blob/main/sms/v1/openapi.yaml",
+    "_note": "from docs: OpenAPI SuccessSMSResponseObj example (messageId and cost typed as strings).",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "statusCode": 201,
+        "messageId": "5829452722",
+        "cost": "0.1500",
+        "currency": "SAR",
+        "totalCount": 1,
+        "msgLength": 1,
+        "accepted": "[966500000000,]",
+        "rejected": "[]"
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "_source": "https://developers.sinch.com/docs/sms/api-reference/status-codes",
+    "_note": "From docs: for 404 \"the REST API does not return a response body\" (e.g. a wrong service plan ID).",
+    "status": 404,
+    "headers": {},
+    "body_raw": ""
+}

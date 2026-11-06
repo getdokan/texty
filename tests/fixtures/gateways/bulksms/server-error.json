@@ -1,0 +1,11 @@
+{
+    "_source": "https://www.bulksms.com/developer/json/v1/errors/",
+    "_note": "inferred from the Error schema and the documented internal-server-error type.",
+    "status": 500,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "type": "https://developer.bulksms.com/json/v1/errors/#internal-server-error",
+        "title": "Internal Server Error",
+        "status": 500
+    }
+}

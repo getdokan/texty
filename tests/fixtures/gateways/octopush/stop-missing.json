@@ -1,0 +1,7 @@
+{
+    "_source": "https://dev.octopush.com/en/sms-gateway-api-documentation/send-sms/",
+    "_note": "From docs: documented 400 Bad Request failure example (code 121).",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": { "code": 121, "message": "Mention STOP is missing." }
+}

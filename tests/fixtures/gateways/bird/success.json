@@ -1,0 +1,18 @@
+{
+    "_source": "https://bird.com/docs/api/reference/create-sms-message.md",
+    "_note": "From docs: 'Example response 202', trimmed. The populated last_error is in the docs example and must be ignored on a 202.",
+    "status": 202,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "id": "sms_01krdgeqcxet5s7t44vh8rt9mg",
+        "direction": "outbound",
+        "status": "scheduled",
+        "to": "+15551234567",
+        "from": "+15557654321",
+        "category": "transactional",
+        "segments": { "count": 1, "encoding": "GSM_7BIT", "characters": 41 },
+        "cost": { "amount": "0.00990", "currency_code": "USD" },
+        "last_error": { "code": "invalid_destination", "description": "Carrier filtered as spam" },
+        "created_at": "2026-05-21T12:00:00Z"
+    }
+}

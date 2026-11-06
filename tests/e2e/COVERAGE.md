@@ -45,7 +45,7 @@ npx playwright test rest-   # only the REST contract suites
 | `/gateway/deactivate` | POST | clears active gateway | `rest-gateway-lifecycle` |
 | `/gateway/disconnect` | POST | missing key → 400; fake → success+`disconnected` | `rest-gateway-lifecycle` |
 | `/send` | POST | missing params → 400 `rest_missing_callback_param`; partial → 400; full → success/message envelope | `rest-send-tools-status` |
-| `/send` (fake gateway) | POST | single send → logged `sent`/`fake_*`; bulk varied payloads (unicode/emoji/long/specials/newlines/no-+); repeated sends → distinct rows; tools/test logged; sends move `sms_sent`/`delivered` + volume-chart buckets (buckets sum == `delivered`); **Pause All blocks the send** (success=false + paused msg, no `sent` row); **Append Company Name appends a `from <store>` footer** to the logged message | `rest-send-fake-gateway` |
+| `/send` (fake gateway) | POST | single send → logged `sent`/`fake_*`; bulk varied payloads (unicode/emoji/long/specials/newlines/no-+); repeated sends → distinct rows; tools/test logged; sends move `sms_sent`/`delivered` + volume-chart buckets (buckets sum == `delivered`); **Pause All blocks the send** (success=false + paused msg, no `sent` row, one `failed` row with `texty_paused` in `response`); **Append Company Name appends a `from <store>` footer** to the logged message | `rest-send-fake-gateway` |
 | `/tools/test` | POST | missing `to` → 400; with `to` → envelope | `rest-send-tools-status` |
 | `/status` | GET | boolean `success` flag | `rest-send-tools-status` |
 | **All routes** | GET/POST | unauthenticated → 401/403 (8 reads + 7 writes); admin cookies w/o nonce → blocked | `rest-auth-matrix` |

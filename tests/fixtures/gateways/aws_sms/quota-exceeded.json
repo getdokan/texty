@@ -1,0 +1,13 @@
+{
+    "_source": "https://docs.aws.amazon.com/pinpoint/latest/apireference_smsvoicev2/API_SendTextMessage.html",
+    "_note": "Error name ServiceQuotaExceededException and HTTP 400 from docs; body, message and Reason value inferred.",
+    "status": 400,
+    "headers": {
+        "content-type": "application/x-amz-json-1.0"
+    },
+    "body": {
+        "__type": "ServiceQuotaExceededException",
+        "message": "The monthly SMS spend limit has been reached.",
+        "Reason": "MONTHLY_SPEND_LIMIT_REACHED_FOR_TEXT"
+    }
+}

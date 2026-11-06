@@ -1,0 +1,24 @@
+{
+    "_source": "https://api.apis.guru/v2/specs/clicksend.com/1.0.0/openapi.json",
+    "_note": "Inferred: success envelope with a per-message INSUFFICIENT_CREDIT status (code from the docs' Application Status Codes table; body shape is not documented).",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "http_code": 200,
+        "response_code": "SUCCESS",
+        "response_msg": "Messages queued for delivery.",
+        "data": {
+            "total_price": 0,
+            "total_count": 1,
+            "queued_count": 0,
+            "messages": [
+                {
+                    "to": "+61411111111",
+                    "body": "Hello from Texty",
+                    "message_id": "",
+                    "status": "INSUFFICIENT_CREDIT"
+                }
+            ]
+        }
+    }
+}

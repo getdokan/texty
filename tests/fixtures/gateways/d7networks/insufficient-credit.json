@@ -1,0 +1,7 @@
+{
+    "_source": "https://d7networks.com/docs/sms/send-sms/",
+    "_note": "from docs: 402 with `detail` as a list; message truncated (the docs page obfuscates the support email).",
+    "status": 402,
+    "headers": { "content-type": "application/json" },
+    "body": { "detail": [ { "code": "INSUFFICIENT_CREDIT", "message": "It looks like your requests failed due to insufficient credit on our account." } ] }
+}

@@ -1,0 +1,7 @@
+{
+    "_source": "https://developer.vonage.com/en/api/account#getAccountBalance",
+    "_note": "Trimmed from the documented balance response.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": { "value": 10.28, "autoReload": false }
+}

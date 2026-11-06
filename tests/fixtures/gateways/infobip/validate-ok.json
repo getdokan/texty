@@ -1,0 +1,10 @@
+{
+    "_source": "https://api.infobip.com/platform/1/openapi/account-management",
+    "_note": "inferred: field names from the AccountBalance schema of GET /account/1/balance; the spec has no 200 example, so the values are made up.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "balance": 47.79,
+        "currency": "EUR"
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "_source": "https://developers.telnyx.com/api/messaging/send-message",
+    "_note": "inferred: success payload shape with a non-empty data.errors entry (40012 carrier rejection) and a failed recipient status; no verbatim docs example exists.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "data": {
+            "record_type": "message",
+            "direction": "outbound",
+            "id": "40385f64-5717-4562-b3fc-2c963f66afa7",
+            "type": "SMS",
+            "from": { "phone_number": "+18445550001" },
+            "to": [
+                {
+                    "phone_number": "+18665550001",
+                    "status": "sending_failed"
+                }
+            ],
+            "text": "Hello, World!",
+            "errors": [
+                {
+                    "code": "40012",
+                    "title": "Invalid destination number",
+                    "detail": "The carrier rejected the destination number."
+                }
+            ]
+        }
+    }
+}

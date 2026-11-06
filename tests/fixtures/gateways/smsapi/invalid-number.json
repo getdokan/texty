@@ -1,0 +1,17 @@
+{
+    "_source": "https://www.smsapi.com/docs/#2-single-sms",
+    "_note": "From docs: section 2 \"Single SMS\", example response b). HTTP 200 inferred from the official PHP client's LegacyResponseMapper (errors arrive as 200 + error body).",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "invalid_numbers": [
+            {
+                "number": "44123456789",
+                "submitted_number": "44123456789",
+                "message": "Invalid phone number"
+            }
+        ],
+        "error": 13,
+        "message": "No correct phone numbers"
+    }
+}

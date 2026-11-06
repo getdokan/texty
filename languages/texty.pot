@@ -1,16 +1,16 @@
 # Copyright (c) 2026 weDevs Pte. Ltd. All Rights Reserved.
 msgid ""
 msgstr ""
-"Project-Id-Version: Texty 2.0.2\n"
+"Project-Id-Version: Texty 2.2.0\n"
 "Report-Msgid-Bugs-To: https://github.com/weDevsOfficial/texty/issues\n"
 "Last-Translator: support@wedevs.com\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-31T20:02:06+00:00\n"
+"POT-Creation-Date: 2026-11-02T09:40:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.10.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: texty\n"
 
 #. Plugin Name of the plugin
@@ -99,6 +99,7 @@ msgid "A gateway key is required."
 msgstr ""
 
 #: includes/Api/Gateway.php:128
+#: includes/Api/Settings.php:107
 msgid "Unknown gateway."
 msgstr ""
 
@@ -275,73 +276,75 @@ msgstr ""
 msgid "The message to be sent"
 msgstr ""
 
-#: includes/Api/Settings.php:127
+#: includes/Api/Settings.php:150
 msgid "The selected gateway"
 msgstr ""
 
-#: includes/Api/SettingsController.php:218
+#: includes/Api/SettingsController.php:256
 msgid "Invalid values format."
 msgstr ""
 
-#: includes/Api/SettingsController.php:228
+#: includes/Api/SettingsController.php:266
 msgid "Invalid scope ID."
 msgstr ""
 
 #. translators: %s: field label, e.g. "Account SID"
-#: includes/Api/SettingsController.php:365
+#: includes/Api/SettingsController.php:401
+#, php-format
 msgid "%s is required."
 msgstr ""
 
-#: includes/Api/SettingsController.php:400
-msgid "Get your account"
+#: includes/Api/SettingsController.php:440
+msgid "View documentation"
 msgstr ""
 
 #. translators: %s: credential field label, e.g. "Account SID"
-#: includes/Api/SettingsController.php:433
+#: includes/Api/SettingsController.php:480
+#, php-format
 msgid "Enter %s"
 msgstr ""
 
-#: includes/Api/SettingsController.php:475
+#: includes/Api/SettingsController.php:529
 msgid "IP whitelist"
 msgstr ""
 
-#: includes/Api/SettingsController.php:476
+#: includes/Api/SettingsController.php:530
 msgid "This gateway only accepts requests from whitelisted server IPs."
 msgstr ""
 
-#: includes/Api/SettingsController.php:522
+#: includes/Api/SettingsController.php:609
 msgid "Must be a numeric value."
 msgstr ""
 
-#: includes/Api/SettingsController.php:523
+#: includes/Api/SettingsController.php:610
 msgid "Must be \"on\" or \"off\"."
 msgstr ""
 
-#: includes/Api/SettingsController.php:524
+#: includes/Api/SettingsController.php:611
 msgid "Invalid option selected."
 msgstr ""
 
-#: includes/Api/SettingsController.php:525
+#: includes/Api/SettingsController.php:612
 msgid "Must be an array."
 msgstr ""
 
-#: includes/Api/SettingsController.php:526
+#: includes/Api/SettingsController.php:613
 msgid "Contains invalid options."
 msgstr ""
 
-#: includes/Api/SettingsController.php:527
+#: includes/Api/SettingsController.php:614
 msgid "Must be a valid hex color (e.g. #ff0000)."
 msgstr ""
 
-#: includes/Api/SettingsController.php:528
+#: includes/Api/SettingsController.php:615
 msgid "Must be an object."
 msgstr ""
 
-#: includes/Api/SettingsController.php:542
+#: includes/Api/SettingsController.php:629
 msgid "You do not have permission to update settings."
 msgstr ""
 
-#: includes/Api/SettingsController.php:543
+#: includes/Api/SettingsController.php:630
 msgid "You do not have permission to view settings."
 msgstr ""
 
@@ -351,25 +354,710 @@ msgstr ""
 
 #. translators: %s: company / store name
 #: includes/Compliance.php:91
+#, php-format
 msgid "from %s"
 msgstr ""
 
-#: includes/Gateways.php:71
+#: includes/Gateways.php:85
 msgid "No recipient phone number was provided."
 msgstr ""
 
-#: includes/Gateways/Clickatell.php:26
+#: includes/Gateways/AfricasTalking.php:100
+msgid "Africa's Talking"
+msgstr ""
+
+#. translators: 1: URL to the Africa's Talking account dashboard, 2: URL to the Texty setup guide
+#: includes/Gateways/AfricasTalking.php:111
+#, php-format
+msgid "Send SMS with Africa's Talking. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get your app username and API key. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:143
+#: includes/Gateways/ClickSend.php:121
+#: includes/Gateways/Textmagic.php:109
+msgid "Username"
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:146
+msgid "Your Africa's Talking app username. Use \"sandbox\" for the Sandbox environment."
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:149
+#: includes/Gateways/Bird.php:137
+#: includes/Gateways/Brevo.php:129
+#: includes/Gateways/Clickatell.php:97
+#: includes/Gateways/ClickSend.php:127
+#: includes/Gateways/Fast2SMS.php:124
+#: includes/Gateways/Infobip.php:130
+#: includes/Gateways/Octopush.php:135
+#: includes/Gateways/SMSGlobal.php:124
+#: includes/Gateways/Telnyx.php:126
+#: includes/Gateways/Textmagic.php:115
+#: includes/Gateways/Vonage.php:101
+msgid "API Key"
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:152
+msgid "Generate it under your app's Settings → API Key. The sandbox app has its own key."
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:155
+#: includes/Gateways/Fast2SMS.php:140
+#: includes/Gateways/MSG91.php:136
+#: includes/Gateways/Textmagic.php:121
+#: includes/Gateways/Unifonic.php:138
+msgid "Sender ID"
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:158
+msgid "Registered alphanumeric sender ID or short code. Leave blank to use the default (AFRICASTKNG)."
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:162
+msgid "Environment"
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:165
+msgid "Live"
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:166
+msgid "Sandbox"
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:169
+msgid "Sandbox sends to the Africa's Talking simulator for free."
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:192
+#: includes/Gateways/AfricasTalking.php:263
+msgid "Africa's Talking username and API key are required."
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:201
+#: includes/Gateways/Octopush.php:177
+msgid "The recipient phone number is not valid."
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:270
+msgid "Environment must be \"live\" or \"sandbox\"."
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:277
+msgid "Sandbox username must be \"sandbox\"."
+msgstr ""
+
+#. translators: %d: maximum number of characters
+#: includes/Gateways/AfricasTalking.php:286
+#, php-format
+msgid "Sender ID must be at most %d characters."
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:316
+msgid "Africa's Talking could not verify these credentials."
+msgstr ""
+
+#: includes/Gateways/AfricasTalking.php:343
+msgid "Africa's Talking returned an unexpected response."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:103
+msgid "AWS End User Messaging SMS"
+msgstr ""
+
+#. translators: 1: URL to the AWS IAM console, 2: URL to the setup guide
+#: includes/Gateways/AwsSms.php:114
+#, php-format
+msgid "Send SMS with AWS End User Messaging SMS. Create an IAM user access key in the <a href=\"%1$s\" target=\"_blank\">AWS IAM console</a>. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:146
+msgid "Access key ID"
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:149
+msgid "IAM user access key ID (starts with AKIA). Temporary STS credentials (ASIA keys with a session token) are not supported. The IAM user needs the sms-voice:SendTextMessage and sms-voice:DescribeAccountAttributes permissions."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:152
+msgid "Secret access key"
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:155
+msgid "Shown once when the access key is created."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:158
+#: includes/Gateways/Bird.php:143
+#: includes/Gateways/Sinch.php:137
+msgid "Region"
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:162
+msgid "Region where your phone number / sender ID and SMS sandbox status live. Each region has its own sandbox and spend limit."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:165
+msgid "Origination identity (optional)"
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:169
+msgid "Phone number (E.164), PhoneNumberId, SenderId, PoolId or their ARN. Leave blank to let AWS pick. Shared resources require the full ARN."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:207
+#: includes/Gateways/AwsSms.php:290
+msgid "AWS access key ID and secret access key are required."
+msgstr ""
+
+#. translators: %s: recipient phone number
+#: includes/Gateways/AwsSms.php:223
+#, php-format
+msgid "%s is not a valid E.164 phone number."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:232
+msgid "The message must contain between 1 and 1600 characters."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:305
+msgid "Temporary AWS credentials (access keys starting with ASIA) are not supported. Use a long-term IAM user access key (starting with AKIA)."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:312
+msgid "The access key ID looks invalid. It should be 16 to 128 upper-case letters and digits, usually starting with AKIA."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:419
+msgid "The request body could not be encoded as JSON."
+msgstr ""
+
+#. translators: 1: AWS error message, 2: AWS error reason code
+#: includes/Gateways/AwsSms.php:554
+#, php-format
+msgid "%1$s (reason: %2$s)"
+msgstr ""
+
+#. translators: %s: AWS error message
+#: includes/Gateways/AwsSms.php:574
+#, php-format
+msgid "AWS rejected the access key ID or secret access key: %s"
+msgstr ""
+
+#. translators: 1: IAM action name, 2: AWS error message
+#: includes/Gateways/AwsSms.php:582
+#, php-format
+msgid "The access key is valid but the IAM user is not allowed to call %1$s: %2$s"
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:588
+msgid "AWS could not verify the credentials."
+msgstr ""
+
+#. translators: %s: region code entered by the user
+#: includes/Gateways/AwsSms.php:601
+#, php-format
+msgid "%s is not a supported AWS region for End User Messaging SMS."
+msgstr ""
+
+#: includes/Gateways/AwsSms.php:612
+msgid "The origination identity must be 1 to 256 letters, digits or the characters _ : / + -."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:97
+msgid "Bandwidth"
+msgstr ""
+
+#. translators: 1: URL to the Bandwidth App, 2: URL to the Texty setup guide
+#: includes/Gateways/Bandwidth.php:108
+#, php-format
+msgid "Send SMS with Bandwidth (US and Canada). Create OAuth API Credentials and find your 7-digit Account ID in <a href=\"%1$s\" target=\"_blank\">the Bandwidth App</a>. US traffic needs a registered 10DLC campaign or a verified toll-free number; carrier rejections are only reported by webhook, so Texty may log them as sent. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:136
+msgid "Account ID"
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:139
+msgid "Your 7-digit Bandwidth Account ID, shown in the Bandwidth App."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:142
+msgid "Client ID"
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:145
+msgid "From Account > API Credentials in the Bandwidth App."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:148
+msgid "Client Secret"
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:151
+msgid "Shown only once when the credential is created."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:154
+#: includes/Gateways/BulkGate.php:138
+msgid "Application ID"
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:157
+msgid "The Messaging Application your From number is linked to."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:160
+msgid "From number / Sender ID"
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:163
+msgid "Your Bandwidth number in E.164 (+15551113333) or an alphanumeric sender ID (max 11 chars)."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:278
+msgid "This looks like a legacy Bandwidth account ID (u-…). OAuth needs the 7-digit Account ID shown in the Bandwidth App."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:285
+msgid "The Bandwidth Account ID must be the 7-digit number shown in the Bandwidth App."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:292
+msgid "The From value must be an E.164 number such as +15551113333, or an alphanumeric sender ID of up to 11 characters."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:446
+msgid "Bandwidth did not issue an access token. Check the Client ID and Client Secret."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:549
+msgid "Bandwidth could not accept the message."
+msgstr ""
+
+#: includes/Gateways/Bandwidth.php:585
+msgid "Bandwidth Account ID, Client ID, Client Secret, Application ID and From number are required."
+msgstr ""
+
+#: includes/Gateways/Bird.php:92
+msgid "Bird"
+msgstr ""
+
+#. translators: 1: URL to the Bird API keys page, 2: URL to the Texty setup guide for Bird
+#: includes/Gateways/Bird.php:105
+#, php-format
+msgid "Send SMS with Bird. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to create an API key in your Bird workspace. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Bird.php:140
+msgid "Workspace API key from Bird dashboard > Platform tools > API keys. It needs the sms scope with write access."
+msgstr ""
+
+#: includes/Gateways/Bird.php:146
+msgid "United States (us1)"
+msgstr ""
+
+#: includes/Gateways/Bird.php:147
+msgid "Europe (eu1)"
+msgstr ""
+
+#: includes/Gateways/Bird.php:150
+msgid "Data region of your Bird workspace. It must match the region in your API key (bk_us1_... or bk_eu1_...)."
+msgstr ""
+
+#: includes/Gateways/Bird.php:153
+#: includes/Gateways/Brevo.php:135
+#: includes/Gateways/BulkGate.php:162
+#: includes/Gateways/ClickSend.php:133
+#: includes/Gateways/Infobip.php:142
+#: includes/Gateways/Octopush.php:141
+msgid "Sender"
+msgstr ""
+
+#: includes/Gateways/Bird.php:157
+msgid "A sender your Bird workspace holds: an owned number in E.164 format (+15557654321), a short code, or a registered alphanumeric sender ID (3-11 characters)."
+msgstr ""
+
+#: includes/Gateways/Bird.php:160
+msgid "Message Category"
+msgstr ""
+
+#: includes/Gateways/Bird.php:163
+msgid "Transactional"
+msgstr ""
+
+#: includes/Gateways/Bird.php:164
+msgid "Marketing"
+msgstr ""
+
+#: includes/Gateways/Bird.php:165
+msgid "Authentication"
+msgstr ""
+
+#: includes/Gateways/Bird.php:166
+msgid "Service"
+msgstr ""
+
+#: includes/Gateways/Bird.php:169
+msgid "Why you are sending. Bird requires a category on every message."
+msgstr ""
+
+#: includes/Gateways/Bird.php:194
+#: includes/Gateways/Bird.php:262
+msgid "Bird API Key and Sender are required."
+msgstr ""
+
+#: includes/Gateways/Bird.php:271
+msgid "This does not look like a Bird workspace API key. It should start with bk_us1_ or bk_eu1_."
+msgstr ""
+
+#: includes/Gateways/Bird.php:282
+msgid "Bird Region must be us1 or eu1."
+msgstr ""
+
+#. translators: 1: region in the API key, 2: region selected in the settings
+#: includes/Gateways/Bird.php:291
+#, php-format
+msgid "This API key belongs to the %1$s region, but the Region setting is %2$s. Set the Region to match the key."
+msgstr ""
+
+#: includes/Gateways/Bird.php:301
+msgid "Bird Sender must be a phone number, a short code, or an alphanumeric sender ID of 3-11 characters."
+msgstr ""
+
+#: includes/Gateways/Bird.php:312
+msgid "Bird Message Category must be transactional, marketing, authentication or service."
+msgstr ""
+
+#: includes/Gateways/Brevo.php:90
+msgid "Brevo"
+msgstr ""
+
+#. translators: 1: URL to the Brevo API keys page, 2: URL to the Texty setup guide
+#: includes/Gateways/Brevo.php:101
+#, php-format
+msgid "Send SMS with Brevo. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to create an API key in Brevo. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Brevo.php:132
+msgid "Create one in Brevo under SMTP & API > API Keys. If Authorized IPs is turned on for your Brevo account, add this server's IP address there too."
+msgstr ""
+
+#: includes/Gateways/Brevo.php:138
+msgid "Up to 11 letters/digits, or up to 15 digits for a numeric sender."
+msgstr ""
+
+#: includes/Gateways/Brevo.php:161
+#: includes/Gateways/Brevo.php:252
+msgid "Brevo API Key and Sender are required."
+msgstr ""
+
+#: includes/Gateways/Brevo.php:168
+#: includes/Gateways/Brevo.php:259
+msgid "The Brevo sender must be up to 11 letters/digits, or up to 15 digits for a numeric sender."
+msgstr ""
+
+#: includes/Gateways/Brevo.php:177
+msgid "The phone number must contain between 6 and 15 digits, including the country code."
+msgstr ""
+
+#: includes/Gateways/Brevo.php:190
+msgid "The Brevo template ID must be a number."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: includes/Gateways/Brevo.php:390
+#, php-format
+msgid "Brevo returned an unexpected response (HTTP %d)."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:95
+msgid "BulkGate"
+msgstr ""
+
+#. translators: 1: URL to the BulkGate portal, 2: URL to the Texty setup guide
+#: includes/Gateways/BulkGate.php:106
+#, php-format
+msgid "Send SMS with BulkGate. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to create an API application and get its Application ID and Token. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:141
+msgid "BulkGate portal → Modules & APIs → your API → Settings → Login credentials."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:144
+msgid "Application Token"
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:147
+msgid "Shown under Application Token in the same Login credentials section. If you restrict API access by IP address, add this server's IP to the allow-list, otherwise BulkGate rejects the credentials."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:150
+msgid "Sender Type"
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:154
+msgid "BulkGate system number"
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:155
+msgid "Text sender (registered name)"
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:156
+msgid "Own number (verified in BulkGate)"
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:157
+msgid "Sender ID profile"
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:159
+msgid "How the sender is shown to recipients. The system number needs no sender value."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:166
+msgid "Text sender: the registered name (letters, digits and spaces, up to 11 characters). Own number: your verified number with country code. Sender ID profile: the numeric profile ID. Ignored for the system number."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:189
+#: includes/Gateways/BulkGate.php:269
+msgid "BulkGate Application ID and Application Token are required."
+msgstr ""
+
+#. translators: %s: message status returned by BulkGate
+#: includes/Gateways/BulkGate.php:235
+#, php-format
+msgid "BulkGate did not accept the message (status: %s)."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:276
+msgid "BulkGate Application ID must contain digits only."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:285
+msgid "BulkGate Sender Type must be one of gSystem, gText, gOwn or gProfile."
+msgstr ""
+
+#. translators: %s: error message returned by BulkGate
+#: includes/Gateways/BulkGate.php:319
+#, php-format
+msgid "%s Check the Application ID and Token. If you restrict API access by IP address, add this server's IP to the allow-list."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:385
+msgid "A BulkGate text sender must be 1 to 11 letters, digits or spaces."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:392
+msgid "A BulkGate own-number sender must be a phone number with country code."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:399
+msgid "A BulkGate Sender ID profile must be a numeric profile ID."
+msgstr ""
+
+#: includes/Gateways/BulkGate.php:501
+msgid "BulkGate returned an unexpected response."
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:86
+msgid "BulkSMS"
+msgstr ""
+
+#. translators: 1: URL to the BulkSMS API token docs, 2: URL to the Texty setup guide
+#: includes/Gateways/BulkSMS.php:97
+#, php-format
+msgid "Send SMS with BulkSMS. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to learn how to create an API token (Settings > Developer Settings > API Tokens). Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:125
+msgid "Token ID"
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:128
+msgid "Create in BulkSMS: Settings > Developer Settings > API Tokens"
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:131
+msgid "Token Secret"
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:134
+msgid "Shown once when the token is created"
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:137
+msgid "From (Sender ID)"
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:140
+msgid "Optional. Alphanumeric (max 11 chars) or international number (7-15 digits, may start with +). Leave empty to use the BulkSMS default."
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:165
+#: includes/Gateways/BulkSMS.php:253
+msgid "BulkSMS Token ID and Token Secret are required."
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:219
+msgid "BulkSMS returned an unexpected response."
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:260
+msgid "The BulkSMS sender must be up to 11 letters, digits or spaces, or an international number of 7-15 digits."
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:359
+msgid "The message expired before it could be delivered."
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:360
+msgid "The recipient handset could not receive the message."
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:361
+msgid "The message was blocked."
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:362
+msgid "BulkSMS could not find a route for the phone number."
+msgstr ""
+
+#: includes/Gateways/BulkSMS.php:367
+msgid "BulkSMS did not accept the message."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: includes/Gateways/BulkSMS.php:417
+#, php-format
+msgid "BulkSMS returned an unexpected response (HTTP %d)."
+msgstr ""
+
+#: includes/Gateways/Clickatell.php:49
 msgid "Clickatell"
 msgstr ""
 
 #. translators: URL to Twilio settings and help docs
-#: includes/Gateways/Clickatell.php:37
+#: includes/Gateways/Clickatell.php:60
+#, php-format
 msgid "Send SMS with Clickatell. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the API. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Clickatell.php:74
-#: includes/Gateways/Vonage.php:74
-msgid "API Key"
+#: includes/Gateways/Clickatell.php:120
+#: includes/Gateways/Clickatell.php:178
+msgid "Clickatell API Key is required."
+msgstr ""
+
+#: includes/Gateways/Clickatell.php:157
+msgid "Bad Request"
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:82
+msgid "ClickSend"
+msgstr ""
+
+#. translators: 1: URL to the ClickSend dashboard API credentials, 2: URL to the Texty setup guide
+#: includes/Gateways/ClickSend.php:93
+#, php-format
+msgid "Send SMS with ClickSend. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get your API username and API key from ClickSend. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:124
+msgid "Your ClickSend API username (shown under API Credentials in the dashboard)."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:130
+msgid "Your ClickSend API key (Dashboard → API Credentials). Your account password is not supported."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:136
+msgid "Sender ID (up to 11 letters or digits) or dedicated number. Leave blank to use a ClickSend shared number. Some countries, including the US and Canada, do not support alphanumeric sender IDs."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:161
+#: includes/Gateways/ClickSend.php:246
+msgid "ClickSend username and API key are required."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:253
+msgid "The ClickSend sender must be a phone number or an alphanumeric sender ID of up to 11 letters or digits, without spaces."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:348
+msgid "The recipient phone number is invalid."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:349
+msgid "Your ClickSend account does not have enough credit."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:350
+msgid "The sender ID is invalid or not allowed for this destination."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:351
+msgid "ClickSend blocked an identical message recently sent to the same recipient."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:352
+msgid "Your ClickSend account is not activated."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:353
+msgid "The message is empty."
+msgstr ""
+
+#: includes/Gateways/ClickSend.php:373
+msgid "ClickSend could not process the request."
+msgstr ""
+
+#: includes/Gateways/D7Networks.php:80
+msgid "D7 Networks"
+msgstr ""
+
+#. translators: 1: URL to the D7 Networks dashboard, 2: URL to the Texty setup guide
+#: includes/Gateways/D7Networks.php:91
+#, php-format
+msgid "Send SMS with D7 Networks. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to create an API token in the Developer section of the D7 dashboard. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/D7Networks.php:119
+#: includes/Gateways/Sinch.php:131
+#: includes/Gateways/SslWireless.php:98
+msgid "API Token"
+msgstr ""
+
+#: includes/Gateways/D7Networks.php:122
+msgid "Create an API token in the Developer section of the D7 dashboard (app.d7networks.com)."
+msgstr ""
+
+#: includes/Gateways/D7Networks.php:125
+msgid "Originator (Sender ID)"
+msgstr ""
+
+#: includes/Gateways/D7Networks.php:128
+msgid "Sender name or number shown on the recipient's phone. Alphanumeric sender IDs may need registration in some countries."
+msgstr ""
+
+#: includes/Gateways/D7Networks.php:151
+#: includes/Gateways/D7Networks.php:228
+msgid "D7 Networks API Token and Originator are required."
+msgstr ""
+
+#: includes/Gateways/D7Networks.php:195
+msgid "D7 Networks rejected the message."
+msgstr ""
+
+#: includes/Gateways/D7Networks.php:262
+msgid "Could not verify the D7 Networks API Token."
+msgstr ""
+
+#. translators: 1: Field path reported by D7 Networks, 2: Validation error message
+#: includes/Gateways/D7Networks.php:332
+#, php-format
+msgid "%1$s: %2$s"
 msgstr ""
 
 #: includes/Gateways/Fake.php:29
@@ -380,32 +1068,479 @@ msgstr ""
 msgid "This is a fake gateway that logs the messages to <code>debug.log</code> file without sending the actual SMS."
 msgstr ""
 
-#: includes/Gateways/Plivo.php:26
+#: includes/Gateways/Fast2SMS.php:84
+msgid "Fast2SMS"
+msgstr ""
+
+#. translators: 1: URL to the Fast2SMS Dev API page, 2: URL to the setup guide
+#: includes/Gateways/Fast2SMS.php:95
+#, php-format
+msgid "Send SMS to Indian mobile numbers with Fast2SMS. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get your API key. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:127
+msgid "Found in your Fast2SMS dashboard under Dev API."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:130
+msgid "Route"
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:133
+msgid "Quick SMS"
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:134
+msgid "DLT"
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:137
+msgid "Quick SMS: any message text, no DLT needed, random sender, premium per-SMS price. DLT: uses your DLT-approved Sender ID and a DLT Message ID per notification (cheapest)."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:143
+msgid "Your 3–6 letter DLT-approved Sender ID (header), added in DLT Manager. Required for the DLT route, ignored for Quick SMS."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:166
+#: includes/Gateways/Fast2SMS.php:233
+msgid "Fast2SMS API Key is required."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:175
+msgid "Fast2SMS can only send to 10-digit Indian mobile numbers."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:240
+msgid "Fast2SMS route must be \"q\" (Quick SMS) or \"dlt\" (DLT)."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:247
+msgid "Fast2SMS DLT route requires a 3–6 letter DLT-approved Sender ID."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:302
+msgid "Fast2SMS DLT route requires a DLT Message ID for this notification."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:309
+msgid "Fast2SMS DLT Message ID must contain digits only."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:318
+msgid "Fast2SMS DLT route requires a Sender ID."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:335
+msgid "Fast2SMS template variables must be plain text and cannot contain \"|\"."
+msgstr ""
+
+#: includes/Gateways/Fast2SMS.php:452
+msgid "Fast2SMS returned an unknown error."
+msgstr ""
+
+#: includes/Gateways/Infobip.php:91
+msgid "Infobip"
+msgstr ""
+
+#. translators: 1: URL to the Infobip portal, 2: URL to the Texty setup guide
+#: includes/Gateways/Infobip.php:102
+#, php-format
+msgid "Send SMS with Infobip. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get your API key and base URL from the Infobip portal. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Infobip.php:133
+msgid "Create an API key in the Infobip portal under Developers > API keys. It needs the sms:message:send scope (add account-management:manage to enable balance checks)."
+msgstr ""
+
+#: includes/Gateways/Infobip.php:136
+msgid "Base URL"
+msgstr ""
+
+#: includes/Gateways/Infobip.php:139
+msgid "Your personal base URL shown on the Infobip portal homepage, e.g. xxxxx.api.infobip.com."
+msgstr ""
+
+#: includes/Gateways/Infobip.php:145
+msgid "Alphanumeric sender ID or number registered on your Infobip account. Trial accounts can use ServiceSMS and can only send to their own verified number."
+msgstr ""
+
+#: includes/Gateways/Infobip.php:169
+#: includes/Gateways/Infobip.php:259
+msgid "Infobip API Key and Base URL are required."
+msgstr ""
+
+#: includes/Gateways/Infobip.php:228
+msgid "Infobip returned a response without a message status."
+msgstr ""
+
+#: includes/Gateways/Infobip.php:293
+msgid "Infobip rejected the API key. Check the key and the base URL."
+msgstr ""
+
+#: includes/Gateways/Infobip.php:385
+msgid "Infobip Base URL must be your https://xxxxx.api.infobip.com address from the Infobip portal."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:91
+msgid "MSG91"
+msgstr ""
+
+#. translators: 1: URL to the MSG91 panel, 2: URL to the Texty setup guide
+#: includes/Gateways/MSG91.php:102
+#, php-format
+msgid "Send DLT template SMS with MSG91. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get your Auth Key from the MSG91 panel. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:130
+msgid "Auth Key"
+msgstr ""
+
+#: includes/Gateways/MSG91.php:133
+msgid "MSG91 panel → user menu → Authkey. If IP Security is on for this key (MSG91 turns it on by default), add your server's outbound IP to the key's Whitelisted IPs."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:139
+msgid "Your DLT-approved 6-character header. It is only used when your MSG91 template's sender is set to \"FromAPI\"; otherwise the sender saved on the template is used."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:161
+msgid "MSG91 Auth Key is required."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:168
+msgid "MSG91 requires an approved template ID for this notification. Set it under Texty > Notifications."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:177
+msgid "MSG91 needs the phone number in international format with the country code, e.g. 919876543210."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:245
+msgid "MSG91 Auth Key and Sender ID are required."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:252
+msgid "MSG91 Sender ID must be 3 to 11 letters or digits."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:288
+msgid "Invalid MSG91 auth key. If IP Security is on for this key, make sure this server's IP address is whitelisted."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:363
+msgid "MSG91 server error"
+msgstr ""
+
+#: includes/Gateways/MSG91.php:364
+msgid "Unexpected response from MSG91."
+msgstr ""
+
+#: includes/Gateways/MSG91.php:376
+#: includes/Gateways/SMSAPI.php:352
+#: includes/Gateways/Unifonic.php:381
+msgid "Unknown error"
+msgstr ""
+
+#: includes/Gateways/MSG91.php:407
+msgid "MSG91 rejected the request because this server's IP address is not whitelisted for the auth key. Add it under the auth key's Whitelisted IPs in the MSG91 panel."
+msgstr ""
+
+#: includes/Gateways/Octopush.php:90
+msgid "Octopush"
+msgstr ""
+
+#. translators: 1: URL of the Octopush account where the API credentials are found, 2: URL of the setup guide
+#: includes/Gateways/Octopush.php:101
+#, php-format
+msgid "Send transactional SMS with Octopush (notifications only, not marketing). Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get your API login and API key from your Octopush profile. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Octopush.php:129
+msgid "API Login"
+msgstr ""
+
+#: includes/Gateways/Octopush.php:132
+msgid "The email address you use to log in to Octopush"
+msgstr ""
+
+#: includes/Gateways/Octopush.php:138
+msgid "Found in your Octopush user profile (API credentials)"
+msgstr ""
+
+#: includes/Gateways/Octopush.php:144
+msgid "3–11 letters/digits. Only used if your account is allowed a custom sender. Leave empty to use the default."
+msgstr ""
+
+#: includes/Gateways/Octopush.php:168
+#: includes/Gateways/Octopush.php:270
+msgid "Octopush API Login and API Key are required."
+msgstr ""
+
+#: includes/Gateways/Octopush.php:239
+msgid "Octopush accepted the request but found no valid recipient."
+msgstr ""
+
+#: includes/Gateways/Octopush.php:277
+msgid "The Octopush sender must be 3 to 11 letters, digits or spaces."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: includes/Gateways/Octopush.php:355
+#, php-format
+msgid "Octopush returned an unexpected response (HTTP %d)."
+msgstr ""
+
+#: includes/Gateways/Plivo.php:53
 msgid "Plivo"
 msgstr ""
 
 #. translators: URL to Plivo settings and help docs
-#: includes/Gateways/Plivo.php:37
+#: includes/Gateways/Plivo.php:64
+#, php-format
 msgid "Send SMS with Plivo. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the Auth ID and Token from Plivo. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Plivo.php:74
+#: includes/Gateways/Plivo.php:101
 msgid "Auth ID"
 msgstr ""
 
-#: includes/Gateways/Plivo.php:80
-#: includes/Gateways/Twilio.php:80
+#: includes/Gateways/Plivo.php:107
+#: includes/Gateways/Twilio.php:112
 msgid "Auth Token"
 msgstr ""
 
-#: includes/Gateways/Plivo.php:86
-#: includes/Gateways/Twilio.php:86
-#: includes/Gateways/Vonage.php:86
+#: includes/Gateways/Plivo.php:113
+#: includes/Gateways/Twilio.php:118
+#: includes/Gateways/Vonage.php:113
 msgid "From Number"
 msgstr ""
 
-#: includes/Gateways/Plivo.php:89
+#: includes/Gateways/Plivo.php:116
 msgid "Must be a valid number associated with your Plivo account"
+msgstr ""
+
+#: includes/Gateways/Plivo.php:139
+#: includes/Gateways/Plivo.php:190
+msgid "Plivo Auth ID and Auth Token are required."
+msgstr ""
+
+#: includes/Gateways/Result.php:82
+msgid "The gateway did not return a message ID, so the message cannot be confirmed as sent."
+msgstr ""
+
+#: includes/Gateways/Result.php:108
+msgid "The gateway could not send the message."
+msgstr ""
+
+#: includes/Gateways/Sinch.php:85
+msgid "Sinch"
+msgstr ""
+
+#. translators: 1: URL to the Sinch SMS REST API settings, 2: URL to the setup guide
+#: includes/Gateways/Sinch.php:96
+#, php-format
+msgid "Send SMS with the Sinch SMS API. The standalone SMS API is available to existing Sinch SMS customers; new Sinch accounts may only get the Conversation API. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the Service Plan ID and API Token. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Sinch.php:125
+msgid "Service Plan ID"
+msgstr ""
+
+#: includes/Gateways/Sinch.php:128
+msgid "Sinch Customer Dashboard → SMS → APIs → REST configuration"
+msgstr ""
+
+#: includes/Gateways/Sinch.php:134
+msgid "The API token shown next to your Service Plan ID"
+msgstr ""
+
+#: includes/Gateways/Sinch.php:141
+msgid "Must match the region where your service plan was created."
+msgstr ""
+
+#: includes/Gateways/Sinch.php:144
+msgid "From (Sender)"
+msgstr ""
+
+#: includes/Gateways/Sinch.php:147
+msgid "Phone number (E.164), short code, or alphanumeric sender. Can be left empty if your account has an Automatic Default Originator configured."
+msgstr ""
+
+#: includes/Gateways/Sinch.php:172
+#: includes/Gateways/Sinch.php:234
+msgid "Sinch Service Plan ID and API Token are required."
+msgstr ""
+
+#. translators: %s: comma-separated list of region codes, e.g. "us, eu, au"
+#: includes/Gateways/Sinch.php:247
+#, php-format
+msgid "Invalid Sinch region. Use one of: %s"
+msgstr ""
+
+#. translators: %d: maximum number of characters
+#: includes/Gateways/Sinch.php:258
+#, php-format
+msgid "An alphanumeric sender can be at most %d characters long."
+msgstr ""
+
+#: includes/Gateways/Sinch.php:299
+msgid "United States"
+msgstr ""
+
+#: includes/Gateways/Sinch.php:300
+msgid "Europe"
+msgstr ""
+
+#: includes/Gateways/Sinch.php:301
+msgid "Australia"
+msgstr ""
+
+#: includes/Gateways/Sinch.php:302
+msgid "Brazil"
+msgstr ""
+
+#: includes/Gateways/Sinch.php:303
+msgid "Canada"
+msgstr ""
+
+#: includes/Gateways/Sinch.php:401
+msgid "Invalid Sinch API token or service plan ID. Check that the region matches the one your service plan was created in."
+msgstr ""
+
+#: includes/Gateways/Sinch.php:408
+msgid "Sinch service plan not found. Check the Service Plan ID and the region."
+msgstr ""
+
+#: includes/Gateways/Sinch.php:415
+msgid "Sinch rate limit reached. Try again later."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: includes/Gateways/Sinch.php:430
+#, php-format
+msgid "Sinch returned an unexpected response (HTTP %d)."
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:84
+msgid "SMSAPI"
+msgstr ""
+
+#. translators: %1$s: URL to the SMSAPI OAuth token page, %2$s: URL to the setup guide
+#: includes/Gateways/SMSAPI.php:95
+#, php-format
+msgid "Send SMS with SMSAPI. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to generate an OAuth token in the SMSAPI Customer Portal. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:123
+msgid "OAuth Token"
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:126
+msgid "Generate it in the SMSAPI Customer Portal under OAuth Tokens. Grant at least the SMS sending and profile/account scopes."
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:129
+msgid "Service region"
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:132
+msgid "SMSAPI.com (international)"
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:133
+msgid "SMSAPI.pl (Poland)"
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:136
+msgid "Pick the portal where your account was created. Tokens do not work across the two."
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:139
+msgid "Sender name"
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:142
+msgid "Must be verified in the SMSAPI Customer Portal under Sender names. Leave empty to use the account default."
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:166
+#: includes/Gateways/SMSAPI.php:231
+msgid "SMSAPI OAuth Token is required."
+msgstr ""
+
+#: includes/Gateways/SMSAPI.php:259
+msgid "The SMSAPI token was accepted but lacks the profile/account scope. Generate a token with that scope and try again."
+msgstr ""
+
+#. translators: %1$s: SMSAPI error message, %2$s: reason the phone number was rejected
+#: includes/Gateways/SMSAPI.php:358
+#, php-format
+msgid "%1$s (%2$s)"
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:85
+msgid "SMSGlobal"
+msgstr ""
+
+#. translators: 1: URL to the SMSGlobal MXT API keys page, 2: URL to the Texty setup guide
+#: includes/Gateways/SMSGlobal.php:96
+#, php-format
+msgid "Send SMS with SMSGlobal. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to create a REST API key and secret in MXT. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:127
+msgid "REST API key from MXT → API & Integrations."
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:130
+#: includes/Gateways/Vonage.php:107
+msgid "API Secret"
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:133
+msgid "REST API secret, shown once when the key is created in MXT."
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:136
+msgid "Origin (Sender ID)"
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:139
+msgid "Number or alphanumeric sender ID (3–11 letters/digits, or 3–15 digits). Leave empty to use your account default."
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:163
+#: includes/Gateways/SMSGlobal.php:244
+msgid "SMSGlobal API Key and API Secret are required."
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:172
+msgid "SMSGlobal needs the destination as 3–15 digits in international format."
+msgstr ""
+
+#. translators: %s: message status returned by SMSGlobal
+#: includes/Gateways/SMSGlobal.php:215
+#, php-format
+msgid "SMSGlobal did not accept the message (status: %s)."
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:251
+msgid "The SMSGlobal origin must be 3–11 letters or digits, or a number of 3–15 digits."
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:406
+msgid "Unauthorized"
+msgstr ""
+
+#. translators: %s: error returned by SMSGlobal
+#: includes/Gateways/SMSGlobal.php:411
+#, php-format
+msgid "SMSGlobal rejected the API key or secret (%s). Check both values and make sure this server’s clock is correct; requests signed with the wrong time are refused."
+msgstr ""
+
+#: includes/Gateways/SMSGlobal.php:417
+msgid "Your SMSGlobal account is out of credit."
 msgstr ""
 
 #: includes/Gateways/SslWireless.php:39
@@ -414,11 +1549,8 @@ msgstr ""
 
 #. translators: URL to the SSL Wireless iSMS Plus portal
 #: includes/Gateways/SslWireless.php:50
+#, php-format
 msgid "Send SMS in Bangladesh with SSL Wireless iSMS Plus. Get your API token and Sender ID from the <a href=\"%1$s\" target=\"_blank\">iSMS Plus portal</a>, and whitelist your server IP there."
-msgstr ""
-
-#: includes/Gateways/SslWireless.php:98
-msgid "API Token"
 msgstr ""
 
 #: includes/Gateways/SslWireless.php:104
@@ -435,6 +1567,7 @@ msgstr ""
 
 #. translators: %s: this server's outgoing IPv4 address
 #: includes/Gateways/SslWireless.php:181
+#, php-format
 msgid "IP Blacklisted: ask SSL Wireless to whitelist %s for your iSMS Plus account."
 msgstr ""
 
@@ -446,42 +1579,307 @@ msgstr ""
 msgid "SSL Wireless API token and SID are required."
 msgstr ""
 
-#: includes/Gateways/Twilio.php:26
+#: includes/Gateways/Taqnyat.php:75
+msgid "Taqnyat"
+msgstr ""
+
+#. translators: 1: URL to the Taqnyat portal, 2: URL to the Texty setup guide
+#: includes/Gateways/Taqnyat.php:86
+#, php-format
+msgid "Send SMS with Taqnyat (Saudi Arabia). Create a Bearer token in the <a href=\"%1$s\" target=\"_blank\">Taqnyat portal</a> under Developer &rarr; Application. Your sender name must be registered and active, and API access must be allowed for your server's IP and country in the account security settings. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Taqnyat.php:114
+msgid "Bearer Token"
+msgstr ""
+
+#: includes/Gateways/Taqnyat.php:117
+msgid "Create it in the Taqnyat portal: Developer → Application → Add, select the SMS service, then copy the Bearer token."
+msgstr ""
+
+#: includes/Gateways/Taqnyat.php:120
+msgid "Sender Name"
+msgstr ""
+
+#: includes/Gateways/Taqnyat.php:123
+msgid "Must exactly match an active sender name in your Taqnyat account (case-sensitive). Saudi sender names must be registered and approved by the operators: ask your Taqnyat account manager for the New Sender form and submit it on company letterhead with a valid commercial registration. Approval can take several days."
+msgstr ""
+
+#: includes/Gateways/Taqnyat.php:148
+#: includes/Gateways/Taqnyat.php:224
+msgid "Taqnyat Bearer Token and Sender Name are required."
+msgstr ""
+
+#: includes/Gateways/Taqnyat.php:157
+msgid "The phone number must be in international format, e.g. 966500000000."
+msgstr ""
+
+#: includes/Gateways/Taqnyat.php:193
+msgid "Recipient rejected by Taqnyat"
+msgstr ""
+
+#: includes/Gateways/Taqnyat.php:262
+msgid "Sender name not found in your Taqnyat account. Sender names are case-sensitive."
+msgstr ""
+
+#: includes/Gateways/Taqnyat.php:270
+msgid "This sender name is not active in your Taqnyat account yet."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:87
+msgid "Telnyx"
+msgstr ""
+
+#. translators: 1: URL to the Telnyx API keys page, 2: URL to the Texty setup guide
+#: includes/Gateways/Telnyx.php:98
+#, php-format
+msgid "Send SMS with Telnyx. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get your API key. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:129
+msgid "Mission Control Portal → Account Settings → Keys & Credentials → API Keys."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:132
+msgid "From Number / Sender ID"
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:137
+msgid "E.164 number (+15551234567), short code, or alphanumeric sender ID owned by your account. An alphanumeric sender ID also needs the Messaging Profile ID. US numbers must be registered for 10DLC (or toll-free verified) in Telnyx before they can send."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:140
+msgid "Messaging Profile ID"
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:144
+msgid "Required for alphanumeric sender IDs (together with the sender ID above) and for number pools (leave the sender empty). Optional when sending from a number or short code."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:168
+msgid "Telnyx API Key and a From Number / Sender ID or Messaging Profile ID are required."
+msgstr ""
+
+#. translators: %s: recipient status reported by Telnyx
+#: includes/Gateways/Telnyx.php:220
+#, php-format
+msgid "Telnyx did not accept the message (status: %s)."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:253
+msgid "Telnyx API Key is required."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:260
+msgid "Telnyx needs a From Number / Sender ID or a Messaging Profile ID."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:270
+msgid "Enter the sender as an E.164 number (+15551234567), a short code, or an alphanumeric sender ID of up to 11 characters."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:277
+msgid "Telnyx requires a Messaging Profile ID when sending from an alphanumeric sender ID."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:287
+msgid "The Messaging Profile ID should look like abc85f64-5717-4562-b3fc-2c9600000000."
+msgstr ""
+
+#: includes/Gateways/Telnyx.php:332
+msgid "This Telnyx messaging profile is disabled."
+msgstr ""
+
+#: includes/Gateways/Textmagic.php:70
+msgid "Textmagic"
+msgstr ""
+
+#. translators: %1$s: URL to the Textmagic API keys page, %2$s: URL to the setup guide
+#: includes/Gateways/Textmagic.php:81
+#, php-format
+msgid "Send SMS with Textmagic. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get your username and API key from Textmagic. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Textmagic.php:112
+msgid "Your Textmagic account username (shown in Settings → API)."
+msgstr ""
+
+#: includes/Gateways/Textmagic.php:118
+msgid "Generate one at my.textmagic.com → API → Add new API key. V1 keys do not work."
+msgstr ""
+
+#: includes/Gateways/Textmagic.php:126
+msgid "Optional. An approved alphanumeric Sender ID or one of your Textmagic numbers. Leave empty to use the account's default sender settings. If the Sender ID is not allowed for a destination, Textmagic silently uses your default sender instead."
+msgstr ""
+
+#: includes/Gateways/Textmagic.php:149
+#: includes/Gateways/Textmagic.php:219
+msgid "Textmagic username and API key are required."
+msgstr ""
+
+#: includes/Gateways/Textmagic.php:186
+msgid "Textmagic accepted the request but did not return a message ID, so the message cannot be confirmed as sent."
+msgstr ""
+
+#: includes/Gateways/Textmagic.php:363
+msgid "Textmagic rate limit reached. Please try again in a moment."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: includes/Gateways/Textmagic.php:368
+#, php-format
+msgid "Textmagic returned an unexpected response (HTTP %d)."
+msgstr ""
+
+#: includes/Gateways/Twilio.php:58
 msgid "Twilio"
 msgstr ""
 
 #. translators: URL to Twilio settings and help docs
-#: includes/Gateways/Twilio.php:37
+#: includes/Gateways/Twilio.php:69
+#, php-format
 msgid "Send SMS with Twilio. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the Account SID and Token from Twilio. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Twilio.php:74
+#: includes/Gateways/Twilio.php:106
 msgid "Account SID"
 msgstr ""
 
-#: includes/Gateways/Twilio.php:89
+#: includes/Gateways/Twilio.php:121
 msgid "Must be a valid number associated with your Twilio account"
 msgstr ""
 
-#: includes/Gateways/Twilio.php:148
+#: includes/Gateways/Twilio.php:144
+#: includes/Gateways/Twilio.php:192
 msgid "Twilio Account SID and Auth Token are required."
 msgstr ""
 
-#: includes/Gateways/Twilio.php:176
+#: includes/Gateways/Twilio.php:210
 msgid "Twilio rejected the credentials."
 msgstr ""
 
-#: includes/Gateways/Vonage.php:26
+#: includes/Gateways/Unifonic.php:93
+msgid "Unifonic"
+msgstr ""
+
+#. translators: 1: URL to the Unifonic console, 2: URL to the Texty setup guide
+#: includes/Gateways/Unifonic.php:104
+#, php-format
+msgid "Send SMS with Unifonic. Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the AppSid from the Unifonic console. Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:132
+msgid "AppSid"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:135
+msgid "Create an application under Developers > Applications in the Unifonic console and copy its AppSid."
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:142
+msgid "Sender IDs must be registered and approved by Unifonic before use (in Saudi Arabia, under CST/CITC rules). Leave empty to use your application's default sender. Trial accounts can use UNITEST."
+msgstr ""
+
+#. translators: %s: Message status reported by Unifonic, e.g. Rejected
+#: includes/Gateways/Unifonic.php:206
+#, php-format
+msgid "Unifonic accepted the request but reported the message as %s."
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:391
+msgid "Authentication failed"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:392
+msgid "Missing AppSid parameter"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:393
+msgid "Invalid IP address"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:394
+msgid "Duplicate message"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:395
+msgid "Invalid recipient format"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:396
+msgid "Message body too long"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:397
+#: includes/Gateways/Unifonic.php:401
+msgid "Message body is empty"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:398
+msgid "No recipient"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:399
+msgid "Too many requests"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:400
+msgid "Wrong sender format"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:402
+msgid "Authentication parameters are incorrectly base64-encoded"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:403
+msgid "Invalid encoding"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:404
+msgid "This user cannot use the specified SenderID"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:405
+msgid "Country does not exist"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:406
+msgid "Invalid destination number"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:407
+msgid "Operator not found"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:408
+msgid "Request failed"
+msgstr ""
+
+#: includes/Gateways/Unifonic.php:418
+msgid "Unifonic AppSid is required."
+msgstr ""
+
+#: includes/Gateways/Vonage.php:53
 msgid "Vonage (nexmo)"
 msgstr ""
 
 #. translators: Vonage dashboard settings URL and help docs
-#: includes/Gateways/Vonage.php:55
+#: includes/Gateways/Vonage.php:82
+#, php-format
 msgid "Send SMS with Vonage (formerly Nexmo). Follow <a href=\"%1$s\" target=\"_blank\">this link</a> to get the API Key and Secret from Vonage.  Follow <a href=\"%2$s\" target=\"_blank\">these instructions</a> to configure the gateway."
 msgstr ""
 
-#: includes/Gateways/Vonage.php:80
-msgid "API Secret"
+#: includes/Gateways/Vonage.php:139
+#: includes/Gateways/Vonage.php:192
+msgid "Vonage API Key and API Secret are required."
+msgstr ""
+
+#: includes/Gateways/Vonage.php:213
+msgid "Vonage rejected the credentials."
+msgstr ""
+
+#: includes/Http/Client.php:91
+msgid "Gateway requests must use HTTPS."
 msgstr ""
 
 #: includes/Migrations/NoticeProvider.php:57
@@ -490,6 +1888,7 @@ msgstr ""
 
 #. translators: 1: target plugin version, 2: current DB schema version
 #: includes/Migrations/NoticeProvider.php:60
+#, php-format
 msgid "Texty %1$s needs to update your database from version %2$s. The update is safe to re-run and usually finishes in a few seconds."
 msgstr ""
 
@@ -563,6 +1962,7 @@ msgstr ""
 
 #. translators: 1: notification title, 2: gateway name
 #: includes/Notifications/WC/Base.php:313
+#, php-format
 msgid "SMS “%1$s” via %2$s:"
 msgstr ""
 
@@ -572,17 +1972,20 @@ msgstr ""
 
 #. translators: %s: phone number (masked for staff/vendor recipients)
 #: includes/Notifications/WC/Base.php:331
+#, php-format
 msgid "✓ Sent to %s"
 msgstr ""
 
 #. translators: 1: phone number (masked for staff/vendor recipients), 2: error code
 #: includes/Notifications/WC/Base.php:333
+#, php-format
 msgid "✗ Failed for %1$s (%2$s), details in Texty → Logs"
 msgstr ""
 
 #. translators: %s: SMS text
 #: includes/Notifications/WC/Base.php:337
 #: includes/OrderSms.php:170
+#, php-format
 msgid "Message: “%s”"
 msgstr ""
 
@@ -660,6 +2063,7 @@ msgstr ""
 
 #. translators: %d: maximum number of characters
 #: includes/OrderSms.php:132
+#, php-format
 msgid "Keep the message under %d characters."
 msgstr ""
 
@@ -673,16 +2077,19 @@ msgstr ""
 
 #. translators: 1: phone number, 2: gateway name, 3: error code
 #: includes/OrderSms.php:168
+#, php-format
 msgid "SMS to %1$s via %2$s failed (%3$s), details in Texty → Logs"
 msgstr ""
 
 #. translators: 1: phone number, 2: gateway name, 3: message text
 #: includes/OrderSms.php:186
+#, php-format
 msgid "SMS sent to %1$s via %2$s: “%3$s”"
 msgstr ""
 
 #. translators: %s: vendor store name
 #: includes/OrderSms.php:239
+#, php-format
 msgid "Vendor (%s)"
 msgstr ""
 
@@ -693,6 +2100,7 @@ msgstr ""
 
 #. translators: 1: date, 2: time
 #: includes/OrderSms.php:269
+#, php-format
 msgid "%1$s at %2$s"
 msgstr ""
 

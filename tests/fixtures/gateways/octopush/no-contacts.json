@@ -1,0 +1,7 @@
+{
+    "_source": "https://dev.octopush.com/en/sms-gateway-api-documentation/send-sms/",
+    "_note": "Inferred: docs say invalid recipients are dropped; whether that yields 201 with zero contacts is not documented.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": { "sms_ticket": "sms_5f3fbce61266f", "number_of_contacts": 0, "total_cost": 0 }
+}

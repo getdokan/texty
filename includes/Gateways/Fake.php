@@ -61,10 +61,11 @@ class Fake implements GatewayInterface {
      *
      * @param string $to
      * @param string $message
+     * @param array  $options Per-message options (ignored)
      *
      * @return WP_Error|array
      */
-    public function send( $to, $message ) {
+    public function send( $to, $message, $options = [] ) {
         $message = sprintf( 'To: %s; Message: %s', $to, $message );
         error_log( $message );
 

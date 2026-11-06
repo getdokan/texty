@@ -1,0 +1,7 @@
+{
+    "_source": "https://developer.vonage.com/en/messaging/sms/guides/troubleshooting-sms#sms-api-error-codes",
+    "_note": "Inferred: generic 5xx with a non-JSON body.",
+    "status": 503,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "<html><body>Service Unavailable</body></html>"
+}

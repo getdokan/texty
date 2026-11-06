@@ -1,0 +1,16 @@
+{
+    "_source": "https://docs.textmagic.com/#operation/sendMessage",
+    "_note": "Inferred: SendMessageResponse with type session and a null messageId (schema enum + bulk tutorial example). Must not count as a success.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "id": 34436600,
+        "href": "/api/v2/sessions/34436600",
+        "type": "session",
+        "sessionId": 34436600,
+        "bulkId": null,
+        "messageId": null,
+        "scheduleId": null,
+        "chatId": null
+    }
+}

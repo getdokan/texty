@@ -1,0 +1,25 @@
+{
+    "_source": "https://www.infobip.com/docs/api/channels/sms/outbound-sms/send-message/send-sms-messages",
+    "_note": "from docs: OpenAPI (https://api.infobip.com/platform/1/openapi/sms) paths./sms/3/messages.post.responses.200 example 'Response for request with one destination'.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "bulkId": "2034072219640523072",
+        "messages": [
+            {
+                "messageId": "2250be2d4219-3af1-78856-aabe-1362af1edfd2",
+                "status": {
+                    "groupId": 1,
+                    "groupName": "PENDING",
+                    "id": 26,
+                    "name": "PENDING_ACCEPTED",
+                    "description": "Message sent to next instance"
+                },
+                "destination": "41793026727",
+                "details": {
+                    "messageCount": 1
+                }
+            }
+        ]
+    }
+}

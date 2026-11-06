@@ -1,0 +1,24 @@
+{
+    "_source": "https://developers.brevo.com/reference/get-account",
+    "_note": "from docs (200 example for GET /v3/account), trimmed to the account identity and plan[] entries.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "email": "john.smith@example.com",
+        "firstName": "John",
+        "lastName": "Smith",
+        "companyName": "Example Company",
+        "plan": [
+            {
+                "type": "free",
+                "creditsType": "sendLimit",
+                "credits": 250
+            },
+            {
+                "type": "sms",
+                "creditsType": "sendLimit",
+                "credits": 15
+            }
+        ]
+    }
+}

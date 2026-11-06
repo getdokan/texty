@@ -1,0 +1,17 @@
+{
+    "_source": "https://developers.telnyx.com/docs/messaging/messages/error-codes",
+    "_note": "inferred: envelope from messaging_GenericErrorResponse, code 40310 from the error-codes page; HTTP status, detail text and source.pointer are inferred.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "errors": [
+            {
+                "code": "40310",
+                "title": "Invalid 'to' address",
+                "detail": "The 'to' address should be a valid E.164 phone number or short code.",
+                "source": { "pointer": "/to" },
+                "meta": { "url": "https://developers.telnyx.com/docs/overview/errors/40310" }
+            }
+        ]
+    }
+}

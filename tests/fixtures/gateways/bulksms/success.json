@@ -1,0 +1,29 @@
+{
+    "_source": "https://api.apis.guru/v2/specs/bulksms.com/1.0.0/openapi.json",
+    "_note": "inferred from the Message schema (201, array of created messages); the spec has no 201 example.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": [
+        {
+            "id": "1918293012",
+            "type": "SENT",
+            "from": "TEXTY",
+            "to": "+27001234567",
+            "body": "Hello from Texty",
+            "encoding": "TEXT",
+            "protocolId": 0,
+            "messageClass": 2,
+            "numberOfParts": 1,
+            "creditCost": 1,
+            "submission": {
+                "id": "2-00000000000000009001",
+                "date": "2026-10-22T10:00:00Z"
+            },
+            "status": {
+                "id": "ACCEPTED.null",
+                "type": "ACCEPTED",
+                "subtype": null
+            }
+        }
+    ]
+}

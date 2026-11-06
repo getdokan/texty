@@ -2,6 +2,7 @@ import type { SettingsElement } from '@wedevs/plugin-ui';
 import { RawHTML } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ArrowUpRight } from 'lucide-react';
+import BetaBadge from './components/BetaBadge';
 
 type Props = {
   source: SettingsElement;
@@ -24,9 +25,12 @@ const Header = ({ source }: Props) => {
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         {label && (
-          <h2 className="text-lg leading-tight font-semibold text-foreground">
-            <RawHTML>{label}</RawHTML>
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg leading-tight font-semibold text-foreground">
+              <RawHTML>{label}</RawHTML>
+            </h2>
+            <BetaBadge source={source} />
+          </div>
         )}
         {(source.description || source.doc_link) && (
           <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5 text-sm text-muted-foreground">

@@ -9,7 +9,7 @@
  *   DELETE /texty/v1/egress-ips            — remove one IP (`ip`), or all when omitted.
  *
  * @package Texty\Api
- * @since   2.0.3
+ * @since   2.2.0
  */
 
 namespace Texty\Api;
@@ -29,7 +29,7 @@ class EgressIps extends Base {
     /**
      * Constructor.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function __construct() {
         $this->namespace = 'texty/v1';
@@ -40,7 +40,7 @@ class EgressIps extends Base {
      * Register routes.
      *
      * @return void
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function register_routes() {
         $ip_arg = [
@@ -90,7 +90,7 @@ class EgressIps extends Base {
      * @param WP_REST_Request $request Request.
      *
      * @return WP_REST_Response
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function get_items( $request ) {
         $egress = texty()->egress_ip();
@@ -109,7 +109,7 @@ class EgressIps extends Base {
      * @param WP_REST_Request $request Request.
      *
      * @return WP_REST_Response|WP_Error
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function create_item( $request ) {
         $ip = sanitize_text_field( (string) $request->get_param( 'ip' ) );
@@ -127,7 +127,7 @@ class EgressIps extends Base {
      * @param WP_REST_Request $request Request.
      *
      * @return WP_REST_Response
-     * @since 2.0.3
+     * @since 2.2.0
      */
     public function delete_items( $request ) {
         $ip = sanitize_text_field( (string) $request->get_param( 'ip' ) );

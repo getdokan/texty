@@ -5,7 +5,7 @@
  * Plugin URI: https://wordpress.org/plugins/texty/
  * Author: weDevs
  * Author URI: https://wptexty.com/
- * Version: 2.0.3
+ * Version: 2.2.0
  * License: GPL2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: texty
@@ -28,7 +28,7 @@ final class Texty {
      *
      * @var string
      */
-    private $version = '2.0.3';
+    private $version = '2.2.0';
 
     /**
      * Instances array
@@ -198,7 +198,7 @@ final class Texty {
     /**
      * Access to the background notification queue.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @return Texty\Queue
      */
@@ -213,7 +213,7 @@ final class Texty {
     /**
      * Access to the outgoing-IP detector used for gateway IP whitelisting.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @return Texty\EgressIp
      */
@@ -228,7 +228,7 @@ final class Texty {
     /**
      * Access to the manual order SMS service.
      *
-     * @since 2.0.3
+     * @since 2.2.0
      *
      * @return Texty\OrderSms
      */

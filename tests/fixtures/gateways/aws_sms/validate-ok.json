@@ -1,0 +1,16 @@
+{
+    "_source": "https://docs.aws.amazon.com/pinpoint/latest/apireference_smsvoicev2/API_DescribeAccountAttributes.html",
+    "_note": "Shape from docs (AccountAttributes list of Name/Value); ACCOUNT_TIER name from the botocore model; the Value string SANDBOX is inferred.",
+    "status": 200,
+    "headers": {
+        "content-type": "application/x-amz-json-1.0"
+    },
+    "body": {
+        "AccountAttributes": [
+            {
+                "Name": "ACCOUNT_TIER",
+                "Value": "SANDBOX"
+            }
+        ]
+    }
+}

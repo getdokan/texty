@@ -1,0 +1,21 @@
+{
+    "_source": "https://api.apis.guru/v2/specs/clicksend.com/1.0.0/openapi.json",
+    "_note": "Inferred: docs' /account 200 body with user_id removed, to prove validate() redacts API keys from a 200 it still rejects.",
+    "status": 200,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "http_code": 200,
+        "response_code": "SUCCESS",
+        "response_msg": "Here's your account",
+        "data": {
+            "username": "ULXHP",
+            "balance": "1117.461060",
+            "_subaccount": {
+                "subaccount_id": 1716,
+                "api_username": "KCIHOYEYGM",
+                "api_key": "IJVEGTCF-VOHU-GSVF-KNKK-XHTARJXMQTXK"
+            },
+            "notes": "submitted key echoed: clicksend-api-key-1234"
+        }
+    }
+}

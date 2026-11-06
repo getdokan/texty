@@ -1,0 +1,18 @@
+{
+    "_source": "https://www.infobip.com/docs/api/channels/sms/outbound-sms/send-message/send-sms-messages",
+    "_note": "inferred: 400 ApiError envelope from the /sms/3/messages 'Bad request' example; the real property path and violation text for a bad number are not documented.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "errorCode": "E400",
+        "description": "Request cannot be processed.",
+        "action": "Check the syntax, violations and adjust the request.",
+        "violations": [
+            {
+                "property": "messages[0].destinations[0].to",
+                "violation": "must be a valid phone number"
+            }
+        ],
+        "resources": []
+    }
+}

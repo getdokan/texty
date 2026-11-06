@@ -1,0 +1,17 @@
+{
+    "_source": "https://developers.sinch.com/_spec/docs/sms/api-reference/sms.json",
+    "_note": "From docs: components.examples.TextResponse (rendered on https://developers.sinch.com/docs/sms/api-reference/sms/batches/sendsms), trimmed. to/from are numbers in the docs example.",
+    "status": 201,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "id": "01FC66621XXXXX119Z8PMV1QPQ",
+        "to": [ 15551231234, 15551256344 ],
+        "from": 15551231234,
+        "canceled": false,
+        "body": "Hi ${name}! How are you?",
+        "type": "mt_text",
+        "created_at": "2019-08-24T14:15:22Z",
+        "modified_at": "2019-08-24T14:15:22Z",
+        "delivery_report": "none"
+    }
+}

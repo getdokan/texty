@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  * and legacy post-based orders (`shop_order`). The box itself is a small
  * script built on WordPress' own components, loaded only on this screen.
  *
- * @since 2.0.3
+ * @since 2.2.0
  */
 class OrderSmsBox {
 

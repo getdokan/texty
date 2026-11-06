@@ -1,0 +1,7 @@
+{
+    "_source": "https://dev.octopush.com/en/sms-gateway-api-documentation/return-codes/",
+    "_note": "Inferred: return-codes lists 500 but documents no body; non-JSON body assumed.",
+    "status": 500,
+    "headers": { "content-type": "text/html" },
+    "body_raw": "Internal Server Error"
+}

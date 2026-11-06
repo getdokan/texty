@@ -1,0 +1,7 @@
+{
+    "_source": "https://developer.vonage.com/en/api/account#getAccountBalance",
+    "_note": "Inferred from the documented 401 error shape.",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": { "error-code": "401", "error-code-label": "authentication failed" }
+}

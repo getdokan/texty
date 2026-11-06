@@ -1,0 +1,19 @@
+{
+    "_source": "https://dev.bandwidth.com/spec/messaging.yml",
+    "_note": "from docs (assembled): property example values of the `message` schema returned by createMessage (HTTP 202); the spec has no single response example",
+    "status": 202,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "id": "1589228074636lm4k2je7j7jklbn2",
+        "owner": "+15553332222",
+        "applicationId": "93de2206-9669-4e07-948d-329f4b722ee2",
+        "time": "2024-12-02T20:15:57.278Z",
+        "segmentCount": 1,
+        "direction": "out",
+        "to": [ "+15552223333" ],
+        "from": "+15553332222",
+        "text": "Hello world",
+        "tag": "custom string",
+        "priority": "default"
+    }
+}

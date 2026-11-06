@@ -1,0 +1,55 @@
+name: PHPUnit
+
+# Gateway tests fake every HTTP call via `pre_http_request`, so this suite
+# never reaches a provider and needs no credentials.
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: phpunit-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          coverage: none
+          tools: composer:v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      # Dev-mode install so Mozart generates `dependencies/` and PHPUnit is available.
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Start WordPress (wp-env)
+        run: npx --yes @wordpress/env start
+
+      - name: Run PHPUnit
+        run: npm run test:php

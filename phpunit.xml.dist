@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    bootstrap="tests/php/bootstrap.php"
+    backupGlobals="false"
+    colors="true"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    convertDeprecationsToExceptions="true"
+>
+    <testsuites>
+        <testsuite name="texty">
+            <directory suffix="Test.php">tests/php</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <const name="WP_TESTS_MULTISITE" value="0"/>
+    </php>
+</phpunit>

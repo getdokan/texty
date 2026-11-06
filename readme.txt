@@ -3,9 +3,9 @@ Contributors: tareq1988, wedevs, nizamuddinbabu
 Donate link: https://tareq.co/donate/
 Tags: sms, notification, twilio, woocommerce, dokan
 Requires at least: 6.8
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.0.3
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,8 +164,11 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 
 == Changelog ==
 
-= v2.0.3 (4 Nov, 2026) =
+= v2.2.0 (2 Nov, 2026) =
 
+- **New:** 20 new SMS gateways: Africa's Talking, AWS End User Messaging, Bandwidth, Bird, Brevo, BulkGate, BulkSMS, ClickSend, D7 Networks, Fast2SMS, Infobip, MSG91, Octopush, SMSAPI, SMSGlobal, Sinch, Taqnyat, Telnyx, Textmagic and Unifonic. MSG91 and Fast2SMS are marked Beta.
+- **New:** Each gateway's settings page links to the provider's API documentation.
+- **Update:** Saved gateway secrets (API keys, tokens) are masked on the settings page and in the REST API.
 - **New:** Developers can add, override or remove message placeholders (like `{order_id}`) with the `texty_notification_placeholders` filter. Custom placeholders show up in the "Available variables" lists and the order "Send SMS" box, and are filled in when messages are sent.
 - **New:** Gateways that require IP whitelisting (SSL Wireless) show your server's outgoing IP on their settings page, with copy buttons. On sites with several servers or a load balancer, every server's IP is listed as it sends, marked Allowed or Blocked, and you can add your host's fixed outgoing IP by hand. A blocked send's error now names the exact IP to whitelist, and SSL Wireless requests always use IPv4.
 - **New:** Send an SMS from the WooCommerce order screen. A "Send SMS" box above Order notes suggests the order's billing, shipping and Dokan vendor numbers as you type (or enter any number), fills order details like {order_id} and {order_total}, counts characters and SMS parts (including Bangla/Unicode), and records the message as a private order note. Available to admins and shop managers.
@@ -175,6 +178,7 @@ Yes. Use the `texty_register_notifications` action hook to register custom notif
 - **New:** SMS notifications are sent in the background (using WooCommerce's Action Scheduler) instead of during checkout or order updates, so those pages no longer wait on the SMS gateway. Queued messages show as Pending in Logs, with Send now and Cancel buttons.
 - **Changed:** Because notifications are sent in the background, they go out shortly after the event (usually within a minute) rather than instantly. Code that filters Texty messages now runs in that background request, without the shopper's session. To keep the previous immediate sending, add `add_filter( 'texty_send_async', '__return_false' );`. Sites without WooCommerce keep sending immediately.
 - **Fix:** Logs → All and the dashboard counters no longer show stale or empty data on sites with a persistent object cache.
+- **Fix:** SMS that are not sent because Pause All Notifications is on, no gateway is active or the recipient number is missing now show in Logs as Failed instead of leaving no record, so the order note's "details in Texty → Logs" has an entry to point to.
 - **Update:** Faster Logs, CSV export and dashboard on sites with many messages.
 
 = v2.0.2 (10 Aug, 2026) =

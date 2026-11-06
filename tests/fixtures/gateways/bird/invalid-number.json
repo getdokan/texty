@@ -1,0 +1,17 @@
+{
+    "_source": "https://bird.com/docs/api/reference/create-sms-message.md",
+    "_note": "Inferred: errors.md envelope plus the SMSInvalidRecipient cause named in create-sms-message.md. The E-code is a placeholder; the real one is not in the pages read.",
+    "status": 422,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "error": {
+            "type": "validation_error",
+            "code": "E00000",
+            "name": "SMSInvalidRecipient",
+            "message": "The recipient is not a valid phone number.",
+            "doc_url": "https://bird.com/docs/api/errors/E00000",
+            "request_id": "req_01krdgf1111111111111111111",
+            "details": [ { "param": "to", "message": "not a routable phone number" } ]
+        }
+    }
+}

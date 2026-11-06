@@ -26,6 +26,7 @@ npm run typecheck        # tsc --noEmit (strict mode, src/** only)
 npm run build            # production build
 npm run makepot          # regenerate languages/texty.pot
 npm run pot2json         # POT → JSON for JS i18n
+npm run version          # release only: replace `@since TEXTY_VERSION` placeholders with package.json "version"
 
 # PHP
 composer install         # also runs Mozart in dev mode (post-install-cmd)
@@ -49,7 +50,7 @@ There is no PHP test suite. To verify a single PHP file: `vendor/bin/phpcs -p -s
 The singleton lazily exposes three registries: `texty()->gateways()`, `texty()->settings()`, `texty()->notifications()`. Always go through these — they own the option-key constants and the registration lifecycle.
 
 ### Send pipeline (`Texty\Gateways::send`)
-Every SMS — whether from an integration, the REST `Send` endpoint, or a notification — funnels through this method, which fires this exact sequence of hooks: `texty_sms_to` → `texty_sms_message` → `texty_pre_send_sms` (short-circuits if non-null) → `texty_before_send_sms` → gateway `send()` → `texty_after_send_sms` → `texty_send_sms_failed` (only on `WP_Error`). The dispatcher subscribes to `texty_after_send_sms` to write an `SmsStat` row, so any new send path automatically gets logged.
+Every SMS — whether from an integration, the REST `Send` endpoint, or a notification — funnels through this method, which fires this exact sequence of hooks: `texty_sms_to` → `texty_sms_message` → `texty_pre_send_sms` (short-circuits if non-null) → `texty_before_send_sms` → gateway `send()` → `texty_after_send_sms` → `texty_send_sms_failed` (only on `WP_Error`). The dispatcher subscribes to `texty_after_send_sms` to write an `SmsStat` row, so any new send path automatically gets logged. Sends refused before the gateway are logged as failed too: a `WP_Error` from `texty_pre_send_sms` (e.g. Pause All) or a missing recipient fires `texty_after_send_sms` + `texty_send_sms_failed`; no active gateway fires `texty_send_sms_no_gateway` instead (no gateway instance to pass) and `send()` still returns `false`.
 
 ### Gateways (`includes/Gateways/`)
 Gateways implement `GatewayInterface` (`send`, `name`, `logo`, `description`, `get_settings`, `validate`). Built-ins (Twilio, Vonage, Plivo, Clickatell, plus `Fake` when `WP_DEBUG`) are registered lazily inside `Gateways::all()`; third parties register on the `texty_register_gateways` action. The active gateway key lives in the `texty_settings` option under `gateway`, with credentials stored under a sub-key matching that name.
@@ -89,6 +90,7 @@ Only Appsero packages are namespaced into `Texty\Dependencies\` via Mozart (`com
 - `phpcs.xml` disables many WordPress-Core strictness rules (Yoda, escape-output, file-name) but **enforces strict comparisons** (`Universal.Operators.StrictComparisons`, `WordPress.PHP.StrictInArray.MissingTrueStrict`) as errors. Use `===` and pass `true` to `in_array`.
 - TypeScript runs in strict mode; JS files in `src/` are accepted (`allowJs: true`) but not type-checked (`checkJs: false`).
 - Text domain is `texty` (enforced by phpcs).
+- **Version placeholder for new code:** tag new classes, methods, hooks and docblocks with `@since TEXTY_VERSION` (also `@deprecated TEXTY_VERSION`) — never a guessed number like `2.3.0`. The next release number isn't known while developing; `npm run version` (`bin/version-replace.sh`) swaps the placeholder for the `package.json` version at release time. It only touches `@since` / `@deprecated` / `@version` tags in `.php`, `.js`, `.jsx`, `.ts`, `.tsx`, `.css`, `.scss`, so the live `TEXTY_VERSION` constant in code is safe. Don't rewrite existing numbered `@since` tags.
 
 ## Adding features
 

@@ -1,0 +1,15 @@
+{
+    "_source": "https://github.com/team-telnyx/openapi (openapi/spec3.json billing_ForbiddenErrorResponse)",
+    "_note": "from docs",
+    "status": 403,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "errors": [
+            {
+                "code": "10010",
+                "title": "Authorization failed",
+                "detail": "You do not have permission to perform the requested action on the specified resource or resources."
+            }
+        ]
+    }
+}

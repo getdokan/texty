@@ -1,0 +1,16 @@
+{
+    "_source": "https://github.com/team-telnyx/openapi (openapi/spec3.json components.responses.Unauthorized)",
+    "_note": "from docs",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "errors": [
+            {
+                "code": "10009",
+                "title": "Authentication failed",
+                "detail": "The required authentication headers were either invalid or not included in the request.",
+                "meta": { "url": "https://developers.telnyx.com/docs/overview/errors/10009" }
+            }
+        ]
+    }
+}

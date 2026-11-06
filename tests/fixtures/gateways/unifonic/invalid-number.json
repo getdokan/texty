@@ -1,0 +1,12 @@
+{
+    "_source": "https://docs.unifonic.com/articles/products-documentation/sms-03-sending-api",
+    "_note": "from docs: the documented HTTP 400 / ER-04 error example, verbatim.",
+    "status": 400,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "success": false,
+        "message": "Dest num is too short",
+        "errorCode": "ER-04",
+        "data": {}
+    }
+}

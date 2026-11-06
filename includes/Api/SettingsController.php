@@ -26,8 +26,9 @@
 namespace Texty\Api;
 
 use Texty\Gateways\GatewayInterface;
-use Texty\Gateways\HasDocLink;
+use Texty\Gateways\Metadata;
 use Texty\Gateways\RequiresIpWhitelist;
+use Texty\Gateways\Secrets;
 use Texty\Dependencies\WeDevs\WPKit\Settings\BaseSettingsRESTController;
 use WP_Error;
 use WP_REST_Request;
@@ -124,25 +125,62 @@ class SettingsController extends BaseSettingsRESTController {
 	 * BaseSettingsRESTController defaults to one option per page; we override to
 	 * keep all gateway credentials in one option (BC).
 	 *
+	 * Secret (`password`) fields are masked: these values go to the browser.
+	 *
 	 * @param array $schema Settings schema elements.
 	 *
 	 * @return array<string, array>
 	 * @since 2.0.0
+	 * @since 2.2.0 Masks secret fields.
 	 */
 	protected function load_values( array $schema ): array {
-		$stored = $this->load_stored_settings();
+		return $this->masked_page_values( $schema, $this->load_stored_settings() );
+	}
+
+	/**
+	 * Per-page credential values with secret fields masked.
+	 *
+	 * @param array $schema Settings schema elements.
+	 * @param array $stored Stored `texty_settings` option.
+	 *
+	 * @return array<string, array>
+	 * @since 2.2.0
+	 */
+	private function masked_page_values( array $schema, array $stored ): array {
 		$values = [];
 
 		foreach ( $schema as $element ) {
 			if ( 'page' !== $element['type'] ) {
 				continue;
 			}
-			$values[ $element['id'] ] = isset( $stored[ $element['id'] ] ) && is_array( $stored[ $element['id'] ] )
-				? $stored[ $element['id'] ]
-				: [];
+
+			$creds   = isset( $stored[ $element['id'] ] ) && is_array( $stored[ $element['id'] ] ) ? $stored[ $element['id'] ] : [];
+			$gateway = $this->get_gateway( $element['id'] );
+
+			$values[ $element['id'] ] = $gateway ? Secrets::mask( $gateway, $creds ) : $creds;
 		}
 
 		return $values;
+	}
+
+	/**
+	 * Instantiate a registered gateway by key.
+	 *
+	 * @param string $key Gateway registry key.
+	 *
+	 * @return GatewayInterface|null
+	 * @since 2.2.0
+	 */
+	private function get_gateway( string $key ) {
+		$registered = texty()->gateways()->all();
+
+		if ( ! isset( $registered[ $key ] ) ) {
+			return null;
+		}
+
+		$gateway = is_object( $registered[ $key ] ) ? $registered[ $key ] : new $registered[ $key ]();
+
+		return $gateway instanceof GatewayInterface ? $gateway : null;
 	}
 
 	/**
@@ -246,7 +284,17 @@ class SettingsController extends BaseSettingsRESTController {
 			}
 		}
 
-		$creds = isset( $nested[ $scope_id ] ) && is_array( $nested[ $scope_id ] ) ? $nested[ $scope_id ] : [];
+		$creds    = isset( $nested[ $scope_id ] ) && is_array( $nested[ $scope_id ] ) ? $nested[ $scope_id ] : [];
+		$existing = $this->load_stored_settings();
+		$gateway  = $this->get_gateway( $scope_id );
+
+		// The browser only ever sees a mask for saved secrets. An unchanged
+		// mask means "keep the saved value"; swap it back before validating.
+		if ( $gateway ) {
+			$stored_creds        = isset( $existing[ $scope_id ] ) && is_array( $existing[ $scope_id ] ) ? $existing[ $scope_id ] : [];
+			$creds               = Secrets::restore( $gateway, $creds, $stored_creds );
+			$nested[ $scope_id ] = $creds;
+		}
 
 		// Validate credentials via the gateway's own validate() method.
 		$validation = $this->validate_gateway_credentials( $scope_id, $creds );
@@ -262,8 +310,7 @@ class SettingsController extends BaseSettingsRESTController {
 		}
 
 		// Merge credentials into existing settings — preserve the active gateway.
-		$existing = $this->load_stored_settings();
-		$merged   = $this->array_merge_deep( $existing, $nested );
+		$merged = $this->array_merge_deep( $existing, $nested );
 
 		update_option( self::OPTION_KEY, $merged );
 
@@ -276,21 +323,10 @@ class SettingsController extends BaseSettingsRESTController {
 		 */
 		do_action( 'texty_settings_after_save', $merged, $nested, $scope_id );
 
-		// Build the per-page values response.
-		$values_response = [];
-		foreach ( $schema as $element ) {
-			if ( 'page' !== $element['type'] ) {
-				continue;
-			}
-			$values_response[ $element['id'] ] = isset( $merged[ $element['id'] ] ) && is_array( $merged[ $element['id'] ] )
-				? $merged[ $element['id'] ]
-				: [];
-		}
-
 		return new WP_REST_Response(
 			[
 				'success'        => true,
-				'values'         => $values_response,
+				'values'         => $this->masked_page_values( $schema, $merged ),
 				'active_gateway' => isset( $merged['gateway'] ) ? (string) $merged['gateway'] : '',
 				'connected'      => $scope_id,
 			]
@@ -384,6 +420,8 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @since 2.0.0
 	 */
 	private function build_gateway_schema( string $key, GatewayInterface $gateway, int $priority ): array {
+		$meta = Metadata::for_gateway( $gateway );
+
 		$page = [
 			'type'        => 'page',
 			'id'          => $key,
@@ -391,13 +429,15 @@ class SettingsController extends BaseSettingsRESTController {
 			'description' => $gateway->description(),
 			'image_url'   => $gateway->logo(),
 			'priority'    => $priority,
+			'meta'        => $meta,
 		];
 
-		$doc_link = $gateway instanceof HasDocLink ? $gateway->doc_link() : '';
+		// Resolved from HasDocLink::doc_link() by Metadata::for_gateway().
+		$doc_link = $meta['docs_url'];
 
 		if ( $doc_link ) {
 			$page['doc_link']      = $doc_link;
-			$page['doc_link_text'] = __( 'Get your account', 'texty' );
+			$page['doc_link_text'] = __( 'View documentation', 'texty' );
 		}
 
 		$elements = [ $page ];
@@ -419,23 +459,37 @@ class SettingsController extends BaseSettingsRESTController {
 		$field_priority = 10;
 
 		foreach ( $settings as $cred_key => $setting ) {
+			if ( ! is_array( $setting ) ) {
+				continue;
+			}
+
 			$label = isset( $setting['name'] ) ? $setting['name'] : $cred_key;
 			$type  = isset( $setting['type'] ) ? $setting['type'] : 'text';
+
+			$variant  = $this->field_variant( (string) $cred_key, $type, $setting );
+			$required = ! isset( $setting['required'] ) || false !== $setting['required'];
 
 			$field = [
 				'type'        => 'field',
 				'id'          => $key . '_' . $cred_key,
 				'page_id'     => $key,
 				'section_id'  => $section_id,
-				'variant'     => $this->field_variant( (string) $cred_key, $type ),
+				'variant'     => $variant,
 				'label'       => $label,
 				/* translators: %s: credential field label, e.g. "Account SID" */
 				'placeholder' => sprintf( __( 'Enter %s', 'texty' ), $label ),
 				'layout'      => 'full-width',
 				'priority'    => $field_priority,
-				'default'     => isset( $setting['value'] ) ? $setting['value'] : '',
-				'validations' => $this->required_validation( $label ),
+				// Never send a saved secret to the browser.
+				'default'     => 'password' === $type
+					? Secrets::mask_value( isset( $setting['value'] ) ? $setting['value'] : '' )
+					: ( isset( $setting['value'] ) ? $setting['value'] : '' ),
+				'validations' => $required ? $this->required_validation( $label ) : [],
 			];
+
+			if ( 'select' === $variant ) {
+				$field['options'] = $this->select_options( $setting['options'] );
+			}
 
 			if ( ! empty( $setting['help'] ) ) {
 				$field['description'] = $setting['help'];
@@ -461,7 +515,7 @@ class SettingsController extends BaseSettingsRESTController {
 	 * @param RequiresIpWhitelist $gateway Gateway instance.
 	 *
 	 * @return array[]
-	 * @since 2.0.3
+	 * @since 2.2.0
 	 */
 	private function ip_whitelist_schema( string $key, RequiresIpWhitelist $gateway ): array {
 		$section_id = $key . '_ip_whitelist';
@@ -493,22 +547,55 @@ class SettingsController extends BaseSettingsRESTController {
 	/**
 	 * Map a gateway settings field to a plugin-ui field variant.
 	 *
+	 * Besides `name`, `type`, `value` and `help`, a gateway setting may
+	 * declare (since 2.2.0):
+	 * - `options`      value => label map, used with `'type' => 'select'`
+	 * - `required`     false to make the field optional (default true)
+	 * - `alphanumeric` true on a `from` field that accepts a sender name,
+	 *                  so it renders as text instead of a phone input
+	 *
 	 * @param string $cred_key Credential key within the gateway (e.g. 'from').
 	 * @param string $type     Field type declared by the gateway's get_settings().
+	 * @param array  $setting  The full setting declaration.
 	 *
 	 * @return string
 	 * @since 2.0.0
 	 */
-	private function field_variant( string $cred_key, string $type ): string {
+	private function field_variant( string $cred_key, string $type, array $setting = [] ): string {
 		if ( 'password' === $type ) {
 			return 'show_hide';
 		}
 
-		if ( 'phone' === $type || 'from' === $cred_key ) {
+		if ( 'select' === $type && ! empty( $setting['options'] ) && is_array( $setting['options'] ) ) {
+			return 'select';
+		}
+
+		if ( 'phone' === $type || ( 'from' === $cred_key && empty( $setting['alphanumeric'] ) ) ) {
 			return 'phone';
 		}
 
 		return 'text';
+	}
+
+	/**
+	 * Turn a gateway's value => label map into plugin-ui select options.
+	 *
+	 * @param array $options Value => label map.
+	 *
+	 * @return array[]
+	 * @since 2.2.0
+	 */
+	private function select_options( array $options ): array {
+		$list = [];
+
+		foreach ( $options as $value => $label ) {
+			$list[] = [
+				'value' => (string) $value,
+				'label' => (string) $label,
+			];
+		}
+
+		return $list;
 	}
 
 	/**

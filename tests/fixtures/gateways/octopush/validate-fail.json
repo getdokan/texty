@@ -1,0 +1,7 @@
+{
+    "_source": "https://dev.octopush.com/en/sms-gateway-api-documentation/check-sms-balance/",
+    "_note": "Inferred: the check-balance page documents no failure response; {code, message} shape and code 401 'Authentication failure' taken from the send-sms and return-codes pages.",
+    "status": 401,
+    "headers": { "content-type": "application/json" },
+    "body": { "code": 401, "message": "Authentication failure" }
+}

@@ -1,0 +1,14 @@
+{
+    "_source": "https://docs.clickatell.com/channels/sms-channels/sms-api-reference/#section/Error-codes",
+    "_note": "Inferred: 202 where the message entry is not accepted (error 105, invalid destination).",
+    "status": 202,
+    "headers": { "content-type": "application/json" },
+    "body": {
+        "messages": [
+            { "apiMessageId": null, "accepted": false, "to": "123", "errorCode": 105, "error": "Invalid destination address", "errorDescription": "Invalid destination address" }
+        ],
+        "errorCode": null,
+        "error": null,
+        "errorDescription": null
+    }
+}
