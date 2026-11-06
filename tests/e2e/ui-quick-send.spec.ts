@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { gotoTextyHash, bootstrapNonce, restCall, REST_NS } from './helpers/texty';
 
 /**
- * Drives the dashboard Quick Send card end-to-end through the WP_DEBUG-only
+ * Drives the Quick Send page (#/quick-send) end-to-end through the WP_DEBUG-only
  * `fake` gateway, then validates the message landed in the Logs UI and moved
  * the dashboard metrics. The prior active gateway is captured and restored;
  * only `fake` is ever activated. Sends are append-only (no logs DELETE), so a
@@ -44,14 +44,20 @@ test.describe('Quick Send (UI) → logs + dashboard', () => {
         }
     });
 
-    // Fill the Quick Send card and submit; returns once POST /send resolves.
-    const sendFromDashboard = async (
+    // Open the Quick Send page with the fake gateway active (so the form renders,
+    // not the "No SMS gateway connected" state).
+    const openQuickSend = async (page: import('@playwright/test').Page): Promise<void> => {
+        await gotoTextyHash(page, '/quick-send');
+        await page.waitForLoadState('networkidle');
+    };
+
+    // Fill the Quick Send form and submit; returns once POST /send resolves.
+    const sendFromQuickSend = async (
         page: import('@playwright/test').Page,
         phone: string,
         message: string
     ): Promise<void> => {
-        await gotoTextyHash(page, '/dashboard');
-        await page.waitForLoadState('networkidle');
+        await openQuickSend(page);
 
         // react-phone-input-2 exposes input[name="phone"]; plugin-ui textarea by placeholder.
         await page.locator('input[name="phone"]').fill(phone);
@@ -64,14 +70,36 @@ test.describe('Quick Send (UI) → logs + dashboard', () => {
         await sendResp;
     };
 
-    test('sending from the dashboard shows a success toast and moves the metrics', async ({ page }) => {
+    test('send button is gated on both phone and message', async ({ page }) => {
+        await openQuickSend(page);
+
+        const sendBtn = page.getByRole('button', { name: /Send Message/i });
+        await expect(sendBtn).toBeDisabled();
+
+        // Typing only a message keeps it disabled (no phone yet).
+        await page.getByPlaceholder(/Write here/i).fill('Hello from QA');
+        await expect(sendBtn).toBeDisabled();
+
+        // Add a phone number — now it should enable.
+        await page.locator('input[name="phone"]').fill('15555550123');
+        await expect(sendBtn).toBeEnabled();
+    });
+
+    test('message character counter reflects typed length', async ({ page }) => {
+        await openQuickSend(page);
+
+        await page.getByPlaceholder(/Write here/i).fill('12345');
+        await expect(page.getByText(/^5\//)).toBeVisible();
+    });
+
+    test('sending from Quick Send shows a success toast and moves the metrics', async ({ page }) => {
         const token = `qa-uisend-${Date.now()}`;
 
         const before = await (
             await restCall(page.request, `${REST_NS}/metrics`, { nonce, params: { period: 'this_month' } })
         ).json();
 
-        await sendFromDashboard(page, '15555551234', `${token} hello from QA`);
+        await sendFromQuickSend(page, '15555551234', `${token} hello from QA`);
 
         await expect(page.getByText(/Message has been sent/i).first()).toBeVisible({ timeout: 10_000 });
 
@@ -97,10 +125,10 @@ test.describe('Quick Send (UI) → logs + dashboard', () => {
         expect(after.delivered).toBeGreaterThanOrEqual(before.delivered + 1);
     });
 
-    test('a message sent from the dashboard is findable and readable in the Logs UI', async ({ page }) => {
+    test('a message sent from Quick Send is findable and readable in the Logs UI', async ({ page }) => {
         const token = `qa-uilogs-${Date.now()}`;
 
-        await sendFromDashboard(page, '15555554321', `${token} visible in logs`);
+        await sendFromQuickSend(page, '15555554321', `${token} visible in logs`);
         await expect(page.getByText(/Message has been sent/i).first()).toBeVisible({ timeout: 10_000 });
 
         await gotoTextyHash(page, '/logs');
