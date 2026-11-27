@@ -253,7 +253,9 @@ class OrderSms {
      * @return array{id:int,content:string,date:string,author:string}
      */
     protected function add_note( WC_Order $order, $text ) {
-        $note_id = (int) $order->add_order_note( $text, 0, true );
+        // Escape for the HTML note; `content` below stays plain text because
+        // the order screen appends it with textContent.
+        $note_id = (int) $order->add_order_note( Base::escape_note( $text ), 0, true );
         $user    = wp_get_current_user();
 
         // Use the saved note's own timestamp (correct timezone) rather than

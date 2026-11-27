@@ -336,7 +336,26 @@ class Base extends Notification {
         /* translators: %s: SMS text */
         $lines[] = sprintf( __( 'Message: “%s”', 'texty' ), $content );
 
-        $this->order->add_order_note( implode( "\n", $lines ) );
+        $this->order->add_order_note( self::escape_note( implode( "\n", $lines ) ) );
+    }
+
+    /**
+     * Escape SMS note text before it is stored as an order note.
+     *
+     * Order notes are rendered as HTML (through wp_kses_post()) on the order
+     * screen and the Dokan vendor dashboard, but the SMS text carries
+     * customer-supplied values such as `{billing_name}`. Escaping turns any
+     * markup into plain text so it can't run in a staff member's browser.
+     * The SMS itself is sent unescaped — only the note is escaped.
+     *
+     * @since TEXTY_VERSION
+     *
+     * @param string $text Plain-text note.
+     *
+     * @return string
+     */
+    public static function escape_note( $text ) {
+        return esc_html( (string) $text );
     }
 
     /**
